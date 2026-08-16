@@ -57,6 +57,30 @@ Each entry corresponds to one phase of the build plan in `nanoscale_lm_spec.md`.
   corpus can fill (761 merges), and dead embedding rows cost parameters and CPU time
   for nothing. `nano` is now 4,952,064 parameters.
 
+### Phase 2 — Model
+
+**Added**
+
+- `nanoscale.model`: the full decoder-only transformer, from scratch.
+  - `rope.py` — RoPE in the paper's interleaved-pair convention, with a slow literal
+    reference implementation used only by tests, and configurable table precision.
+  - `norm.py` — RMSNorm (default) and a bias-free LayerNorm ablation.
+  - `mlp.py` — SwiGLU (default, 8/3 expansion) and the ReLU² speedrun variant.
+  - `attention.py` — causal self-attention with GQA, RoPE, QK-norm, KV caching, and
+    an optional SDPA fast path behind the same interface.
+  - `kv_cache.py` — preallocated per-layer KV storage with `clone`/`truncate` for
+    speculative rollback and byte-level memory accounting.
+  - `block.py`, `lm.py`, `mtp.py` — pre-norm blocks, the LM with zero-init or
+    depth-scaled initialisation, tanh logit soft-capping, optional multi-token
+    prediction heads, and the reference generation loop.
+  - `numerics.py` — "promote to at least fp32, never demote" for the reduction-heavy
+    ops.
+- 119 new tests: manual attention == SDPA in fp32 and fp64 across MHA/GQA/MQA with and
+  without QK-norm and padding masks; cached decode == full recompute token-for-token;
+  RoPE == a literal reference rotation and the relative-position property to 1e-12;
+  hand-computed RMSNorm/SwiGLU values; parameter counts against the tier table;
+  `ln(vocab)` initial loss; plus hypothesis properties over the whole config space.
+
 **Notes**
 
 - The spec's headline parameter figures are approximate. The shapes from the spec's

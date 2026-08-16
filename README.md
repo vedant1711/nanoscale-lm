@@ -20,7 +20,7 @@ Under construction, phase by phase, against `nanoscale_lm_spec.md`.
 |---|---|---|
 | 0 | Foundation: scaffold, configs, CLI, seeds/manifests, CI | ✅ |
 | 1 | Byte-level BPE tokenizer | ✅ |
-| 2 | Model: GQA + RoPE + QK-norm + RMSNorm + SwiGLU + KV cache | ⬜ |
+| 2 | Model: GQA + RoPE + QK-norm + RMSNorm + SwiGLU + KV cache | ✅ |
 | 3 | Optimizer: AdamW + Muon (Newton–Schulz) | ⬜ |
 | 4 | Pretraining loop | ⬜ |
 | 5 | Optimizer & architecture ablations | ⬜ |
