@@ -1,0 +1,56 @@
+{
+  "additionalProperties": false,
+  "description": "Sampling configuration for the generation loop / server (spec Phase 10).",
+  "properties": {
+    "max_new_tokens": {
+      "default": 128,
+      "description": "Tokens to generate.",
+      "exclusiveMinimum": 0,
+      "title": "Max New Tokens",
+      "type": "integer"
+    },
+    "temperature": {
+      "default": 0.8,
+      "description": "0 means greedy decoding.",
+      "minimum": 0.0,
+      "title": "Temperature",
+      "type": "number"
+    },
+    "top_k": {
+      "default": 0,
+      "description": "0 disables top-k.",
+      "minimum": 0,
+      "title": "Top K",
+      "type": "integer"
+    },
+    "top_p": {
+      "default": 0.95,
+      "description": "Nucleus cutoff; 1.0 disables top-p.",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Top P",
+      "type": "number"
+    },
+    "repetition_penalty": {
+      "default": 1.0,
+      "description": "1.0 disables the penalty.",
+      "minimum": 1.0,
+      "title": "Repetition Penalty",
+      "type": "number"
+    },
+    "seed": {
+      "default": 1337,
+      "description": "Sampling seed; generation is reproducible under it.",
+      "title": "Seed",
+      "type": "integer"
+    },
+    "stop_on_eos": {
+      "default": true,
+      "description": "Stop as soon as <eos> is sampled.",
+      "title": "Stop On Eos",
+      "type": "boolean"
+    }
+  },
+  "title": "GenerateConfig",
+  "type": "object"
+}

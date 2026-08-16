@@ -1,0 +1,43 @@
+{
+  "additionalProperties": false,
+  "description": "Learning-rate schedule (spec B4).",
+  "properties": {
+    "name": {
+      "default": "cosine",
+      "description": "Cosine+warmup default; WSD (warmup-stable-decay) as a flag.",
+      "enum": [
+        "cosine",
+        "wsd",
+        "constant"
+      ],
+      "title": "Name",
+      "type": "string"
+    },
+    "warmup_frac": {
+      "default": 0.02,
+      "description": "Fraction of total steps spent warming up.",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Warmup Frac",
+      "type": "number"
+    },
+    "decay_frac": {
+      "default": 0.2,
+      "description": "WSD only: fraction of steps in the decay tail.",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Decay Frac",
+      "type": "number"
+    },
+    "min_lr_frac": {
+      "default": 0.1,
+      "description": "Floor LR as a fraction of peak.",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Min Lr Frac",
+      "type": "number"
+    }
+  },
+  "title": "ScheduleConfig",
+  "type": "object"
+}

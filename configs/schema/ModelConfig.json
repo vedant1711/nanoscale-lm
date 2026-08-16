@@ -1,0 +1,177 @@
+{
+  "additionalProperties": false,
+  "description": "Decoder-only transformer configuration (spec B2).\n\nDefaults are the 2026 \"architecture that won\" for small decoder-only LMs:\nRoPE + RMSNorm + SwiGLU + GQA + QK-norm, untied head, zero-init output projections.\nThe modded-nanoGPT speedrun extras (ReLU^2 MLP, logit soft-cap, MTP head) are\ntoggles so that Phase 5 can *measure* them rather than assert them.",
+  "properties": {
+    "vocab_size": {
+      "default": 8192,
+      "description": "Must match the trained tokenizer.",
+      "exclusiveMinimum": 0,
+      "title": "Vocab Size",
+      "type": "integer"
+    },
+    "n_layers": {
+      "default": 6,
+      "description": "Number of transformer blocks.",
+      "exclusiveMinimum": 0,
+      "title": "N Layers",
+      "type": "integer"
+    },
+    "d_model": {
+      "default": 256,
+      "description": "Residual-stream width.",
+      "exclusiveMinimum": 0,
+      "title": "D Model",
+      "type": "integer"
+    },
+    "n_heads": {
+      "default": 4,
+      "description": "Number of query heads.",
+      "exclusiveMinimum": 0,
+      "title": "N Heads",
+      "type": "integer"
+    },
+    "n_kv_heads": {
+      "default": 2,
+      "description": "Number of key/value heads (GQA). Must divide n_heads.",
+      "exclusiveMinimum": 0,
+      "title": "N Kv Heads",
+      "type": "integer"
+    },
+    "d_ff": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Feed-forward hidden width. If None it is derived as a multiple of d_model (8/3 for SwiGLU so that parameter count matches a 4x non-gated MLP).",
+      "title": "D Ff"
+    },
+    "max_seq_len": {
+      "default": 256,
+      "description": "Maximum context length.",
+      "exclusiveMinimum": 0,
+      "title": "Max Seq Len",
+      "type": "integer"
+    },
+    "norm_type": {
+      "default": "rmsnorm",
+      "description": "Normalization.",
+      "enum": [
+        "rmsnorm",
+        "layernorm"
+      ],
+      "title": "Norm Type",
+      "type": "string"
+    },
+    "mlp_type": {
+      "default": "swiglu",
+      "description": "SwiGLU default; ReLU^2 is the modded-nanoGPT speedrun variant.",
+      "enum": [
+        "swiglu",
+        "relu2"
+      ],
+      "title": "Mlp Type",
+      "type": "string"
+    },
+    "qk_norm": {
+      "default": true,
+      "description": "RMS-normalize q and k before the dot product.",
+      "title": "Qk Norm",
+      "type": "boolean"
+    },
+    "tie_embeddings": {
+      "default": false,
+      "description": "Untied LM head by default (speedrun stack).",
+      "title": "Tie Embeddings",
+      "type": "boolean"
+    },
+    "zero_init_output": {
+      "default": true,
+      "description": "Zero-init attention/MLP output projections and the LM head (muP-like).",
+      "title": "Zero Init Output",
+      "type": "boolean"
+    },
+    "logit_soft_cap": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "If set, apply c*tanh(logits/c) (Gemma-2 style). None disables it.",
+      "title": "Logit Soft Cap"
+    },
+    "n_mtp_heads": {
+      "default": 0,
+      "description": "Extra multi-token-prediction heads predicting t+2, t+3, ... Used both as a training-quality ablation and, in Arc 2, as a self-speculation draft.",
+      "maximum": 4,
+      "minimum": 0,
+      "title": "N Mtp Heads",
+      "type": "integer"
+    },
+    "mtp_loss_weight": {
+      "default": 0.3,
+      "description": "Weight of the auxiliary MTP loss.",
+      "minimum": 0.0,
+      "title": "Mtp Loss Weight",
+      "type": "number"
+    },
+    "rope_theta": {
+      "default": 10000.0,
+      "description": "RoPE base frequency.",
+      "exclusiveMinimum": 0.0,
+      "title": "Rope Theta",
+      "type": "number"
+    },
+    "rope_scaling": {
+      "default": 1.0,
+      "description": "Linear position-interpolation factor.",
+      "exclusiveMinimum": 0.0,
+      "title": "Rope Scaling",
+      "type": "number"
+    },
+    "norm_eps": {
+      "default": 1e-05,
+      "description": "Epsilon inside RMSNorm/LayerNorm.",
+      "exclusiveMinimum": 0.0,
+      "title": "Norm Eps",
+      "type": "number"
+    },
+    "dropout": {
+      "default": 0.0,
+      "description": "Dropout is off by default at this scale.",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Dropout",
+      "type": "number"
+    },
+    "init_std": {
+      "default": 0.02,
+      "description": "Std of the truncated-normal init.",
+      "exclusiveMinimum": 0.0,
+      "title": "Init Std",
+      "type": "number"
+    },
+    "attn_impl": {
+      "default": "manual",
+      "description": "'manual' is the from-scratch reference path. 'sdpa' is an optional fast path that must match 'manual' numerically (tested in tests/unit/test_attention.py).",
+      "enum": [
+        "manual",
+        "sdpa"
+      ],
+      "title": "Attn Impl",
+      "type": "string"
+    }
+  },
+  "title": "ModelConfig",
+  "type": "object"
+}

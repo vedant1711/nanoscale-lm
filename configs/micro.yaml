@@ -1,0 +1,3 @@
+# micro tier: the main reported model. Trains on a free Colab/Kaggle T4 in a few hours
+# to the full Chinchilla-style 20:1 token budget on streaming FineWeb-Edu.
+preset: micro

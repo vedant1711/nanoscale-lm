@@ -1,0 +1,292 @@
+{
+  "$defs": {
+    "OptimConfig": {
+      "additionalProperties": false,
+      "description": "Optimizer configuration (spec B3): Muon for hidden matrices, AdamW for the rest.",
+      "properties": {
+        "name": {
+          "default": "muon",
+          "description": "'adamw' routes everything to AdamW. 'muon' uses the documented split: Muon for 2D hidden matmul weights, AdamW for embeddings, LM head, norms and scalars.",
+          "enum": [
+            "adamw",
+            "muon"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "lr": {
+          "default": 0.003,
+          "description": "Peak LR for the Muon group.",
+          "exclusiveMinimum": 0.0,
+          "title": "Lr",
+          "type": "number"
+        },
+        "adamw_lr": {
+          "default": 0.0003,
+          "description": "Peak LR for the AdamW group.",
+          "exclusiveMinimum": 0.0,
+          "title": "Adamw Lr",
+          "type": "number"
+        },
+        "betas": {
+          "default": [
+            0.9,
+            0.95
+          ],
+          "description": "AdamW betas.",
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Betas",
+          "type": "array"
+        },
+        "eps": {
+          "default": 1e-08,
+          "description": "AdamW epsilon.",
+          "exclusiveMinimum": 0.0,
+          "title": "Eps",
+          "type": "number"
+        },
+        "weight_decay": {
+          "default": 0.1,
+          "description": "Decoupled weight decay.",
+          "minimum": 0.0,
+          "title": "Weight Decay",
+          "type": "number"
+        },
+        "cautious_weight_decay": {
+          "default": false,
+          "description": "Feb-2026 improvement: decay only the components of the weight that agree in sign with the update, on a schedule that decays to zero. Flag so it can be A/B'd.",
+          "title": "Cautious Weight Decay",
+          "type": "boolean"
+        },
+        "muon_momentum": {
+          "default": 0.95,
+          "description": "Muon momentum coefficient.",
+          "exclusiveMaximum": 1.0,
+          "minimum": 0.0,
+          "title": "Muon Momentum",
+          "type": "number"
+        },
+        "muon_nesterov": {
+          "default": true,
+          "description": "Nesterov-style momentum inside Muon.",
+          "title": "Muon Nesterov",
+          "type": "boolean"
+        },
+        "muon_ns_steps": {
+          "default": 5,
+          "description": "Newton-Schulz iterations per step.",
+          "exclusiveMinimum": 0,
+          "title": "Muon Ns Steps",
+          "type": "integer"
+        },
+        "grad_clip": {
+          "default": 1.0,
+          "description": "Global grad-norm clip; 0 disables.",
+          "minimum": 0.0,
+          "title": "Grad Clip",
+          "type": "number"
+        }
+      },
+      "title": "OptimConfig",
+      "type": "object"
+    },
+    "ScheduleConfig": {
+      "additionalProperties": false,
+      "description": "Learning-rate schedule (spec B4).",
+      "properties": {
+        "name": {
+          "default": "cosine",
+          "description": "Cosine+warmup default; WSD (warmup-stable-decay) as a flag.",
+          "enum": [
+            "cosine",
+            "wsd",
+            "constant"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "warmup_frac": {
+          "default": 0.02,
+          "description": "Fraction of total steps spent warming up.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Warmup Frac",
+          "type": "number"
+        },
+        "decay_frac": {
+          "default": 0.2,
+          "description": "WSD only: fraction of steps in the decay tail.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Decay Frac",
+          "type": "number"
+        },
+        "min_lr_frac": {
+          "default": 0.1,
+          "description": "Floor LR as a fraction of peak.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Min Lr Frac",
+          "type": "number"
+        }
+      },
+      "title": "ScheduleConfig",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Pretraining loop configuration (spec B4).",
+  "properties": {
+    "tier": {
+      "default": "nano",
+      "description": "Size-ladder tier name.",
+      "enum": [
+        "nano",
+        "micro",
+        "small"
+      ],
+      "title": "Tier",
+      "type": "string"
+    },
+    "seed": {
+      "default": 1337,
+      "description": "Global seed; controls init, dataloading and dropout.",
+      "title": "Seed",
+      "type": "integer"
+    },
+    "batch_size": {
+      "default": 16,
+      "description": "Micro-batch size (sequences per step).",
+      "exclusiveMinimum": 0,
+      "title": "Batch Size",
+      "type": "integer"
+    },
+    "grad_accum": {
+      "default": 1,
+      "description": "Gradient-accumulation steps.",
+      "exclusiveMinimum": 0,
+      "title": "Grad Accum",
+      "type": "integer"
+    },
+    "max_steps": {
+      "default": 200,
+      "description": "Optimizer steps (upper bound).",
+      "exclusiveMinimum": 0,
+      "title": "Max Steps",
+      "type": "integer"
+    },
+    "token_budget": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "If set, training stops once this many tokens have been consumed. Presets set it from the Chinchilla-style 20:1 tokens:params heuristic.",
+      "title": "Token Budget"
+    },
+    "eval_interval": {
+      "default": 50,
+      "description": "Steps between validation passes.",
+      "exclusiveMinimum": 0,
+      "title": "Eval Interval",
+      "type": "integer"
+    },
+    "eval_batches": {
+      "default": 10,
+      "description": "Validation batches per evaluation.",
+      "exclusiveMinimum": 0,
+      "title": "Eval Batches",
+      "type": "integer"
+    },
+    "log_interval": {
+      "default": 10,
+      "description": "Steps between training-log rows.",
+      "exclusiveMinimum": 0,
+      "title": "Log Interval",
+      "type": "integer"
+    },
+    "ckpt_interval": {
+      "default": 100,
+      "description": "Steps between checkpoint writes.",
+      "exclusiveMinimum": 0,
+      "title": "Ckpt Interval",
+      "type": "integer"
+    },
+    "amp_dtype": {
+      "default": "fp32",
+      "description": "Autocast dtype. fp32 on CPU (the nano tier); bf16 on Colab/Kaggle GPUs, always with an fp32 master-weight copy held by the optimizer.",
+      "enum": [
+        "fp32",
+        "bf16",
+        "fp16"
+      ],
+      "title": "Amp Dtype",
+      "type": "string"
+    },
+    "device": {
+      "default": "auto",
+      "description": "Compute device.",
+      "enum": [
+        "auto",
+        "cpu",
+        "cuda",
+        "mps"
+      ],
+      "title": "Device",
+      "type": "string"
+    },
+    "compile_model": {
+      "default": false,
+      "description": "torch.compile the model (GPU tiers only).",
+      "title": "Compile Model",
+      "type": "boolean"
+    },
+    "out_dir": {
+      "default": "runs/pretrain",
+      "description": "Run directory for logs/checkpoints.",
+      "title": "Out Dir",
+      "type": "string"
+    },
+    "resume": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Checkpoint path to resume from.",
+      "title": "Resume"
+    },
+    "deterministic": {
+      "default": true,
+      "description": "Force deterministic kernels and dataloading.",
+      "title": "Deterministic",
+      "type": "boolean"
+    },
+    "optim": {
+      "$ref": "#/$defs/OptimConfig"
+    },
+    "schedule": {
+      "$ref": "#/$defs/ScheduleConfig"
+    }
+  },
+  "title": "TrainConfig",
+  "type": "object"
+}

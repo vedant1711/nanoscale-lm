@@ -1,0 +1,99 @@
+{
+  "additionalProperties": false,
+  "description": "Optimizer configuration (spec B3): Muon for hidden matrices, AdamW for the rest.",
+  "properties": {
+    "name": {
+      "default": "muon",
+      "description": "'adamw' routes everything to AdamW. 'muon' uses the documented split: Muon for 2D hidden matmul weights, AdamW for embeddings, LM head, norms and scalars.",
+      "enum": [
+        "adamw",
+        "muon"
+      ],
+      "title": "Name",
+      "type": "string"
+    },
+    "lr": {
+      "default": 0.003,
+      "description": "Peak LR for the Muon group.",
+      "exclusiveMinimum": 0.0,
+      "title": "Lr",
+      "type": "number"
+    },
+    "adamw_lr": {
+      "default": 0.0003,
+      "description": "Peak LR for the AdamW group.",
+      "exclusiveMinimum": 0.0,
+      "title": "Adamw Lr",
+      "type": "number"
+    },
+    "betas": {
+      "default": [
+        0.9,
+        0.95
+      ],
+      "description": "AdamW betas.",
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Betas",
+      "type": "array"
+    },
+    "eps": {
+      "default": 1e-08,
+      "description": "AdamW epsilon.",
+      "exclusiveMinimum": 0.0,
+      "title": "Eps",
+      "type": "number"
+    },
+    "weight_decay": {
+      "default": 0.1,
+      "description": "Decoupled weight decay.",
+      "minimum": 0.0,
+      "title": "Weight Decay",
+      "type": "number"
+    },
+    "cautious_weight_decay": {
+      "default": false,
+      "description": "Feb-2026 improvement: decay only the components of the weight that agree in sign with the update, on a schedule that decays to zero. Flag so it can be A/B'd.",
+      "title": "Cautious Weight Decay",
+      "type": "boolean"
+    },
+    "muon_momentum": {
+      "default": 0.95,
+      "description": "Muon momentum coefficient.",
+      "exclusiveMaximum": 1.0,
+      "minimum": 0.0,
+      "title": "Muon Momentum",
+      "type": "number"
+    },
+    "muon_nesterov": {
+      "default": true,
+      "description": "Nesterov-style momentum inside Muon.",
+      "title": "Muon Nesterov",
+      "type": "boolean"
+    },
+    "muon_ns_steps": {
+      "default": 5,
+      "description": "Newton-Schulz iterations per step.",
+      "exclusiveMinimum": 0,
+      "title": "Muon Ns Steps",
+      "type": "integer"
+    },
+    "grad_clip": {
+      "default": 1.0,
+      "description": "Global grad-norm clip; 0 disables.",
+      "minimum": 0.0,
+      "title": "Grad Clip",
+      "type": "number"
+    }
+  },
+  "title": "OptimConfig",
+  "type": "object"
+}

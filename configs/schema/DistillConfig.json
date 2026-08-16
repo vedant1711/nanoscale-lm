@@ -1,0 +1,128 @@
+{
+  "additionalProperties": false,
+  "description": "Knowledge-distillation configuration (spec B6).",
+  "properties": {
+    "method": {
+      "default": "reverse_kl",
+      "description": "'forward_kl' = Hinton token KD (mode-covering baseline); 'seqkd' = MLE on teacher samples; 'reverse_kl' = MiniLLM-style on-policy reverse KL (headline).",
+      "enum": [
+        "forward_kl",
+        "seqkd",
+        "reverse_kl"
+      ],
+      "title": "Method",
+      "type": "string"
+    },
+    "seed": {
+      "default": 1337,
+      "description": "Seed for init, batching and rollouts.",
+      "title": "Seed",
+      "type": "integer"
+    },
+    "seq_len": {
+      "default": 256,
+      "description": "Sequence length for off-policy batches.",
+      "exclusiveMinimum": 0,
+      "title": "Seq Len",
+      "type": "integer"
+    },
+    "batch_size": {
+      "default": 8,
+      "description": "Sequences per micro-batch.",
+      "exclusiveMinimum": 0,
+      "title": "Batch Size",
+      "type": "integer"
+    },
+    "max_steps": {
+      "default": 200,
+      "description": "Optimizer steps.",
+      "exclusiveMinimum": 0,
+      "title": "Max Steps",
+      "type": "integer"
+    },
+    "lr": {
+      "default": 0.0003,
+      "description": "Student learning rate.",
+      "exclusiveMinimum": 0.0,
+      "title": "Lr",
+      "type": "number"
+    },
+    "temperature": {
+      "default": 2.0,
+      "description": "Hinton temperature tau (forward KL).",
+      "exclusiveMinimum": 0.0,
+      "title": "Temperature",
+      "type": "number"
+    },
+    "alpha_ce": {
+      "default": 0.5,
+      "description": "Weight on the hard cross-entropy term; (1-alpha) weights the KD term.",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Alpha Ce",
+      "type": "number"
+    },
+    "max_new_tokens": {
+      "default": 32,
+      "description": "Rollout length for on-policy methods.",
+      "exclusiveMinimum": 0,
+      "title": "Max New Tokens",
+      "type": "integer"
+    },
+    "top_p": {
+      "default": 0.95,
+      "description": "Nucleus cutoff for on-policy sampling.",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Top P",
+      "type": "number"
+    },
+    "length_norm": {
+      "default": true,
+      "description": "Length-normalize the policy-gradient objective.",
+      "title": "Length Norm",
+      "type": "boolean"
+    },
+    "single_step_reg": {
+      "default": true,
+      "description": "MiniLLM's single-step regularisation term, which reduces reward-hacking on short sequences by adding the teacher-weighted single-step KL.",
+      "title": "Single Step Reg",
+      "type": "boolean"
+    },
+    "baseline_ema": {
+      "default": 0.9,
+      "description": "EMA coefficient for the PG baseline.",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Baseline Ema",
+      "type": "number"
+    },
+    "log_interval": {
+      "default": 10,
+      "description": "Steps between log rows.",
+      "exclusiveMinimum": 0,
+      "title": "Log Interval",
+      "type": "integer"
+    },
+    "out_dir": {
+      "default": "runs/distill",
+      "description": "Run directory.",
+      "title": "Out Dir",
+      "type": "string"
+    },
+    "device": {
+      "default": "auto",
+      "description": "Compute device.",
+      "enum": [
+        "auto",
+        "cpu",
+        "cuda",
+        "mps"
+      ],
+      "title": "Device",
+      "type": "string"
+    }
+  },
+  "title": "DistillConfig",
+  "type": "object"
+}

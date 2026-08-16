@@ -1,0 +1,129 @@
+{
+  "additionalProperties": false,
+  "description": "Post-training quantization configuration (spec B7).",
+  "properties": {
+    "method": {
+      "default": "gptq",
+      "description": "Quantization algorithm.",
+      "enum": [
+        "rtn",
+        "gptq",
+        "awq"
+      ],
+      "title": "Method",
+      "type": "string"
+    },
+    "bits": {
+      "default": 4,
+      "description": "Weight bit-width.",
+      "enum": [
+        2,
+        3,
+        4,
+        8
+      ],
+      "title": "Bits",
+      "type": "integer"
+    },
+    "group_size": {
+      "default": 64,
+      "description": "Weights per scale/zero group along the input dim; -1 = per-channel.",
+      "title": "Group Size",
+      "type": "integer"
+    },
+    "symmetric": {
+      "default": false,
+      "description": "Asymmetric (zero-point) quantization by default.",
+      "title": "Symmetric",
+      "type": "boolean"
+    },
+    "calib_samples": {
+      "default": 128,
+      "description": "Calibration sequences.",
+      "exclusiveMinimum": 0,
+      "title": "Calib Samples",
+      "type": "integer"
+    },
+    "calib_seq_len": {
+      "default": 256,
+      "description": "Calibration sequence length.",
+      "exclusiveMinimum": 0,
+      "title": "Calib Seq Len",
+      "type": "integer"
+    },
+    "damp_percent": {
+      "default": 0.01,
+      "description": "Hessian dampening as a fraction of mean(diag(H)).",
+      "exclusiveMaximum": 1.0,
+      "exclusiveMinimum": 0.0,
+      "title": "Damp Percent",
+      "type": "number"
+    },
+    "act_order": {
+      "default": true,
+      "description": "Quantize columns in order of decreasing activation salience.",
+      "title": "Act Order",
+      "type": "boolean"
+    },
+    "block_size": {
+      "default": 128,
+      "description": "GPTQ lazy-batch column block size.",
+      "exclusiveMinimum": 0,
+      "title": "Block Size",
+      "type": "integer"
+    },
+    "awq_grid": {
+      "default": 20,
+      "description": "Grid points searched for the AWQ scale exponent.",
+      "exclusiveMinimum": 0,
+      "title": "Awq Grid",
+      "type": "integer"
+    },
+    "kv_bits": {
+      "default": 0,
+      "description": "0 disables KV-cache quantization.",
+      "enum": [
+        0,
+        2,
+        3,
+        4,
+        8
+      ],
+      "title": "Kv Bits",
+      "type": "integer"
+    },
+    "kv_group_size": {
+      "default": 32,
+      "description": "KV quantization group along head_dim.",
+      "exclusiveMinimum": 0,
+      "title": "Kv Group Size",
+      "type": "integer"
+    },
+    "seed": {
+      "default": 1337,
+      "description": "Seed for calibration sampling.",
+      "title": "Seed",
+      "type": "integer"
+    },
+    "out_dir": {
+      "default": "runs/quant",
+      "description": "Run directory.",
+      "title": "Out Dir",
+      "type": "string"
+    },
+    "device": {
+      "default": "auto",
+      "description": "Compute device.",
+      "enum": [
+        "auto",
+        "cpu",
+        "cuda",
+        "mps"
+      ],
+      "title": "Device",
+      "type": "string"
+    }
+  },
+  "title": "QuantConfig",
+  "type": "object"
+}

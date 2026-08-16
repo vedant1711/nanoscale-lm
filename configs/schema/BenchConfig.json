@@ -1,0 +1,67 @@
+{
+  "additionalProperties": false,
+  "description": "Benchmark-harness configuration (spec Phase 10).",
+  "properties": {
+    "warmup_iters": {
+      "default": 2,
+      "description": "Unmeasured warmup iterations.",
+      "exclusiveMinimum": 0,
+      "title": "Warmup Iters",
+      "type": "integer"
+    },
+    "measure_iters": {
+      "default": 5,
+      "description": "Measured iterations; median is reported.",
+      "exclusiveMinimum": 0,
+      "title": "Measure Iters",
+      "type": "integer"
+    },
+    "prompt_len": {
+      "default": 32,
+      "description": "Prompt length in tokens.",
+      "exclusiveMinimum": 0,
+      "title": "Prompt Len",
+      "type": "integer"
+    },
+    "max_new_tokens": {
+      "default": 64,
+      "description": "Decode length in tokens.",
+      "exclusiveMinimum": 0,
+      "title": "Max New Tokens",
+      "type": "integer"
+    },
+    "batch_size": {
+      "default": 1,
+      "description": "Concurrent sequences; single-stream (1) by default.",
+      "exclusiveMinimum": 0,
+      "title": "Batch Size",
+      "type": "integer"
+    },
+    "seed": {
+      "default": 1337,
+      "description": "Seed for prompts and sampling.",
+      "title": "Seed",
+      "type": "integer"
+    },
+    "device": {
+      "default": "auto",
+      "description": "Compute device.",
+      "enum": [
+        "auto",
+        "cpu",
+        "cuda",
+        "mps"
+      ],
+      "title": "Device",
+      "type": "string"
+    },
+    "out_dir": {
+      "default": "results/bench",
+      "description": "Where the benchmark table is written.",
+      "title": "Out Dir",
+      "type": "string"
+    }
+  },
+  "title": "BenchConfig",
+  "type": "object"
+}

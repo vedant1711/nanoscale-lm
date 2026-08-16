@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Tooling caches
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.hypothesis/
+.coverage
+htmlcov/
+uv.lock
+
+# Runs, checkpoints and scratch output.
+# `results/` is deliberately NOT ignored: committed figures/tables are the
+# source of truth for every number quoted in the docs (Part F5 of the spec).
+runs/
+checkpoints/
+*.pt
+*.bin
+*.safetensors
+wandb/
+site/
+
+# Generated corpora (regenerate with `python scripts/make_toy_corpus.py`)
+data/toy/
+data/cache/
+
+# OS
+.DS_Store

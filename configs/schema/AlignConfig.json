@@ -1,0 +1,373 @@
+{
+  "$defs": {
+    "GRPOConfig": {
+      "additionalProperties": false,
+      "description": "Group-relative policy optimization on a verifiable reward (spec B5, optional track).",
+      "properties": {
+        "seed": {
+          "default": 1337,
+          "description": "Seed for rollouts and batching.",
+          "title": "Seed",
+          "type": "integer"
+        },
+        "group_size": {
+          "default": 8,
+          "description": "Completions sampled per prompt.",
+          "exclusiveMinimum": 0,
+          "title": "Group Size",
+          "type": "integer"
+        },
+        "n_prompts": {
+          "default": 4,
+          "description": "Prompts per optimizer step.",
+          "exclusiveMinimum": 0,
+          "title": "N Prompts",
+          "type": "integer"
+        },
+        "max_steps": {
+          "default": 50,
+          "description": "Optimizer steps.",
+          "exclusiveMinimum": 0,
+          "title": "Max Steps",
+          "type": "integer"
+        },
+        "max_new_tokens": {
+          "default": 24,
+          "description": "Rollout length.",
+          "exclusiveMinimum": 0,
+          "title": "Max New Tokens",
+          "type": "integer"
+        },
+        "temperature": {
+          "default": 1.0,
+          "description": "Rollout sampling temperature.",
+          "exclusiveMinimum": 0.0,
+          "title": "Temperature",
+          "type": "number"
+        },
+        "lr": {
+          "default": 1e-05,
+          "description": "Policy learning rate.",
+          "exclusiveMinimum": 0.0,
+          "title": "Lr",
+          "type": "number"
+        },
+        "kl_coef": {
+          "default": 0.02,
+          "description": "KL penalty toward the frozen reference policy.",
+          "minimum": 0.0,
+          "title": "Kl Coef",
+          "type": "number"
+        },
+        "clip_eps": {
+          "default": 0.2,
+          "description": "PPO-style ratio clip.",
+          "exclusiveMinimum": 0.0,
+          "title": "Clip Eps",
+          "type": "number"
+        },
+        "log_interval": {
+          "default": 5,
+          "description": "Steps between log rows.",
+          "exclusiveMinimum": 0,
+          "title": "Log Interval",
+          "type": "integer"
+        },
+        "out_dir": {
+          "default": "runs/grpo",
+          "description": "Run directory.",
+          "title": "Out Dir",
+          "type": "string"
+        },
+        "device": {
+          "default": "auto",
+          "description": "Compute device.",
+          "enum": [
+            "auto",
+            "cpu",
+            "cuda",
+            "mps"
+          ],
+          "title": "Device",
+          "type": "string"
+        }
+      },
+      "title": "GRPOConfig",
+      "type": "object"
+    },
+    "PreferenceConfig": {
+      "additionalProperties": false,
+      "description": "DPO / SimPO configuration (spec B5).",
+      "properties": {
+        "method": {
+          "default": "dpo",
+          "description": "Preference-optimization method.",
+          "enum": [
+            "dpo",
+            "simpo"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "seed": {
+          "default": 1337,
+          "description": "Seed for init and batching.",
+          "title": "Seed",
+          "type": "integer"
+        },
+        "dataset": {
+          "default": "toy",
+          "description": "Preference dataset source.",
+          "enum": [
+            "toy",
+            "jsonl"
+          ],
+          "title": "Dataset",
+          "type": "string"
+        },
+        "paths": {
+          "default": [],
+          "description": "JSONL paths when dataset='jsonl'.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Paths",
+          "type": "array"
+        },
+        "seq_len": {
+          "default": 256,
+          "description": "Max prompt+response length.",
+          "exclusiveMinimum": 0,
+          "title": "Seq Len",
+          "type": "integer"
+        },
+        "batch_size": {
+          "default": 4,
+          "description": "Preference pairs per micro-batch.",
+          "exclusiveMinimum": 0,
+          "title": "Batch Size",
+          "type": "integer"
+        },
+        "grad_accum": {
+          "default": 1,
+          "description": "Gradient-accumulation steps.",
+          "exclusiveMinimum": 0,
+          "title": "Grad Accum",
+          "type": "integer"
+        },
+        "max_steps": {
+          "default": 100,
+          "description": "Optimizer steps.",
+          "exclusiveMinimum": 0,
+          "title": "Max Steps",
+          "type": "integer"
+        },
+        "lr": {
+          "default": 5e-06,
+          "description": "Peak learning rate; preference tuning wants a low LR.",
+          "exclusiveMinimum": 0.0,
+          "title": "Lr",
+          "type": "number"
+        },
+        "beta": {
+          "default": 0.1,
+          "description": "DPO/SimPO inverse-temperature on the reward.",
+          "exclusiveMinimum": 0.0,
+          "title": "Beta",
+          "type": "number"
+        },
+        "gamma": {
+          "default": 0.5,
+          "description": "SimPO target reward margin (gamma/beta in the paper's parameterisation).",
+          "minimum": 0.0,
+          "title": "Gamma",
+          "type": "number"
+        },
+        "label_smoothing": {
+          "default": 0.0,
+          "description": "cDPO-style label smoothing.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Label Smoothing",
+          "type": "number"
+        },
+        "sft_loss_weight": {
+          "default": 0.0,
+          "description": "Optional auxiliary NLL on the chosen response (RPO-style stabiliser).",
+          "minimum": 0.0,
+          "title": "Sft Loss Weight",
+          "type": "number"
+        },
+        "log_interval": {
+          "default": 10,
+          "description": "Steps between log rows.",
+          "exclusiveMinimum": 0,
+          "title": "Log Interval",
+          "type": "integer"
+        },
+        "out_dir": {
+          "default": "runs/align",
+          "description": "Run directory.",
+          "title": "Out Dir",
+          "type": "string"
+        },
+        "device": {
+          "default": "auto",
+          "description": "Compute device.",
+          "enum": [
+            "auto",
+            "cpu",
+            "cuda",
+            "mps"
+          ],
+          "title": "Device",
+          "type": "string"
+        }
+      },
+      "title": "PreferenceConfig",
+      "type": "object"
+    },
+    "SFTConfig": {
+      "additionalProperties": false,
+      "description": "Supervised fine-tuning configuration (spec B5).",
+      "properties": {
+        "seed": {
+          "default": 1337,
+          "description": "Seed for init, batching and any sampling.",
+          "title": "Seed",
+          "type": "integer"
+        },
+        "dataset": {
+          "default": "toy",
+          "description": "Instruction dataset source.",
+          "enum": [
+            "toy",
+            "jsonl"
+          ],
+          "title": "Dataset",
+          "type": "string"
+        },
+        "paths": {
+          "default": [],
+          "description": "JSONL paths when dataset='jsonl'.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Paths",
+          "type": "array"
+        },
+        "seq_len": {
+          "default": 256,
+          "description": "Chat sequences are padded/truncated to this.",
+          "exclusiveMinimum": 0,
+          "title": "Seq Len",
+          "type": "integer"
+        },
+        "batch_size": {
+          "default": 8,
+          "description": "Conversations per micro-batch.",
+          "exclusiveMinimum": 0,
+          "title": "Batch Size",
+          "type": "integer"
+        },
+        "grad_accum": {
+          "default": 1,
+          "description": "Gradient-accumulation steps.",
+          "exclusiveMinimum": 0,
+          "title": "Grad Accum",
+          "type": "integer"
+        },
+        "max_steps": {
+          "default": 120,
+          "description": "Optimizer steps.",
+          "exclusiveMinimum": 0,
+          "title": "Max Steps",
+          "type": "integer"
+        },
+        "lr": {
+          "default": 0.0001,
+          "description": "Peak learning rate (AdamW).",
+          "exclusiveMinimum": 0.0,
+          "title": "Lr",
+          "type": "number"
+        },
+        "weight_decay": {
+          "default": 0.0,
+          "description": "Decoupled weight decay.",
+          "minimum": 0.0,
+          "title": "Weight Decay",
+          "type": "number"
+        },
+        "warmup_frac": {
+          "default": 0.05,
+          "description": "Warmup fraction of total steps.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Warmup Frac",
+          "type": "number"
+        },
+        "mask_prompt": {
+          "default": true,
+          "description": "Loss on completion tokens only (verified by test).",
+          "title": "Mask Prompt",
+          "type": "boolean"
+        },
+        "eval_interval": {
+          "default": 40,
+          "description": "Steps between held-out evaluations.",
+          "exclusiveMinimum": 0,
+          "title": "Eval Interval",
+          "type": "integer"
+        },
+        "log_interval": {
+          "default": 10,
+          "description": "Steps between log rows.",
+          "exclusiveMinimum": 0,
+          "title": "Log Interval",
+          "type": "integer"
+        },
+        "out_dir": {
+          "default": "runs/sft",
+          "description": "Run directory.",
+          "title": "Out Dir",
+          "type": "string"
+        },
+        "device": {
+          "default": "auto",
+          "description": "Compute device.",
+          "enum": [
+            "auto",
+            "cpu",
+            "cuda",
+            "mps"
+          ],
+          "title": "Device",
+          "type": "string"
+        }
+      },
+      "title": "SFTConfig",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Umbrella alignment config so a single YAML can drive the whole post-training stack.",
+  "properties": {
+    "sft": {
+      "$ref": "#/$defs/SFTConfig"
+    },
+    "preference": {
+      "$ref": "#/$defs/PreferenceConfig"
+    },
+    "grpo": {
+      "$ref": "#/$defs/GRPOConfig"
+    },
+    "enable_grpo": {
+      "default": false,
+      "description": "The RLVR track is opt-in (spec B5).",
+      "title": "Enable Grpo",
+      "type": "boolean"
+    }
+  },
+  "title": "AlignConfig",
+  "type": "object"
+}

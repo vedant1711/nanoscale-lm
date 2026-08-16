@@ -1,0 +1,95 @@
+{
+  "additionalProperties": false,
+  "description": "Group-relative policy optimization on a verifiable reward (spec B5, optional track).",
+  "properties": {
+    "seed": {
+      "default": 1337,
+      "description": "Seed for rollouts and batching.",
+      "title": "Seed",
+      "type": "integer"
+    },
+    "group_size": {
+      "default": 8,
+      "description": "Completions sampled per prompt.",
+      "exclusiveMinimum": 0,
+      "title": "Group Size",
+      "type": "integer"
+    },
+    "n_prompts": {
+      "default": 4,
+      "description": "Prompts per optimizer step.",
+      "exclusiveMinimum": 0,
+      "title": "N Prompts",
+      "type": "integer"
+    },
+    "max_steps": {
+      "default": 50,
+      "description": "Optimizer steps.",
+      "exclusiveMinimum": 0,
+      "title": "Max Steps",
+      "type": "integer"
+    },
+    "max_new_tokens": {
+      "default": 24,
+      "description": "Rollout length.",
+      "exclusiveMinimum": 0,
+      "title": "Max New Tokens",
+      "type": "integer"
+    },
+    "temperature": {
+      "default": 1.0,
+      "description": "Rollout sampling temperature.",
+      "exclusiveMinimum": 0.0,
+      "title": "Temperature",
+      "type": "number"
+    },
+    "lr": {
+      "default": 1e-05,
+      "description": "Policy learning rate.",
+      "exclusiveMinimum": 0.0,
+      "title": "Lr",
+      "type": "number"
+    },
+    "kl_coef": {
+      "default": 0.02,
+      "description": "KL penalty toward the frozen reference policy.",
+      "minimum": 0.0,
+      "title": "Kl Coef",
+      "type": "number"
+    },
+    "clip_eps": {
+      "default": 0.2,
+      "description": "PPO-style ratio clip.",
+      "exclusiveMinimum": 0.0,
+      "title": "Clip Eps",
+      "type": "number"
+    },
+    "log_interval": {
+      "default": 5,
+      "description": "Steps between log rows.",
+      "exclusiveMinimum": 0,
+      "title": "Log Interval",
+      "type": "integer"
+    },
+    "out_dir": {
+      "default": "runs/grpo",
+      "description": "Run directory.",
+      "title": "Out Dir",
+      "type": "string"
+    },
+    "device": {
+      "default": "auto",
+      "description": "Compute device.",
+      "enum": [
+        "auto",
+        "cpu",
+        "cuda",
+        "mps"
+      ],
+      "title": "Device",
+      "type": "string"
+    }
+  },
+  "title": "GRPOConfig",
+  "type": "object"
+}

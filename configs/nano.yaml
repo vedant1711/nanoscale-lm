@@ -1,0 +1,6 @@
+# nano tier: CPU/laptop. The CI, smoke-test and teaching configuration.
+#
+# A YAML file only records deltas from its preset, which is what makes ablation
+# configs readable. Resolve one with:
+#   nanoscale config show -c configs/nano.yaml
+preset: nano

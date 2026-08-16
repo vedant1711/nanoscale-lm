@@ -1,0 +1,1494 @@
+{
+  "$defs": {
+    "AlignConfig": {
+      "additionalProperties": false,
+      "description": "Umbrella alignment config so a single YAML can drive the whole post-training stack.",
+      "properties": {
+        "sft": {
+          "$ref": "#/$defs/SFTConfig"
+        },
+        "preference": {
+          "$ref": "#/$defs/PreferenceConfig"
+        },
+        "grpo": {
+          "$ref": "#/$defs/GRPOConfig"
+        },
+        "enable_grpo": {
+          "default": false,
+          "description": "The RLVR track is opt-in (spec B5).",
+          "title": "Enable Grpo",
+          "type": "boolean"
+        }
+      },
+      "title": "AlignConfig",
+      "type": "object"
+    },
+    "BenchConfig": {
+      "additionalProperties": false,
+      "description": "Benchmark-harness configuration (spec Phase 10).",
+      "properties": {
+        "warmup_iters": {
+          "default": 2,
+          "description": "Unmeasured warmup iterations.",
+          "exclusiveMinimum": 0,
+          "title": "Warmup Iters",
+          "type": "integer"
+        },
+        "measure_iters": {
+          "default": 5,
+          "description": "Measured iterations; median is reported.",
+          "exclusiveMinimum": 0,
+          "title": "Measure Iters",
+          "type": "integer"
+        },
+        "prompt_len": {
+          "default": 32,
+          "description": "Prompt length in tokens.",
+          "exclusiveMinimum": 0,
+          "title": "Prompt Len",
+          "type": "integer"
+        },
+        "max_new_tokens": {
+          "default": 64,
+          "description": "Decode length in tokens.",
+          "exclusiveMinimum": 0,
+          "title": "Max New Tokens",
+          "type": "integer"
+        },
+        "batch_size": {
+          "default": 1,
+          "description": "Concurrent sequences; single-stream (1) by default.",
+          "exclusiveMinimum": 0,
+          "title": "Batch Size",
+          "type": "integer"
+        },
+        "seed": {
+          "default": 1337,
+          "description": "Seed for prompts and sampling.",
+          "title": "Seed",
+          "type": "integer"
+        },
+        "device": {
+          "default": "auto",
+          "description": "Compute device.",
+          "enum": [
+            "auto",
+            "cpu",
+            "cuda",
+            "mps"
+          ],
+          "title": "Device",
+          "type": "string"
+        },
+        "out_dir": {
+          "default": "results/bench",
+          "description": "Where the benchmark table is written.",
+          "title": "Out Dir",
+          "type": "string"
+        }
+      },
+      "title": "BenchConfig",
+      "type": "object"
+    },
+    "DataConfig": {
+      "additionalProperties": false,
+      "description": "Streaming/packed data pipeline configuration (spec B4).",
+      "properties": {
+        "source": {
+          "default": "toy",
+          "description": "'toy' = the committed offline corpus (CI/laptop tier, no network); 'textfile' = local .txt/.jsonl paths; 'hf' = streaming Hugging Face dataset.",
+          "enum": [
+            "toy",
+            "textfile",
+            "hf"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "hf_dataset": {
+          "default": "HuggingFaceFW/fineweb-edu",
+          "description": "HF dataset repo id.",
+          "title": "Hf Dataset",
+          "type": "string"
+        },
+        "hf_config": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": "sample-10BT",
+          "description": "HF dataset config name.",
+          "title": "Hf Config"
+        },
+        "hf_split": {
+          "default": "train",
+          "description": "HF split.",
+          "title": "Hf Split",
+          "type": "string"
+        },
+        "hf_text_field": {
+          "default": "text",
+          "description": "Field of the HF record holding raw text.",
+          "title": "Hf Text Field",
+          "type": "string"
+        },
+        "paths": {
+          "default": [],
+          "description": "Local paths when source='textfile'.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Paths",
+          "type": "array"
+        },
+        "seq_len": {
+          "default": 256,
+          "description": "Packed sequence length (must be <= ctx).",
+          "exclusiveMinimum": 0,
+          "title": "Seq Len",
+          "type": "integer"
+        },
+        "val_fraction": {
+          "default": 0.02,
+          "description": "Fraction of tokens held out for validation.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Val Fraction",
+          "type": "number"
+        },
+        "shuffle_buffer": {
+          "default": 1024,
+          "description": "Streaming shuffle buffer, in documents.",
+          "exclusiveMinimum": 0,
+          "title": "Shuffle Buffer",
+          "type": "integer"
+        },
+        "num_workers": {
+          "default": 0,
+          "description": "Dataloader workers; 0 keeps CPU runs simple.",
+          "minimum": 0,
+          "title": "Num Workers",
+          "type": "integer"
+        }
+      },
+      "title": "DataConfig",
+      "type": "object"
+    },
+    "DistillConfig": {
+      "additionalProperties": false,
+      "description": "Knowledge-distillation configuration (spec B6).",
+      "properties": {
+        "method": {
+          "default": "reverse_kl",
+          "description": "'forward_kl' = Hinton token KD (mode-covering baseline); 'seqkd' = MLE on teacher samples; 'reverse_kl' = MiniLLM-style on-policy reverse KL (headline).",
+          "enum": [
+            "forward_kl",
+            "seqkd",
+            "reverse_kl"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "seed": {
+          "default": 1337,
+          "description": "Seed for init, batching and rollouts.",
+          "title": "Seed",
+          "type": "integer"
+        },
+        "seq_len": {
+          "default": 256,
+          "description": "Sequence length for off-policy batches.",
+          "exclusiveMinimum": 0,
+          "title": "Seq Len",
+          "type": "integer"
+        },
+        "batch_size": {
+          "default": 8,
+          "description": "Sequences per micro-batch.",
+          "exclusiveMinimum": 0,
+          "title": "Batch Size",
+          "type": "integer"
+        },
+        "max_steps": {
+          "default": 200,
+          "description": "Optimizer steps.",
+          "exclusiveMinimum": 0,
+          "title": "Max Steps",
+          "type": "integer"
+        },
+        "lr": {
+          "default": 0.0003,
+          "description": "Student learning rate.",
+          "exclusiveMinimum": 0.0,
+          "title": "Lr",
+          "type": "number"
+        },
+        "temperature": {
+          "default": 2.0,
+          "description": "Hinton temperature tau (forward KL).",
+          "exclusiveMinimum": 0.0,
+          "title": "Temperature",
+          "type": "number"
+        },
+        "alpha_ce": {
+          "default": 0.5,
+          "description": "Weight on the hard cross-entropy term; (1-alpha) weights the KD term.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Alpha Ce",
+          "type": "number"
+        },
+        "max_new_tokens": {
+          "default": 32,
+          "description": "Rollout length for on-policy methods.",
+          "exclusiveMinimum": 0,
+          "title": "Max New Tokens",
+          "type": "integer"
+        },
+        "top_p": {
+          "default": 0.95,
+          "description": "Nucleus cutoff for on-policy sampling.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Top P",
+          "type": "number"
+        },
+        "length_norm": {
+          "default": true,
+          "description": "Length-normalize the policy-gradient objective.",
+          "title": "Length Norm",
+          "type": "boolean"
+        },
+        "single_step_reg": {
+          "default": true,
+          "description": "MiniLLM's single-step regularisation term, which reduces reward-hacking on short sequences by adding the teacher-weighted single-step KL.",
+          "title": "Single Step Reg",
+          "type": "boolean"
+        },
+        "baseline_ema": {
+          "default": 0.9,
+          "description": "EMA coefficient for the PG baseline.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Baseline Ema",
+          "type": "number"
+        },
+        "log_interval": {
+          "default": 10,
+          "description": "Steps between log rows.",
+          "exclusiveMinimum": 0,
+          "title": "Log Interval",
+          "type": "integer"
+        },
+        "out_dir": {
+          "default": "runs/distill",
+          "description": "Run directory.",
+          "title": "Out Dir",
+          "type": "string"
+        },
+        "device": {
+          "default": "auto",
+          "description": "Compute device.",
+          "enum": [
+            "auto",
+            "cpu",
+            "cuda",
+            "mps"
+          ],
+          "title": "Device",
+          "type": "string"
+        }
+      },
+      "title": "DistillConfig",
+      "type": "object"
+    },
+    "GRPOConfig": {
+      "additionalProperties": false,
+      "description": "Group-relative policy optimization on a verifiable reward (spec B5, optional track).",
+      "properties": {
+        "seed": {
+          "default": 1337,
+          "description": "Seed for rollouts and batching.",
+          "title": "Seed",
+          "type": "integer"
+        },
+        "group_size": {
+          "default": 8,
+          "description": "Completions sampled per prompt.",
+          "exclusiveMinimum": 0,
+          "title": "Group Size",
+          "type": "integer"
+        },
+        "n_prompts": {
+          "default": 4,
+          "description": "Prompts per optimizer step.",
+          "exclusiveMinimum": 0,
+          "title": "N Prompts",
+          "type": "integer"
+        },
+        "max_steps": {
+          "default": 50,
+          "description": "Optimizer steps.",
+          "exclusiveMinimum": 0,
+          "title": "Max Steps",
+          "type": "integer"
+        },
+        "max_new_tokens": {
+          "default": 24,
+          "description": "Rollout length.",
+          "exclusiveMinimum": 0,
+          "title": "Max New Tokens",
+          "type": "integer"
+        },
+        "temperature": {
+          "default": 1.0,
+          "description": "Rollout sampling temperature.",
+          "exclusiveMinimum": 0.0,
+          "title": "Temperature",
+          "type": "number"
+        },
+        "lr": {
+          "default": 1e-05,
+          "description": "Policy learning rate.",
+          "exclusiveMinimum": 0.0,
+          "title": "Lr",
+          "type": "number"
+        },
+        "kl_coef": {
+          "default": 0.02,
+          "description": "KL penalty toward the frozen reference policy.",
+          "minimum": 0.0,
+          "title": "Kl Coef",
+          "type": "number"
+        },
+        "clip_eps": {
+          "default": 0.2,
+          "description": "PPO-style ratio clip.",
+          "exclusiveMinimum": 0.0,
+          "title": "Clip Eps",
+          "type": "number"
+        },
+        "log_interval": {
+          "default": 5,
+          "description": "Steps between log rows.",
+          "exclusiveMinimum": 0,
+          "title": "Log Interval",
+          "type": "integer"
+        },
+        "out_dir": {
+          "default": "runs/grpo",
+          "description": "Run directory.",
+          "title": "Out Dir",
+          "type": "string"
+        },
+        "device": {
+          "default": "auto",
+          "description": "Compute device.",
+          "enum": [
+            "auto",
+            "cpu",
+            "cuda",
+            "mps"
+          ],
+          "title": "Device",
+          "type": "string"
+        }
+      },
+      "title": "GRPOConfig",
+      "type": "object"
+    },
+    "GenerateConfig": {
+      "additionalProperties": false,
+      "description": "Sampling configuration for the generation loop / server (spec Phase 10).",
+      "properties": {
+        "max_new_tokens": {
+          "default": 128,
+          "description": "Tokens to generate.",
+          "exclusiveMinimum": 0,
+          "title": "Max New Tokens",
+          "type": "integer"
+        },
+        "temperature": {
+          "default": 0.8,
+          "description": "0 means greedy decoding.",
+          "minimum": 0.0,
+          "title": "Temperature",
+          "type": "number"
+        },
+        "top_k": {
+          "default": 0,
+          "description": "0 disables top-k.",
+          "minimum": 0,
+          "title": "Top K",
+          "type": "integer"
+        },
+        "top_p": {
+          "default": 0.95,
+          "description": "Nucleus cutoff; 1.0 disables top-p.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Top P",
+          "type": "number"
+        },
+        "repetition_penalty": {
+          "default": 1.0,
+          "description": "1.0 disables the penalty.",
+          "minimum": 1.0,
+          "title": "Repetition Penalty",
+          "type": "number"
+        },
+        "seed": {
+          "default": 1337,
+          "description": "Sampling seed; generation is reproducible under it.",
+          "title": "Seed",
+          "type": "integer"
+        },
+        "stop_on_eos": {
+          "default": true,
+          "description": "Stop as soon as <eos> is sampled.",
+          "title": "Stop On Eos",
+          "type": "boolean"
+        }
+      },
+      "title": "GenerateConfig",
+      "type": "object"
+    },
+    "ModelConfig": {
+      "additionalProperties": false,
+      "description": "Decoder-only transformer configuration (spec B2).\n\nDefaults are the 2026 \"architecture that won\" for small decoder-only LMs:\nRoPE + RMSNorm + SwiGLU + GQA + QK-norm, untied head, zero-init output projections.\nThe modded-nanoGPT speedrun extras (ReLU^2 MLP, logit soft-cap, MTP head) are\ntoggles so that Phase 5 can *measure* them rather than assert them.",
+      "properties": {
+        "vocab_size": {
+          "default": 8192,
+          "description": "Must match the trained tokenizer.",
+          "exclusiveMinimum": 0,
+          "title": "Vocab Size",
+          "type": "integer"
+        },
+        "n_layers": {
+          "default": 6,
+          "description": "Number of transformer blocks.",
+          "exclusiveMinimum": 0,
+          "title": "N Layers",
+          "type": "integer"
+        },
+        "d_model": {
+          "default": 256,
+          "description": "Residual-stream width.",
+          "exclusiveMinimum": 0,
+          "title": "D Model",
+          "type": "integer"
+        },
+        "n_heads": {
+          "default": 4,
+          "description": "Number of query heads.",
+          "exclusiveMinimum": 0,
+          "title": "N Heads",
+          "type": "integer"
+        },
+        "n_kv_heads": {
+          "default": 2,
+          "description": "Number of key/value heads (GQA). Must divide n_heads.",
+          "exclusiveMinimum": 0,
+          "title": "N Kv Heads",
+          "type": "integer"
+        },
+        "d_ff": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Feed-forward hidden width. If None it is derived as a multiple of d_model (8/3 for SwiGLU so that parameter count matches a 4x non-gated MLP).",
+          "title": "D Ff"
+        },
+        "max_seq_len": {
+          "default": 256,
+          "description": "Maximum context length.",
+          "exclusiveMinimum": 0,
+          "title": "Max Seq Len",
+          "type": "integer"
+        },
+        "norm_type": {
+          "default": "rmsnorm",
+          "description": "Normalization.",
+          "enum": [
+            "rmsnorm",
+            "layernorm"
+          ],
+          "title": "Norm Type",
+          "type": "string"
+        },
+        "mlp_type": {
+          "default": "swiglu",
+          "description": "SwiGLU default; ReLU^2 is the modded-nanoGPT speedrun variant.",
+          "enum": [
+            "swiglu",
+            "relu2"
+          ],
+          "title": "Mlp Type",
+          "type": "string"
+        },
+        "qk_norm": {
+          "default": true,
+          "description": "RMS-normalize q and k before the dot product.",
+          "title": "Qk Norm",
+          "type": "boolean"
+        },
+        "tie_embeddings": {
+          "default": false,
+          "description": "Untied LM head by default (speedrun stack).",
+          "title": "Tie Embeddings",
+          "type": "boolean"
+        },
+        "zero_init_output": {
+          "default": true,
+          "description": "Zero-init attention/MLP output projections and the LM head (muP-like).",
+          "title": "Zero Init Output",
+          "type": "boolean"
+        },
+        "logit_soft_cap": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "If set, apply c*tanh(logits/c) (Gemma-2 style). None disables it.",
+          "title": "Logit Soft Cap"
+        },
+        "n_mtp_heads": {
+          "default": 0,
+          "description": "Extra multi-token-prediction heads predicting t+2, t+3, ... Used both as a training-quality ablation and, in Arc 2, as a self-speculation draft.",
+          "maximum": 4,
+          "minimum": 0,
+          "title": "N Mtp Heads",
+          "type": "integer"
+        },
+        "mtp_loss_weight": {
+          "default": 0.3,
+          "description": "Weight of the auxiliary MTP loss.",
+          "minimum": 0.0,
+          "title": "Mtp Loss Weight",
+          "type": "number"
+        },
+        "rope_theta": {
+          "default": 10000.0,
+          "description": "RoPE base frequency.",
+          "exclusiveMinimum": 0.0,
+          "title": "Rope Theta",
+          "type": "number"
+        },
+        "rope_scaling": {
+          "default": 1.0,
+          "description": "Linear position-interpolation factor.",
+          "exclusiveMinimum": 0.0,
+          "title": "Rope Scaling",
+          "type": "number"
+        },
+        "norm_eps": {
+          "default": 1e-05,
+          "description": "Epsilon inside RMSNorm/LayerNorm.",
+          "exclusiveMinimum": 0.0,
+          "title": "Norm Eps",
+          "type": "number"
+        },
+        "dropout": {
+          "default": 0.0,
+          "description": "Dropout is off by default at this scale.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Dropout",
+          "type": "number"
+        },
+        "init_std": {
+          "default": 0.02,
+          "description": "Std of the truncated-normal init.",
+          "exclusiveMinimum": 0.0,
+          "title": "Init Std",
+          "type": "number"
+        },
+        "attn_impl": {
+          "default": "manual",
+          "description": "'manual' is the from-scratch reference path. 'sdpa' is an optional fast path that must match 'manual' numerically (tested in tests/unit/test_attention.py).",
+          "enum": [
+            "manual",
+            "sdpa"
+          ],
+          "title": "Attn Impl",
+          "type": "string"
+        }
+      },
+      "title": "ModelConfig",
+      "type": "object"
+    },
+    "OptimConfig": {
+      "additionalProperties": false,
+      "description": "Optimizer configuration (spec B3): Muon for hidden matrices, AdamW for the rest.",
+      "properties": {
+        "name": {
+          "default": "muon",
+          "description": "'adamw' routes everything to AdamW. 'muon' uses the documented split: Muon for 2D hidden matmul weights, AdamW for embeddings, LM head, norms and scalars.",
+          "enum": [
+            "adamw",
+            "muon"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "lr": {
+          "default": 0.003,
+          "description": "Peak LR for the Muon group.",
+          "exclusiveMinimum": 0.0,
+          "title": "Lr",
+          "type": "number"
+        },
+        "adamw_lr": {
+          "default": 0.0003,
+          "description": "Peak LR for the AdamW group.",
+          "exclusiveMinimum": 0.0,
+          "title": "Adamw Lr",
+          "type": "number"
+        },
+        "betas": {
+          "default": [
+            0.9,
+            0.95
+          ],
+          "description": "AdamW betas.",
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Betas",
+          "type": "array"
+        },
+        "eps": {
+          "default": 1e-08,
+          "description": "AdamW epsilon.",
+          "exclusiveMinimum": 0.0,
+          "title": "Eps",
+          "type": "number"
+        },
+        "weight_decay": {
+          "default": 0.1,
+          "description": "Decoupled weight decay.",
+          "minimum": 0.0,
+          "title": "Weight Decay",
+          "type": "number"
+        },
+        "cautious_weight_decay": {
+          "default": false,
+          "description": "Feb-2026 improvement: decay only the components of the weight that agree in sign with the update, on a schedule that decays to zero. Flag so it can be A/B'd.",
+          "title": "Cautious Weight Decay",
+          "type": "boolean"
+        },
+        "muon_momentum": {
+          "default": 0.95,
+          "description": "Muon momentum coefficient.",
+          "exclusiveMaximum": 1.0,
+          "minimum": 0.0,
+          "title": "Muon Momentum",
+          "type": "number"
+        },
+        "muon_nesterov": {
+          "default": true,
+          "description": "Nesterov-style momentum inside Muon.",
+          "title": "Muon Nesterov",
+          "type": "boolean"
+        },
+        "muon_ns_steps": {
+          "default": 5,
+          "description": "Newton-Schulz iterations per step.",
+          "exclusiveMinimum": 0,
+          "title": "Muon Ns Steps",
+          "type": "integer"
+        },
+        "grad_clip": {
+          "default": 1.0,
+          "description": "Global grad-norm clip; 0 disables.",
+          "minimum": 0.0,
+          "title": "Grad Clip",
+          "type": "number"
+        }
+      },
+      "title": "OptimConfig",
+      "type": "object"
+    },
+    "PreferenceConfig": {
+      "additionalProperties": false,
+      "description": "DPO / SimPO configuration (spec B5).",
+      "properties": {
+        "method": {
+          "default": "dpo",
+          "description": "Preference-optimization method.",
+          "enum": [
+            "dpo",
+            "simpo"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "seed": {
+          "default": 1337,
+          "description": "Seed for init and batching.",
+          "title": "Seed",
+          "type": "integer"
+        },
+        "dataset": {
+          "default": "toy",
+          "description": "Preference dataset source.",
+          "enum": [
+            "toy",
+            "jsonl"
+          ],
+          "title": "Dataset",
+          "type": "string"
+        },
+        "paths": {
+          "default": [],
+          "description": "JSONL paths when dataset='jsonl'.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Paths",
+          "type": "array"
+        },
+        "seq_len": {
+          "default": 256,
+          "description": "Max prompt+response length.",
+          "exclusiveMinimum": 0,
+          "title": "Seq Len",
+          "type": "integer"
+        },
+        "batch_size": {
+          "default": 4,
+          "description": "Preference pairs per micro-batch.",
+          "exclusiveMinimum": 0,
+          "title": "Batch Size",
+          "type": "integer"
+        },
+        "grad_accum": {
+          "default": 1,
+          "description": "Gradient-accumulation steps.",
+          "exclusiveMinimum": 0,
+          "title": "Grad Accum",
+          "type": "integer"
+        },
+        "max_steps": {
+          "default": 100,
+          "description": "Optimizer steps.",
+          "exclusiveMinimum": 0,
+          "title": "Max Steps",
+          "type": "integer"
+        },
+        "lr": {
+          "default": 5e-06,
+          "description": "Peak learning rate; preference tuning wants a low LR.",
+          "exclusiveMinimum": 0.0,
+          "title": "Lr",
+          "type": "number"
+        },
+        "beta": {
+          "default": 0.1,
+          "description": "DPO/SimPO inverse-temperature on the reward.",
+          "exclusiveMinimum": 0.0,
+          "title": "Beta",
+          "type": "number"
+        },
+        "gamma": {
+          "default": 0.5,
+          "description": "SimPO target reward margin (gamma/beta in the paper's parameterisation).",
+          "minimum": 0.0,
+          "title": "Gamma",
+          "type": "number"
+        },
+        "label_smoothing": {
+          "default": 0.0,
+          "description": "cDPO-style label smoothing.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Label Smoothing",
+          "type": "number"
+        },
+        "sft_loss_weight": {
+          "default": 0.0,
+          "description": "Optional auxiliary NLL on the chosen response (RPO-style stabiliser).",
+          "minimum": 0.0,
+          "title": "Sft Loss Weight",
+          "type": "number"
+        },
+        "log_interval": {
+          "default": 10,
+          "description": "Steps between log rows.",
+          "exclusiveMinimum": 0,
+          "title": "Log Interval",
+          "type": "integer"
+        },
+        "out_dir": {
+          "default": "runs/align",
+          "description": "Run directory.",
+          "title": "Out Dir",
+          "type": "string"
+        },
+        "device": {
+          "default": "auto",
+          "description": "Compute device.",
+          "enum": [
+            "auto",
+            "cpu",
+            "cuda",
+            "mps"
+          ],
+          "title": "Device",
+          "type": "string"
+        }
+      },
+      "title": "PreferenceConfig",
+      "type": "object"
+    },
+    "QuantConfig": {
+      "additionalProperties": false,
+      "description": "Post-training quantization configuration (spec B7).",
+      "properties": {
+        "method": {
+          "default": "gptq",
+          "description": "Quantization algorithm.",
+          "enum": [
+            "rtn",
+            "gptq",
+            "awq"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "bits": {
+          "default": 4,
+          "description": "Weight bit-width.",
+          "enum": [
+            2,
+            3,
+            4,
+            8
+          ],
+          "title": "Bits",
+          "type": "integer"
+        },
+        "group_size": {
+          "default": 64,
+          "description": "Weights per scale/zero group along the input dim; -1 = per-channel.",
+          "title": "Group Size",
+          "type": "integer"
+        },
+        "symmetric": {
+          "default": false,
+          "description": "Asymmetric (zero-point) quantization by default.",
+          "title": "Symmetric",
+          "type": "boolean"
+        },
+        "calib_samples": {
+          "default": 128,
+          "description": "Calibration sequences.",
+          "exclusiveMinimum": 0,
+          "title": "Calib Samples",
+          "type": "integer"
+        },
+        "calib_seq_len": {
+          "default": 256,
+          "description": "Calibration sequence length.",
+          "exclusiveMinimum": 0,
+          "title": "Calib Seq Len",
+          "type": "integer"
+        },
+        "damp_percent": {
+          "default": 0.01,
+          "description": "Hessian dampening as a fraction of mean(diag(H)).",
+          "exclusiveMaximum": 1.0,
+          "exclusiveMinimum": 0.0,
+          "title": "Damp Percent",
+          "type": "number"
+        },
+        "act_order": {
+          "default": true,
+          "description": "Quantize columns in order of decreasing activation salience.",
+          "title": "Act Order",
+          "type": "boolean"
+        },
+        "block_size": {
+          "default": 128,
+          "description": "GPTQ lazy-batch column block size.",
+          "exclusiveMinimum": 0,
+          "title": "Block Size",
+          "type": "integer"
+        },
+        "awq_grid": {
+          "default": 20,
+          "description": "Grid points searched for the AWQ scale exponent.",
+          "exclusiveMinimum": 0,
+          "title": "Awq Grid",
+          "type": "integer"
+        },
+        "kv_bits": {
+          "default": 0,
+          "description": "0 disables KV-cache quantization.",
+          "enum": [
+            0,
+            2,
+            3,
+            4,
+            8
+          ],
+          "title": "Kv Bits",
+          "type": "integer"
+        },
+        "kv_group_size": {
+          "default": 32,
+          "description": "KV quantization group along head_dim.",
+          "exclusiveMinimum": 0,
+          "title": "Kv Group Size",
+          "type": "integer"
+        },
+        "seed": {
+          "default": 1337,
+          "description": "Seed for calibration sampling.",
+          "title": "Seed",
+          "type": "integer"
+        },
+        "out_dir": {
+          "default": "runs/quant",
+          "description": "Run directory.",
+          "title": "Out Dir",
+          "type": "string"
+        },
+        "device": {
+          "default": "auto",
+          "description": "Compute device.",
+          "enum": [
+            "auto",
+            "cpu",
+            "cuda",
+            "mps"
+          ],
+          "title": "Device",
+          "type": "string"
+        }
+      },
+      "title": "QuantConfig",
+      "type": "object"
+    },
+    "SFTConfig": {
+      "additionalProperties": false,
+      "description": "Supervised fine-tuning configuration (spec B5).",
+      "properties": {
+        "seed": {
+          "default": 1337,
+          "description": "Seed for init, batching and any sampling.",
+          "title": "Seed",
+          "type": "integer"
+        },
+        "dataset": {
+          "default": "toy",
+          "description": "Instruction dataset source.",
+          "enum": [
+            "toy",
+            "jsonl"
+          ],
+          "title": "Dataset",
+          "type": "string"
+        },
+        "paths": {
+          "default": [],
+          "description": "JSONL paths when dataset='jsonl'.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Paths",
+          "type": "array"
+        },
+        "seq_len": {
+          "default": 256,
+          "description": "Chat sequences are padded/truncated to this.",
+          "exclusiveMinimum": 0,
+          "title": "Seq Len",
+          "type": "integer"
+        },
+        "batch_size": {
+          "default": 8,
+          "description": "Conversations per micro-batch.",
+          "exclusiveMinimum": 0,
+          "title": "Batch Size",
+          "type": "integer"
+        },
+        "grad_accum": {
+          "default": 1,
+          "description": "Gradient-accumulation steps.",
+          "exclusiveMinimum": 0,
+          "title": "Grad Accum",
+          "type": "integer"
+        },
+        "max_steps": {
+          "default": 120,
+          "description": "Optimizer steps.",
+          "exclusiveMinimum": 0,
+          "title": "Max Steps",
+          "type": "integer"
+        },
+        "lr": {
+          "default": 0.0001,
+          "description": "Peak learning rate (AdamW).",
+          "exclusiveMinimum": 0.0,
+          "title": "Lr",
+          "type": "number"
+        },
+        "weight_decay": {
+          "default": 0.0,
+          "description": "Decoupled weight decay.",
+          "minimum": 0.0,
+          "title": "Weight Decay",
+          "type": "number"
+        },
+        "warmup_frac": {
+          "default": 0.05,
+          "description": "Warmup fraction of total steps.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Warmup Frac",
+          "type": "number"
+        },
+        "mask_prompt": {
+          "default": true,
+          "description": "Loss on completion tokens only (verified by test).",
+          "title": "Mask Prompt",
+          "type": "boolean"
+        },
+        "eval_interval": {
+          "default": 40,
+          "description": "Steps between held-out evaluations.",
+          "exclusiveMinimum": 0,
+          "title": "Eval Interval",
+          "type": "integer"
+        },
+        "log_interval": {
+          "default": 10,
+          "description": "Steps between log rows.",
+          "exclusiveMinimum": 0,
+          "title": "Log Interval",
+          "type": "integer"
+        },
+        "out_dir": {
+          "default": "runs/sft",
+          "description": "Run directory.",
+          "title": "Out Dir",
+          "type": "string"
+        },
+        "device": {
+          "default": "auto",
+          "description": "Compute device.",
+          "enum": [
+            "auto",
+            "cpu",
+            "cuda",
+            "mps"
+          ],
+          "title": "Device",
+          "type": "string"
+        }
+      },
+      "title": "SFTConfig",
+      "type": "object"
+    },
+    "ScheduleConfig": {
+      "additionalProperties": false,
+      "description": "Learning-rate schedule (spec B4).",
+      "properties": {
+        "name": {
+          "default": "cosine",
+          "description": "Cosine+warmup default; WSD (warmup-stable-decay) as a flag.",
+          "enum": [
+            "cosine",
+            "wsd",
+            "constant"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "warmup_frac": {
+          "default": 0.02,
+          "description": "Fraction of total steps spent warming up.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Warmup Frac",
+          "type": "number"
+        },
+        "decay_frac": {
+          "default": 0.2,
+          "description": "WSD only: fraction of steps in the decay tail.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Decay Frac",
+          "type": "number"
+        },
+        "min_lr_frac": {
+          "default": 0.1,
+          "description": "Floor LR as a fraction of peak.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Min Lr Frac",
+          "type": "number"
+        }
+      },
+      "title": "ScheduleConfig",
+      "type": "object"
+    },
+    "SpecConfig": {
+      "additionalProperties": false,
+      "description": "Speculative-decoding configuration (spec B8).",
+      "properties": {
+        "method": {
+          "default": "draft_target",
+          "description": "Classic draft-model speculation, or Medusa-style heads.",
+          "enum": [
+            "draft_target",
+            "medusa"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "gamma": {
+          "default": 4,
+          "description": "Draft tokens proposed per verification step.",
+          "exclusiveMinimum": 0,
+          "title": "Gamma",
+          "type": "integer"
+        },
+        "max_new_tokens": {
+          "default": 128,
+          "description": "Tokens to generate per request.",
+          "exclusiveMinimum": 0,
+          "title": "Max New Tokens",
+          "type": "integer"
+        },
+        "temperature": {
+          "default": 1.0,
+          "description": "0 means greedy on the target.",
+          "minimum": 0.0,
+          "title": "Temperature",
+          "type": "number"
+        },
+        "top_p": {
+          "default": 1.0,
+          "description": "Nucleus cutoff applied to the target distribution.",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Top P",
+          "type": "number"
+        },
+        "medusa_heads": {
+          "default": 3,
+          "description": "Number of Medusa heads.",
+          "exclusiveMinimum": 0,
+          "title": "Medusa Heads",
+          "type": "integer"
+        },
+        "medusa_topk": {
+          "default": 3,
+          "description": "Candidates per Medusa head for the tree.",
+          "exclusiveMinimum": 0,
+          "title": "Medusa Topk",
+          "type": "integer"
+        },
+        "tree_max_nodes": {
+          "default": 16,
+          "description": "Cap on tree-attention candidate nodes.",
+          "exclusiveMinimum": 0,
+          "title": "Tree Max Nodes",
+          "type": "integer"
+        },
+        "seed": {
+          "default": 1337,
+          "description": "Seed for sampling and the acceptance coin flips.",
+          "title": "Seed",
+          "type": "integer"
+        },
+        "device": {
+          "default": "auto",
+          "description": "Compute device.",
+          "enum": [
+            "auto",
+            "cpu",
+            "cuda",
+            "mps"
+          ],
+          "title": "Device",
+          "type": "string"
+        }
+      },
+      "title": "SpecConfig",
+      "type": "object"
+    },
+    "TokenizerConfig": {
+      "additionalProperties": false,
+      "description": "Byte-level BPE tokenizer configuration (spec B1).",
+      "properties": {
+        "vocab_size": {
+          "default": 8192,
+          "description": "Target vocabulary size including the 256 byte tokens and specials.",
+          "exclusiveMinimum": 0,
+          "title": "Vocab Size",
+          "type": "integer"
+        },
+        "special_tokens": {
+          "default": [
+            "<bos>",
+            "<eos>",
+            "<pad>",
+            "<user>",
+            "<assistant>",
+            "<system>",
+            "<eot>"
+          ],
+          "description": "Special tokens; the chat roles are used by the SFT chat template.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Special Tokens",
+          "type": "array"
+        },
+        "lowercase": {
+          "default": false,
+          "description": "Never lowercase by default: byte-level is exact.",
+          "title": "Lowercase",
+          "type": "boolean"
+        },
+        "split_pattern": {
+          "default": "gpt2",
+          "description": "Pre-tokenization regex. GPT-2/GPT-4 style splitting keeps merges from crossing word/punctuation boundaries, which materially improves compression.",
+          "enum": [
+            "gpt2",
+            "gpt4",
+            "none"
+          ],
+          "title": "Split Pattern",
+          "type": "string"
+        },
+        "max_train_bytes": {
+          "default": 2000000,
+          "description": "Cap on corpus bytes used for BPE training (keeps training quick).",
+          "exclusiveMinimum": 0,
+          "title": "Max Train Bytes",
+          "type": "integer"
+        }
+      },
+      "title": "TokenizerConfig",
+      "type": "object"
+    },
+    "TrainConfig": {
+      "additionalProperties": false,
+      "description": "Pretraining loop configuration (spec B4).",
+      "properties": {
+        "tier": {
+          "default": "nano",
+          "description": "Size-ladder tier name.",
+          "enum": [
+            "nano",
+            "micro",
+            "small"
+          ],
+          "title": "Tier",
+          "type": "string"
+        },
+        "seed": {
+          "default": 1337,
+          "description": "Global seed; controls init, dataloading and dropout.",
+          "title": "Seed",
+          "type": "integer"
+        },
+        "batch_size": {
+          "default": 16,
+          "description": "Micro-batch size (sequences per step).",
+          "exclusiveMinimum": 0,
+          "title": "Batch Size",
+          "type": "integer"
+        },
+        "grad_accum": {
+          "default": 1,
+          "description": "Gradient-accumulation steps.",
+          "exclusiveMinimum": 0,
+          "title": "Grad Accum",
+          "type": "integer"
+        },
+        "max_steps": {
+          "default": 200,
+          "description": "Optimizer steps (upper bound).",
+          "exclusiveMinimum": 0,
+          "title": "Max Steps",
+          "type": "integer"
+        },
+        "token_budget": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "If set, training stops once this many tokens have been consumed. Presets set it from the Chinchilla-style 20:1 tokens:params heuristic.",
+          "title": "Token Budget"
+        },
+        "eval_interval": {
+          "default": 50,
+          "description": "Steps between validation passes.",
+          "exclusiveMinimum": 0,
+          "title": "Eval Interval",
+          "type": "integer"
+        },
+        "eval_batches": {
+          "default": 10,
+          "description": "Validation batches per evaluation.",
+          "exclusiveMinimum": 0,
+          "title": "Eval Batches",
+          "type": "integer"
+        },
+        "log_interval": {
+          "default": 10,
+          "description": "Steps between training-log rows.",
+          "exclusiveMinimum": 0,
+          "title": "Log Interval",
+          "type": "integer"
+        },
+        "ckpt_interval": {
+          "default": 100,
+          "description": "Steps between checkpoint writes.",
+          "exclusiveMinimum": 0,
+          "title": "Ckpt Interval",
+          "type": "integer"
+        },
+        "amp_dtype": {
+          "default": "fp32",
+          "description": "Autocast dtype. fp32 on CPU (the nano tier); bf16 on Colab/Kaggle GPUs, always with an fp32 master-weight copy held by the optimizer.",
+          "enum": [
+            "fp32",
+            "bf16",
+            "fp16"
+          ],
+          "title": "Amp Dtype",
+          "type": "string"
+        },
+        "device": {
+          "default": "auto",
+          "description": "Compute device.",
+          "enum": [
+            "auto",
+            "cpu",
+            "cuda",
+            "mps"
+          ],
+          "title": "Device",
+          "type": "string"
+        },
+        "compile_model": {
+          "default": false,
+          "description": "torch.compile the model (GPU tiers only).",
+          "title": "Compile Model",
+          "type": "boolean"
+        },
+        "out_dir": {
+          "default": "runs/pretrain",
+          "description": "Run directory for logs/checkpoints.",
+          "title": "Out Dir",
+          "type": "string"
+        },
+        "resume": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Checkpoint path to resume from.",
+          "title": "Resume"
+        },
+        "deterministic": {
+          "default": true,
+          "description": "Force deterministic kernels and dataloading.",
+          "title": "Deterministic",
+          "type": "boolean"
+        },
+        "optim": {
+          "$ref": "#/$defs/OptimConfig"
+        },
+        "schedule": {
+          "$ref": "#/$defs/ScheduleConfig"
+        }
+      },
+      "title": "TrainConfig",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The whole pipeline in one object; a tier preset is exactly one of these.",
+  "properties": {
+    "name": {
+      "default": "nano",
+      "description": "Experiment/tier name.",
+      "title": "Name",
+      "type": "string"
+    },
+    "tokenizer": {
+      "$ref": "#/$defs/TokenizerConfig"
+    },
+    "model": {
+      "$ref": "#/$defs/ModelConfig"
+    },
+    "data": {
+      "$ref": "#/$defs/DataConfig"
+    },
+    "train": {
+      "$ref": "#/$defs/TrainConfig"
+    },
+    "align": {
+      "$ref": "#/$defs/AlignConfig"
+    },
+    "distill": {
+      "$ref": "#/$defs/DistillConfig"
+    },
+    "quant": {
+      "$ref": "#/$defs/QuantConfig"
+    },
+    "spec": {
+      "$ref": "#/$defs/SpecConfig"
+    },
+    "generate": {
+      "$ref": "#/$defs/GenerateConfig"
+    },
+    "bench": {
+      "$ref": "#/$defs/BenchConfig"
+    }
+  },
+  "title": "ExperimentConfig",
+  "type": "object"
+}

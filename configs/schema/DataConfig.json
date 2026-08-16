@@ -1,0 +1,88 @@
+{
+  "additionalProperties": false,
+  "description": "Streaming/packed data pipeline configuration (spec B4).",
+  "properties": {
+    "source": {
+      "default": "toy",
+      "description": "'toy' = the committed offline corpus (CI/laptop tier, no network); 'textfile' = local .txt/.jsonl paths; 'hf' = streaming Hugging Face dataset.",
+      "enum": [
+        "toy",
+        "textfile",
+        "hf"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "hf_dataset": {
+      "default": "HuggingFaceFW/fineweb-edu",
+      "description": "HF dataset repo id.",
+      "title": "Hf Dataset",
+      "type": "string"
+    },
+    "hf_config": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": "sample-10BT",
+      "description": "HF dataset config name.",
+      "title": "Hf Config"
+    },
+    "hf_split": {
+      "default": "train",
+      "description": "HF split.",
+      "title": "Hf Split",
+      "type": "string"
+    },
+    "hf_text_field": {
+      "default": "text",
+      "description": "Field of the HF record holding raw text.",
+      "title": "Hf Text Field",
+      "type": "string"
+    },
+    "paths": {
+      "default": [],
+      "description": "Local paths when source='textfile'.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Paths",
+      "type": "array"
+    },
+    "seq_len": {
+      "default": 256,
+      "description": "Packed sequence length (must be <= ctx).",
+      "exclusiveMinimum": 0,
+      "title": "Seq Len",
+      "type": "integer"
+    },
+    "val_fraction": {
+      "default": 0.02,
+      "description": "Fraction of tokens held out for validation.",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Val Fraction",
+      "type": "number"
+    },
+    "shuffle_buffer": {
+      "default": 1024,
+      "description": "Streaming shuffle buffer, in documents.",
+      "exclusiveMinimum": 0,
+      "title": "Shuffle Buffer",
+      "type": "integer"
+    },
+    "num_workers": {
+      "default": 0,
+      "description": "Dataloader workers; 0 keeps CPU runs simple.",
+      "minimum": 0,
+      "title": "Num Workers",
+      "type": "integer"
+    }
+  },
+  "title": "DataConfig",
+  "type": "object"
+}

@@ -1,0 +1,121 @@
+{
+  "additionalProperties": false,
+  "description": "Supervised fine-tuning configuration (spec B5).",
+  "properties": {
+    "seed": {
+      "default": 1337,
+      "description": "Seed for init, batching and any sampling.",
+      "title": "Seed",
+      "type": "integer"
+    },
+    "dataset": {
+      "default": "toy",
+      "description": "Instruction dataset source.",
+      "enum": [
+        "toy",
+        "jsonl"
+      ],
+      "title": "Dataset",
+      "type": "string"
+    },
+    "paths": {
+      "default": [],
+      "description": "JSONL paths when dataset='jsonl'.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Paths",
+      "type": "array"
+    },
+    "seq_len": {
+      "default": 256,
+      "description": "Chat sequences are padded/truncated to this.",
+      "exclusiveMinimum": 0,
+      "title": "Seq Len",
+      "type": "integer"
+    },
+    "batch_size": {
+      "default": 8,
+      "description": "Conversations per micro-batch.",
+      "exclusiveMinimum": 0,
+      "title": "Batch Size",
+      "type": "integer"
+    },
+    "grad_accum": {
+      "default": 1,
+      "description": "Gradient-accumulation steps.",
+      "exclusiveMinimum": 0,
+      "title": "Grad Accum",
+      "type": "integer"
+    },
+    "max_steps": {
+      "default": 120,
+      "description": "Optimizer steps.",
+      "exclusiveMinimum": 0,
+      "title": "Max Steps",
+      "type": "integer"
+    },
+    "lr": {
+      "default": 0.0001,
+      "description": "Peak learning rate (AdamW).",
+      "exclusiveMinimum": 0.0,
+      "title": "Lr",
+      "type": "number"
+    },
+    "weight_decay": {
+      "default": 0.0,
+      "description": "Decoupled weight decay.",
+      "minimum": 0.0,
+      "title": "Weight Decay",
+      "type": "number"
+    },
+    "warmup_frac": {
+      "default": 0.05,
+      "description": "Warmup fraction of total steps.",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Warmup Frac",
+      "type": "number"
+    },
+    "mask_prompt": {
+      "default": true,
+      "description": "Loss on completion tokens only (verified by test).",
+      "title": "Mask Prompt",
+      "type": "boolean"
+    },
+    "eval_interval": {
+      "default": 40,
+      "description": "Steps between held-out evaluations.",
+      "exclusiveMinimum": 0,
+      "title": "Eval Interval",
+      "type": "integer"
+    },
+    "log_interval": {
+      "default": 10,
+      "description": "Steps between log rows.",
+      "exclusiveMinimum": 0,
+      "title": "Log Interval",
+      "type": "integer"
+    },
+    "out_dir": {
+      "default": "runs/sft",
+      "description": "Run directory.",
+      "title": "Out Dir",
+      "type": "string"
+    },
+    "device": {
+      "default": "auto",
+      "description": "Compute device.",
+      "enum": [
+        "auto",
+        "cpu",
+        "cuda",
+        "mps"
+      ],
+      "title": "Device",
+      "type": "string"
+    }
+  },
+  "title": "SFTConfig",
+  "type": "object"
+}

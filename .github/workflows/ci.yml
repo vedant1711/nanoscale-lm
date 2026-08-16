@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Everything in CI runs on the `nano` tier on a CPU runner: no GPU is ever a gate.
+  NANOSCALE_CI: "1"
+
+jobs:
+  quality:
+    name: lint + type + unit (py${{ matrix.python-version }}, CPU)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install project
+        run: |
+          uv venv --python ${{ matrix.python-version }}
+          uv pip install -e ".[dev]" --torch-backend cpu
+
+      - name: Lint (ruff)
+        run: |
+          .venv/bin/python -m ruff check .
+          .venv/bin/python -m ruff format --check .
+
+      - name: Type-check (mypy --strict)
+        run: .venv/bin/python -m mypy
+
+      - name: Unit + property tests
+        run: .venv/bin/python -m pytest -m "not slow and not gpu and not network" --durations=15
+
+  schemas-current:
+    name: committed JSON Schemas are current
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - run: |
+          uv venv --python 3.11
+          uv pip install -e ".[dev]" --torch-backend cpu
+          .venv/bin/python scripts/export_schemas.py
+      - name: Fail if the exported schemas differ from what is committed
+        run: git diff --exit-code -- configs/schema

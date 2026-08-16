@@ -1,0 +1,132 @@
+{
+  "additionalProperties": false,
+  "description": "DPO / SimPO configuration (spec B5).",
+  "properties": {
+    "method": {
+      "default": "dpo",
+      "description": "Preference-optimization method.",
+      "enum": [
+        "dpo",
+        "simpo"
+      ],
+      "title": "Method",
+      "type": "string"
+    },
+    "seed": {
+      "default": 1337,
+      "description": "Seed for init and batching.",
+      "title": "Seed",
+      "type": "integer"
+    },
+    "dataset": {
+      "default": "toy",
+      "description": "Preference dataset source.",
+      "enum": [
+        "toy",
+        "jsonl"
+      ],
+      "title": "Dataset",
+      "type": "string"
+    },
+    "paths": {
+      "default": [],
+      "description": "JSONL paths when dataset='jsonl'.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Paths",
+      "type": "array"
+    },
+    "seq_len": {
+      "default": 256,
+      "description": "Max prompt+response length.",
+      "exclusiveMinimum": 0,
+      "title": "Seq Len",
+      "type": "integer"
+    },
+    "batch_size": {
+      "default": 4,
+      "description": "Preference pairs per micro-batch.",
+      "exclusiveMinimum": 0,
+      "title": "Batch Size",
+      "type": "integer"
+    },
+    "grad_accum": {
+      "default": 1,
+      "description": "Gradient-accumulation steps.",
+      "exclusiveMinimum": 0,
+      "title": "Grad Accum",
+      "type": "integer"
+    },
+    "max_steps": {
+      "default": 100,
+      "description": "Optimizer steps.",
+      "exclusiveMinimum": 0,
+      "title": "Max Steps",
+      "type": "integer"
+    },
+    "lr": {
+      "default": 5e-06,
+      "description": "Peak learning rate; preference tuning wants a low LR.",
+      "exclusiveMinimum": 0.0,
+      "title": "Lr",
+      "type": "number"
+    },
+    "beta": {
+      "default": 0.1,
+      "description": "DPO/SimPO inverse-temperature on the reward.",
+      "exclusiveMinimum": 0.0,
+      "title": "Beta",
+      "type": "number"
+    },
+    "gamma": {
+      "default": 0.5,
+      "description": "SimPO target reward margin (gamma/beta in the paper's parameterisation).",
+      "minimum": 0.0,
+      "title": "Gamma",
+      "type": "number"
+    },
+    "label_smoothing": {
+      "default": 0.0,
+      "description": "cDPO-style label smoothing.",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Label Smoothing",
+      "type": "number"
+    },
+    "sft_loss_weight": {
+      "default": 0.0,
+      "description": "Optional auxiliary NLL on the chosen response (RPO-style stabiliser).",
+      "minimum": 0.0,
+      "title": "Sft Loss Weight",
+      "type": "number"
+    },
+    "log_interval": {
+      "default": 10,
+      "description": "Steps between log rows.",
+      "exclusiveMinimum": 0,
+      "title": "Log Interval",
+      "type": "integer"
+    },
+    "out_dir": {
+      "default": "runs/align",
+      "description": "Run directory.",
+      "title": "Out Dir",
+      "type": "string"
+    },
+    "device": {
+      "default": "auto",
+      "description": "Compute device.",
+      "enum": [
+        "auto",
+        "cpu",
+        "cuda",
+        "mps"
+      ],
+      "title": "Device",
+      "type": "string"
+    }
+  },
+  "title": "PreferenceConfig",
+  "type": "object"
+}

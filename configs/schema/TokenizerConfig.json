@@ -1,0 +1,56 @@
+{
+  "additionalProperties": false,
+  "description": "Byte-level BPE tokenizer configuration (spec B1).",
+  "properties": {
+    "vocab_size": {
+      "default": 8192,
+      "description": "Target vocabulary size including the 256 byte tokens and specials.",
+      "exclusiveMinimum": 0,
+      "title": "Vocab Size",
+      "type": "integer"
+    },
+    "special_tokens": {
+      "default": [
+        "<bos>",
+        "<eos>",
+        "<pad>",
+        "<user>",
+        "<assistant>",
+        "<system>",
+        "<eot>"
+      ],
+      "description": "Special tokens; the chat roles are used by the SFT chat template.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Special Tokens",
+      "type": "array"
+    },
+    "lowercase": {
+      "default": false,
+      "description": "Never lowercase by default: byte-level is exact.",
+      "title": "Lowercase",
+      "type": "boolean"
+    },
+    "split_pattern": {
+      "default": "gpt2",
+      "description": "Pre-tokenization regex. GPT-2/GPT-4 style splitting keeps merges from crossing word/punctuation boundaries, which materially improves compression.",
+      "enum": [
+        "gpt2",
+        "gpt4",
+        "none"
+      ],
+      "title": "Split Pattern",
+      "type": "string"
+    },
+    "max_train_bytes": {
+      "default": 2000000,
+      "description": "Cap on corpus bytes used for BPE training (keeps training quick).",
+      "exclusiveMinimum": 0,
+      "title": "Max Train Bytes",
+      "type": "integer"
+    }
+  },
+  "title": "TokenizerConfig",
+  "type": "object"
+}

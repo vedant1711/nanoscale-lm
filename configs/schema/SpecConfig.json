@@ -1,0 +1,86 @@
+{
+  "additionalProperties": false,
+  "description": "Speculative-decoding configuration (spec B8).",
+  "properties": {
+    "method": {
+      "default": "draft_target",
+      "description": "Classic draft-model speculation, or Medusa-style heads.",
+      "enum": [
+        "draft_target",
+        "medusa"
+      ],
+      "title": "Method",
+      "type": "string"
+    },
+    "gamma": {
+      "default": 4,
+      "description": "Draft tokens proposed per verification step.",
+      "exclusiveMinimum": 0,
+      "title": "Gamma",
+      "type": "integer"
+    },
+    "max_new_tokens": {
+      "default": 128,
+      "description": "Tokens to generate per request.",
+      "exclusiveMinimum": 0,
+      "title": "Max New Tokens",
+      "type": "integer"
+    },
+    "temperature": {
+      "default": 1.0,
+      "description": "0 means greedy on the target.",
+      "minimum": 0.0,
+      "title": "Temperature",
+      "type": "number"
+    },
+    "top_p": {
+      "default": 1.0,
+      "description": "Nucleus cutoff applied to the target distribution.",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Top P",
+      "type": "number"
+    },
+    "medusa_heads": {
+      "default": 3,
+      "description": "Number of Medusa heads.",
+      "exclusiveMinimum": 0,
+      "title": "Medusa Heads",
+      "type": "integer"
+    },
+    "medusa_topk": {
+      "default": 3,
+      "description": "Candidates per Medusa head for the tree.",
+      "exclusiveMinimum": 0,
+      "title": "Medusa Topk",
+      "type": "integer"
+    },
+    "tree_max_nodes": {
+      "default": 16,
+      "description": "Cap on tree-attention candidate nodes.",
+      "exclusiveMinimum": 0,
+      "title": "Tree Max Nodes",
+      "type": "integer"
+    },
+    "seed": {
+      "default": 1337,
+      "description": "Seed for sampling and the acceptance coin flips.",
+      "title": "Seed",
+      "type": "integer"
+    },
+    "device": {
+      "default": "auto",
+      "description": "Compute device.",
+      "enum": [
+        "auto",
+        "cpu",
+        "cuda",
+        "mps"
+      ],
+      "title": "Device",
+      "type": "string"
+    }
+  },
+  "title": "SpecConfig",
+  "type": "object"
+}
