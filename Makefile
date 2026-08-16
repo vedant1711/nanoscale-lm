@@ -48,6 +48,12 @@ check: lint type test  ## lint + type + test (what CI runs)
 schemas:  ## Export config JSON Schemas to configs/schema/
 	$(PY) scripts/export_schemas.py
 
+# ------------------------------------------------------------------------ pipeline
+.PHONY: tokenizer
+tokenizer:  ## Train the committed nano BPE vocabulary and write its report
+	$(PY) -m nanoscale.cli tokenizer train --out artifacts/tokenizer/nano.json --tier nano
+	$(PY) scripts/tokenizer_report.py
+
 .PHONY: clean
 clean:  ## Remove caches and build artifacts
 	rm -rf .mypy_cache .ruff_cache .pytest_cache .hypothesis build dist htmlcov .coverage

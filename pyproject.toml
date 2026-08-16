@@ -42,6 +42,7 @@ dev = [
     "mypy>=1.10",
     "ruff>=0.5",
     "types-PyYAML>=6.0",
+    "types-regex>=2023.12",
     "pre-commit>=3.7",
 ]
 # Optional extras. None of these are needed for the `nano` CPU path, which is

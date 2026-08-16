@@ -1,0 +1,29 @@
+{
+  "vocab_size": 1024,
+  "merges_learned": 761,
+  "merges_targeted": 761,
+  "n_special_tokens": 7,
+  "split_pattern": "gpt2",
+  "bytes_per_token_in_domain": 4.193,
+  "bytes_per_token_held_out": 4.229,
+  "bytes_per_token_out_of_domain": 2.245,
+  "longest_tokens": [
+    " everything",
+    " neighbour",
+    " different",
+    " carefully",
+    " afternoon",
+    " belonged",
+    " patience",
+    " everyone",
+    " promised",
+    " tomorrow",
+    " kindness",
+    " strength",
+    " hedgehog",
+    " borrowed",
+    " squirrel"
+  ],
+  "git_sha": "6248611",
+  "hardware": "mps:apple-silicon | macOS-15.6-arm64-arm-64bit"
+}

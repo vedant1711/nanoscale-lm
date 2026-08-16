@@ -24,7 +24,7 @@ Two honesty notes, both of which the docs repeat:
    is what the spec's "~25M" style figures track most closely). The exact expected
    counts are asserted in ``tests/unit/test_config.py`` so architecture drift is caught.
 2. ``micro`` and ``small`` train to their full 20:1 Chinchilla budget. ``nano`` does
-   **not**: 20:1 on ~6.5M parameters is ~130M tokens, which is hours of CPU time, and
+   **not**: 20:1 on ~5M parameters is ~99M tokens, which is hours of CPU time, and
    ``nano`` exists to be a <10-minute CI/teaching run. Its stopping budget is therefore
    set from its step count, and every ``nano`` manifest records what fraction of the
    compute-optimal budget it covered.
@@ -66,15 +66,20 @@ TOKENS_PER_PARAM: Final[int] = 20
 #: the analytic count and the count of the built ``nn.Module``. Any accidental change to
 #: a width, a depth or the FFN expansion rule fails that test loudly.
 TIER_EXPECTED_PARAMS: Final[dict[str, tuple[int, int]]] = {
-    "nano": (6_524_928, 4_427_776),
+    "nano": (4_952_064, 4_427_776),
     "micro": (40_379_904, 23_602_688),
     "small": (125_849_856, 75_518_208),
 }
 
 
 def _nano() -> ExperimentConfig:
-    """CPU/laptop tier: the CI, smoke-test and teaching configuration."""
-    tokenizer = TokenizerConfig(vocab_size=4096, max_train_bytes=1_000_000)
+    """CPU/laptop tier: the CI, smoke-test and teaching configuration.
+
+    The 1024-token vocabulary is not arbitrary: it is exactly what the offline toy
+    corpus (:mod:`nanoscale.data.toy`) can fill. A larger vocabulary would leave dead
+    embedding rows that cost parameters and CPU time while carrying no information.
+    """
+    tokenizer = TokenizerConfig(vocab_size=1024, max_train_bytes=1_500_000)
     model = ModelConfig(
         vocab_size=tokenizer.vocab_size,
         n_layers=6,
