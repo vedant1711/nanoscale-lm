@@ -54,6 +54,19 @@ tokenizer:  ## Train the committed nano BPE vocabulary and write its report
 	$(PY) -m nanoscale.cli tokenizer train --out artifacts/tokenizer/nano.json --tier nano
 	$(PY) scripts/tokenizer_report.py
 
+.PHONY: train-nano
+train-nano: tokenizer  ## Pretrain the nano tier on CPU and refresh its committed artifacts
+	$(PY) -m nanoscale.cli train pretrain --tier nano --set train.device=cpu -o runs/nano/pretrain
+	$(PY) scripts/plot_loss_curve.py runs/nano/pretrain --out results/curves/nano_loss.png \
+		--title "nano tier -- 400 steps on CPU"
+	$(PY) scripts/sample_generations.py runs/nano/pretrain/final.pt --name nano_base
+
+.PHONY: train-micro
+train-micro:  ## Pretrain the micro tier (needs a GPU and the 'data' extra)
+	$(PY) -m nanoscale.cli train pretrain --tier micro -o runs/micro/pretrain
+	$(PY) scripts/plot_loss_curve.py runs/micro/pretrain --out results/curves/micro_loss.png \
+		--title "micro tier -- FineWeb-Edu, 20:1 token budget"
+
 .PHONY: clean
 clean:  ## Remove caches and build artifacts
 	rm -rf .mypy_cache .ruff_cache .pytest_cache .hypothesis build dist htmlcov .coverage

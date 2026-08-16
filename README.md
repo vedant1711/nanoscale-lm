@@ -22,7 +22,7 @@ Under construction, phase by phase, against `nanoscale_lm_spec.md`.
 | 1 | Byte-level BPE tokenizer | ✅ |
 | 2 | Model: GQA + RoPE + QK-norm + RMSNorm + SwiGLU + KV cache | ✅ |
 | 3 | Optimizer: AdamW + Muon (Newton–Schulz) | ✅ |
-| 4 | Pretraining loop | ⬜ |
+| 4 | Pretraining loop | ✅ |
 | 5 | Optimizer & architecture ablations | ⬜ |
 | 6 | Alignment: SFT, DPO, SimPO, (optional) GRPO-RLVR | ⬜ |
 | 7 | Distillation: forward-KL, SeqKD, reverse-KL on-policy | ⬜ |
@@ -37,6 +37,27 @@ uv venv --python 3.11
 uv pip install -e ".[dev]"
 nanoscale info
 ```
+
+## First result: the `nano` tier, trained on a laptop CPU
+
+![nano loss curve](results/curves/nano_loss.png)
+
+4,952,064 parameters, 819,200 tokens, 95 s on
+CPU at 8,598 tokens/s. Validation loss
+0.390 (perplexity 1.48), starting from
+exactly `ln(1024) = 6.93` as the zero-init scheme predicts.
+
+Sampled from the committed checkpoint (`results/samples/nano_base.md`):
+
+> It was a sunny day. Lily went to the park with a patient hedgehog. Lily wanted to find
+> a torn map. But a torn map was too heavy to lift. She tied her scarf around it for
+> grip. A patient hedgehog pushed from the other side. She sat down and thought about the
+> problem. With one more try a torn map came loose.
+
+The `nano` tier trains on a synthetic story corpus (see `src/nanoscale/data/toy.py`), so
+this is a demonstration that the pipeline learns structure — agreement, coreference,
+narrative shape — not a claim about open-domain language modelling. The `micro` tier
+trains on FineWeb-Edu to a full 20:1 token budget for that.
 
 ## The size ladder
 

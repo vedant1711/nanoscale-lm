@@ -81,15 +81,46 @@ def test_ordinary_encoding_never_emits_a_special_token(tokenizer: BPETokenizer, 
     assert not (set(ids) & set(tokenizer.id_to_special))
 
 
+def test_bpe_token_counts_are_not_subadditive(tokenizer: BPETokenizer) -> None:
+    """A counterexample, pinned: ``len(encode(a+b))`` can *exceed* the sum of the parts.
+
+    This test exists because the obvious-looking property is false, and hypothesis found
+    the counterexample. With the committed `nano` vocabulary::
+
+        encode("eps")   -> 1 token
+        encode("ep")    -> 1 token
+        encode("epsep") -> 3 tokens
+
+    Greedy rank-ordered merging is **path-dependent**: on the concatenated string an
+    earlier-ranked merge straddling the join fires first and consumes characters that
+    would otherwise have formed the longer tokens, and the greedy walk cannot backtrack.
+    So BPE token counts are neither subadditive nor monotone under concatenation.
+
+    Practical consequence, and the reason this is worth a test rather than a comment:
+    you cannot assume a prompt's token count is the sum of its parts' token counts, and
+    you cannot cache a tokenization by concatenating cached pieces -- unless the join
+    lands on a pre-token boundary, which is exactly the next test.
+    """
+    assert len(tokenizer.encode("eps")) == 1
+    assert len(tokenizer.encode("ep")) == 1
+    assert len(tokenizer.encode("epsep")) > 2
+
+
 @_SETTINGS
 @given(a=st.text(max_size=100), b=st.text(max_size=100))
-def test_concatenation_is_subadditive(tokenizer: BPETokenizer, a: str, b: str) -> None:
-    """Encoding a+b is never longer than encoding a and b separately.
+def test_encoding_splits_exactly_at_pretoken_boundaries(
+    tokenizer: BPETokenizer, a: str, b: str
+) -> None:
+    """When the join is a pre-token boundary, encoding *is* exactly concatenative.
 
-    Pre-tokenization can merge across the join point but can never split more than the
-    parts already were, so token counts are subadditive.
+    The GPT-2 regex starts a new pre-token at a leading space, and merges never cross a
+    pre-token boundary. So ``encode(a + " " + b) == encode(a) + encode(" " + b)``
+    exactly -- which is what makes incremental/streaming tokenization sound.
     """
-    assert len(tokenizer.encode(a + b)) <= len(tokenizer.encode(a)) + len(tokenizer.encode(b))
+    assume(a and not a[-1].isspace())
+    left = tokenizer.encode(a)
+    right = tokenizer.encode(" " + b)
+    assert tokenizer.encode(a + " " + b) == left + right
 
 
 @_SETTINGS

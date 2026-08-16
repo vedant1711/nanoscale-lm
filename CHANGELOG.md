@@ -104,6 +104,30 @@ Each entry corresponds to one phase of the build plan in `nanoscale_lm_spec.md`.
   and long-horizon AdamW/torch divergence at aggressive hyperparameters is chaos
   amplification, not a formula error — pinned by measuring the growth curve.
 
+### Phase 4 — Pretraining
+
+**Added**
+
+- `nanoscale.train.data` — packing, contiguous train/val splitting, and a deterministic
+  batcher whose position in the stream is a pure function of `(seed, batches consumed)`.
+- `nanoscale.train.schedule` — cosine+warmup and warmup-stable-decay, both returning a
+  multiplier so Muon and AdamW can share one schedule at different peak LRs; plus the
+  decaying-λ schedule for cautious weight decay.
+- `nanoscale.train.checkpoint` — resumable checkpoints carrying weights, optimizer
+  state, counters and RNG state.
+- `nanoscale.train.loop` — gradient accumulation, clipping, AMP with fp32 master
+  weights, token-budget stopping, metric logging and manifest writing.
+- `nanoscale train pretrain|generate` CLI; `make train-nano` / `make train-micro`.
+- `nanoscale.utils.plotting` and `scripts/plot_loss_curve.py` /
+  `scripts/sample_generations.py`, both stamping figures with the producing git SHA.
+- First committed results: `results/curves/nano_loss.png`, `results/samples/nano_base.*`.
+
+**Fixed**
+
+- Checkpoint resume replayed the current epoch from its first batch instead of the
+  correct offset, so a resumed run silently re-trained on data it had already seen and
+  diverged from an uninterrupted one. Data position is now derived from the step count.
+
 **Notes**
 
 - The spec's headline parameter figures are approximate. The shapes from the spec's
