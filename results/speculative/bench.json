@@ -1,0 +1,73 @@
+{
+  "git_sha": "7ba6387",
+  "hardware": "mps:apple-silicon | macOS-15.6-arm64-arm-64bit",
+  "checkpoint": "runs/nano/pretrain/final.pt",
+  "draft": "runs/nano/distill/reverse_kl/final.pt",
+  "target_params": 4952064,
+  "draft_params": 279168,
+  "temperature": 1.0,
+  "tokens_per_request": 64,
+  "prompts": 8,
+  "rows": [
+    {
+      "arm": "autoregressive",
+      "generated": 512,
+      "target_calls": 520,
+      "draft_calls": 0,
+      "acceptance_rate": null,
+      "mean_accepted_length": 0.9846,
+      "wall_clock_s": 0.7559,
+      "tokens_per_s": 677.35
+    },
+    {
+      "arm": "speculative \u03b3=2",
+      "generated": 512,
+      "target_calls": 245,
+      "draft_calls": 597,
+      "acceptance_rate": 0.5899,
+      "mean_accepted_length": 2.0898,
+      "wall_clock_s": 1.0595,
+      "tokens_per_s": 483.24
+    },
+    {
+      "arm": "speculative \u03b3=4",
+      "generated": 512,
+      "target_calls": 203,
+      "draft_calls": 813,
+      "acceptance_rate": 0.4239,
+      "mean_accepted_length": 2.5222,
+      "wall_clock_s": 1.1053,
+      "tokens_per_s": 463.24
+    },
+    {
+      "arm": "speculative \u03b3=6",
+      "generated": 512,
+      "target_calls": 174,
+      "draft_calls": 984,
+      "acceptance_rate": 0.3674,
+      "mean_accepted_length": 2.9425,
+      "wall_clock_s": 0.9562,
+      "tokens_per_s": 535.48
+    },
+    {
+      "arm": "autoregressive + GPTQ-4bit",
+      "generated": 512,
+      "target_calls": 520,
+      "draft_calls": 0,
+      "acceptance_rate": null,
+      "mean_accepted_length": 0.9846,
+      "wall_clock_s": 0.6608,
+      "tokens_per_s": 774.8
+    },
+    {
+      "arm": "speculative \u03b3=6 + GPTQ-4bit",
+      "generated": 512,
+      "target_calls": 176,
+      "draft_calls": 989,
+      "acceptance_rate": 0.3617,
+      "mean_accepted_length": 2.9091,
+      "wall_clock_s": 0.9556,
+      "tokens_per_s": 535.8
+    }
+  ]
+}

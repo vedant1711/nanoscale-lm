@@ -56,7 +56,7 @@ def sft(
 ) -> None:
     """Instruction-tune a pretrained checkpoint with completion-masked loss."""
     tok, cfg, model = _load(checkpoint, tokenizer_path, tier, list(set_ or []))
-    trainer = SFTTrainer(model, tok, cfg.align.sft, out_dir=out_dir)
+    trainer = SFTTrainer(model, tok, cfg.align.sft, out_dir=out_dir, experiment_config=cfg)
     typer.echo(json.dumps(trainer.train().summary(), indent=2))
 
 
@@ -74,7 +74,9 @@ def preference(
         raise typer.BadParameter("method must be 'dpo' or 'simpo'.")
     overrides = [*(set_ or []), f"align.preference.method={method}"]
     tok, cfg, model = _load(checkpoint, tokenizer_path, tier, overrides)
-    trainer = PreferenceTrainer(model, tok, cfg.align.preference, out_dir=out_dir)
+    trainer = PreferenceTrainer(
+        model, tok, cfg.align.preference, out_dir=out_dir, experiment_config=cfg
+    )
     typer.echo(json.dumps(trainer.train().summary(), indent=2))
 
 
@@ -88,5 +90,5 @@ def grpo(
 ) -> None:
     """Run the optional GRPO-RLVR track on verifiable arithmetic."""
     tok, cfg, model = _load(checkpoint, tokenizer_path, tier, list(set_ or []))
-    trainer = GRPOTrainer(model, tok, cfg.align.grpo, out_dir=out_dir)
+    trainer = GRPOTrainer(model, tok, cfg.align.grpo, out_dir=out_dir, experiment_config=cfg)
     typer.echo(json.dumps(trainer.train().summary(), indent=2))

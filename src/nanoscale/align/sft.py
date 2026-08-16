@@ -28,7 +28,7 @@ from pathlib import Path
 import torch
 from torch import Tensor
 
-from nanoscale.config import ScheduleConfig, SFTConfig
+from nanoscale.config import ExperimentConfig, ScheduleConfig, SFTConfig
 from nanoscale.data.instruct import InstructExample, iter_instructions
 from nanoscale.model import IGNORE_INDEX, NanoScaleLM
 from nanoscale.optim import AdamW
@@ -166,6 +166,7 @@ class SFTTrainer:
         config: SFTConfig,
         *,
         out_dir: str | Path | None = None,
+        experiment_config: ExperimentConfig | None = None,
         examples: list[InstructExample] | None = None,
         n_examples: int = 2400,
     ) -> None:
@@ -176,6 +177,7 @@ class SFTTrainer:
         self.device = resolve_device(config.device)
         self.amp_dtype = resolve_dtype("fp32", self.device)
         self.model = model.to(self.device)
+        self.experiment_config = experiment_config
         self.out_dir = Path(out_dir or config.out_dir)
         self.out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -270,6 +272,7 @@ class SFTTrainer:
             self.out_dir / "final.pt",
             model=self.model,
             state=TrainState(step=cfg.max_steps),
+            config=self.experiment_config,
             extra={"phase": "phase6-sft"},
         )
         result = SFTResult(

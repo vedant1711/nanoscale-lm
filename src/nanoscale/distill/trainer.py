@@ -5,6 +5,20 @@ architecture, the same teacher, the same step budget and the same seed, differin
 in the objective. That is what makes "reverse-KL on-policy beats forward-KL" a claim
 about the objective rather than about a training-budget difference.
 
+Warm-start
+----------
+``DistillConfig.warmup_steps`` runs plain MLE on the training data before the configured
+objective takes over. This is not a convenience: MiniLLM prescribes exactly this, and the
+reason is structural. On-policy reverse KL estimates its gradient from trajectories the
+**student** generates, so a randomly-initialised student is sampling noise and scoring it
+against a teacher that finds all of it equally unlikely — the reward carries no usable
+signal and the policy gradient is pure variance. Skipping the warm-start does not make
+reverse KL slightly worse; it makes it not work at all (measured: student perplexity
+~1000 without, versus the teacher's ~3).
+
+The warm-start is applied identically to **every** objective, so the comparison stays
+controlled: all three arms start from the same warm-started weights.
+
 Cost note, which is part of the result: the three objectives are not equally expensive
 per step. Forward KL runs one teacher forward pass per batch; SeqKD runs none (the
 teacher's cost is a one-off sampling phase); reverse-KL on-policy runs a student
@@ -22,7 +36,7 @@ from pathlib import Path
 import torch
 from torch import Tensor
 
-from nanoscale.config import DistillConfig, ScheduleConfig
+from nanoscale.config import DistillConfig, ExperimentConfig, ScheduleConfig
 from nanoscale.distill.losses import (
     DistillLossOutput,
     forward_kl_loss,
@@ -59,15 +73,30 @@ class DistillResult:
     teacher_val_loss: float
     student_params: int
     teacher_params: int
+    student_non_embedding: int
+    teacher_non_embedding: int
     steps: int
+    warmup_steps: int
     wall_clock_s: float
     checkpoint_path: Path | None = None
     history: list[dict[str, float]] = field(default_factory=list)
 
     @property
     def compression_ratio(self) -> float:
-        """Teacher parameters per student parameter."""
+        """Teacher parameters per student parameter, counting everything."""
         return self.teacher_params / max(1, self.student_params)
+
+    @property
+    def non_embedding_compression(self) -> float:
+        """Compression of the *non-embedding* parameters.
+
+        This is the number that describes what distillation actually shrank. Teacher and
+        student must share a tokenizer, so the embedding table and LM head are the same
+        width in both and their cost is irreducible — at small vocabularies they can
+        dominate the total and make the headline ratio look far worse than the depth and
+        width reduction really is.
+        """
+        return self.teacher_non_embedding / max(1, self.student_non_embedding)
 
     def summary(self) -> dict[str, float | int | str]:
         """Headline numbers for the manifest and the comparison table."""
@@ -81,7 +110,9 @@ class DistillResult:
             "student_params": self.student_params,
             "teacher_params": self.teacher_params,
             "compression_ratio": round(self.compression_ratio, 3),
+            "non_embedding_compression": round(self.non_embedding_compression, 3),
             "steps": self.steps,
+            "warmup_steps": self.warmup_steps,
             "wall_clock_s": round(self.wall_clock_s, 2),
         }
 
@@ -99,6 +130,7 @@ class DistillTrainer:
         train_batcher: TokenBatcher | None = None,
         val_batches: list[Batch] | None = None,
         out_dir: str | Path | None = None,
+        experiment_config: ExperimentConfig | None = None,
     ) -> None:
         """Freeze the teacher, prepare the student, the data and the optimizer."""
         self.config = config
@@ -119,6 +151,7 @@ class DistillTrainer:
         self.batcher = train_batcher
         self.val_batches = val_batches or []
 
+        self.experiment_config = experiment_config
         self.out_dir = Path(out_dir or config.out_dir)
         self.out_dir.mkdir(parents=True, exist_ok=True)
         self.optimizer = AdamW(
@@ -160,8 +193,17 @@ class DistillTrainer:
         mask[:, prompts.shape[1] :] = 1.0
         return out, mask
 
-    def _step_loss(self, batch: Batch) -> DistillLossOutput:
+    def _mle_loss(self, batch: Batch) -> DistillLossOutput:
+        """Plain next-token MLE, used for the warm-start phase."""
+        batch = batch.to(self.device)
+        out = self.student(batch.inputs, targets=batch.targets)
+        assert out.loss is not None
+        return DistillLossOutput(loss=out.loss, ce=out.loss, kd=out.loss.new_zeros(()), extra={})
+
+    def _step_loss(self, batch: Batch, *, step: int) -> DistillLossOutput:
         cfg = self.config
+        if step < cfg.warmup_steps:
+            return self._mle_loss(batch)
         batch = batch.to(self.device)
 
         if cfg.method == "forward_kl":
@@ -237,11 +279,14 @@ class DistillTrainer:
 
         for step in range(cfg.max_steps):
             self.optimizer.zero_grad(set_to_none=True)
-            out = self._step_loss(next(stream))
+            out = self._step_loss(next(stream), step=step)
             backward(out.loss)
             torch.nn.utils.clip_grad_norm_(self.student.parameters(), 1.0)
 
             scale = lr_multiplier(step, cfg.max_steps, self.schedule)
+            if cfg.method == "reverse_kl" and step >= cfg.warmup_steps:
+                # Policy-gradient steps are much noisier than supervised ones.
+                scale *= cfg.onpolicy_lr_scale
             for group in self.optimizer.param_groups:
                 group.setdefault("initial_lr", cfg.lr)
                 group["lr"] = group["initial_lr"] * scale
@@ -249,7 +294,12 @@ class DistillTrainer:
             last = float(out.loss.detach())
 
             if (step + 1) % cfg.log_interval == 0 or step == 0:
-                row = self.metrics.log(step=step + 1, console=True, **out.stats())
+                row = self.metrics.log(
+                    step=step + 1,
+                    console=True,
+                    phase=1.0 if step < cfg.warmup_steps else 0.0,
+                    **out.stats(),
+                )
                 history.append({k: float(v) for k, v in row.items()})
 
         wall = time.perf_counter() - start
@@ -259,6 +309,7 @@ class DistillTrainer:
             self.out_dir / "final.pt",
             model=self.student,
             state=TrainState(step=cfg.max_steps),
+            config=self.experiment_config,
             extra={"phase": f"phase7-distill-{cfg.method}"},
         )
         result = DistillResult(
@@ -268,7 +319,10 @@ class DistillTrainer:
             teacher_val_loss=teacher_val,
             student_params=self.student.num_parameters(),
             teacher_params=self.teacher.num_parameters(),
+            student_non_embedding=self.student.num_parameters(non_embedding=True),
+            teacher_non_embedding=self.teacher.num_parameters(non_embedding=True),
             steps=cfg.max_steps,
+            warmup_steps=cfg.warmup_steps,
             wall_clock_s=wall,
             checkpoint_path=ckpt,
             history=history,

@@ -31,7 +31,7 @@ from nanoscale.align.losses import (
     sequence_logprobs,
     simpo_loss,
 )
-from nanoscale.config import PreferenceConfig, ScheduleConfig
+from nanoscale.config import ExperimentConfig, PreferenceConfig, ScheduleConfig
 from nanoscale.data.instruct import PreferencePair, iter_preference_pairs
 from nanoscale.model import NanoScaleLM
 from nanoscale.optim import AdamW
@@ -188,6 +188,7 @@ class PreferenceTrainer:
         config: PreferenceConfig,
         *,
         out_dir: str | Path | None = None,
+        experiment_config: ExperimentConfig | None = None,
         pairs: list[PreferencePair] | None = None,
         n_pairs: int = 800,
     ) -> None:
@@ -197,6 +198,7 @@ class PreferenceTrainer:
         seed_all(config.seed)
         self.device = resolve_device(config.device)
         self.model = model.to(self.device)
+        self.experiment_config = experiment_config
         self.out_dir = Path(out_dir or config.out_dir)
         self.out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -394,6 +396,7 @@ class PreferenceTrainer:
             self.out_dir / "final.pt",
             model=self.model,
             state=TrainState(step=cfg.max_steps),
+            config=self.experiment_config,
             extra={"phase": f"phase6-{cfg.method}"},
         )
         result = PreferenceResult(

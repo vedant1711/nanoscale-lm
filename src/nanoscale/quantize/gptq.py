@@ -241,23 +241,10 @@ def gptq_quantize_layer(
         if block_end < in_features:
             w[:, block_end:] -= block_err @ h_chol[block_start:block_end, block_end:]
 
-    if act_order:
-        inverse = torch.argsort(perm)
-        codes = codes[:, inverse]
-        # Scales are per group of the *permuted* layout; reconstruct in permuted order and
-        # then un-permute, which is what the reference implementation does.
-        q = QuantizedTensor(
-            codes=codes[:, perm].to(torch.int32),
-            scales=scales,
-            zeros=zeros,
-            bits=bits,
-            group_size=group,
-            symmetric=symmetric,
-            original_shape=(out_features, in_features),
-        )
-        restored = q.dequantize()[:, inverse]
-        return _as_dense(restored, bits, group, symmetric, (out_features, in_features))
-
+    # Codes and scales are in the permuted layout; the permutation travels with them so
+    # `dequantize` can invert it exactly. Re-encoding the reconstructed weights instead
+    # would run a second rounding pass over values GPTQ had already carefully placed --
+    # measurably worse at low bit-widths, and a bug this frontier caught.
     return QuantizedTensor(
         codes=codes.to(torch.int32),
         scales=scales,
@@ -266,29 +253,8 @@ def gptq_quantize_layer(
         group_size=group,
         symmetric=symmetric,
         original_shape=(out_features, in_features),
+        perm=perm if act_order else None,
     )
-
-
-def _as_dense(
-    dequantized: Tensor,
-    bits: int,
-    group: int,
-    symmetric: bool,
-    shape: tuple[int, int],
-) -> QuantizedTensor:
-    """Wrap already-dequantized weights so the return type is uniform.
-
-    Under ``act_order`` the codes live in a permuted column order, so re-deriving exact
-    integer codes in the original order would need the permuted scales carried alongside.
-    Since every consumer here uses ``dequantize()``, the reconstructed float weights are
-    re-encoded losslessly at the same bit-width instead — the effective-bits accounting
-    is unchanged and the values are exactly the ones GPTQ produced.
-    """
-    from nanoscale.quantize.rtn import quantize_tensor_rtn
-
-    q = quantize_tensor_rtn(dequantized, bits=bits, group_size=group, symmetric=symmetric)
-    q.original_shape = shape
-    return q
 
 
 class GPTQQuantizer:

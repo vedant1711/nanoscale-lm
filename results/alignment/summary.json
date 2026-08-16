@@ -1,5 +1,5 @@
 {
-  "git_sha": "c5739b2",
+  "git_sha": "7ba6387",
   "hardware": "mps:apple-silicon | macOS-15.6-arm64-arm-64bit",
   "checkpoint": "runs/nano/pretrain/final.pt",
   "sft": {
@@ -8,7 +8,7 @@
     "final_perplexity": 1.2819,
     "steps": 250,
     "supervised_tokens": 53711,
-    "wall_clock_s": 51.62
+    "wall_clock_s": 17.28
   },
   "preference": {
     "dpo": {
@@ -17,7 +17,7 @@
       "final_reward_margin": 7.88173,
       "final_reward_accuracy": 1.0,
       "steps": 150,
-      "wall_clock_s": 25.21,
+      "wall_clock_s": 11.83,
       "mean_chosen_len": 27.75,
       "mean_rejected_len": 28.5,
       "generated_len_before": 26.58,
@@ -30,7 +30,7 @@
       "final_reward_margin": 7.16238,
       "final_reward_accuracy": 1.0,
       "steps": 150,
-      "wall_clock_s": 35.05,
+      "wall_clock_s": 16.82,
       "mean_chosen_len": 27.75,
       "mean_rejected_len": 28.5,
       "generated_len_before": 26.58,
@@ -43,7 +43,7 @@
       "final_reward_margin": 16.19752,
       "final_reward_accuracy": 1.0,
       "steps": 150,
-      "wall_clock_s": 14.79,
+      "wall_clock_s": 9.24,
       "mean_chosen_len": 27.75,
       "mean_rejected_len": 28.5,
       "generated_len_before": 26.58,

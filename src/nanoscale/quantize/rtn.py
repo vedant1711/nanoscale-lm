@@ -55,6 +55,13 @@ class QuantizedTensor:
     group_size: int
     symmetric: bool
     original_shape: tuple[int, ...]
+    #: Column permutation applied before grouping, if any. GPTQ's activation ordering
+    #: quantizes columns by decreasing salience, so its codes and scales live in the
+    #: permuted layout; ``dequantize`` un-permutes at the end. Carrying the permutation
+    #: rather than re-encoding the reconstructed weights matters: re-encoding would run
+    #: a *second* rounding pass over values GPTQ had already placed, adding error on top
+    #: of the error it worked to minimise.
+    perm: Tensor | None = None
 
     def dequantize(self) -> Tensor:
         """Reconstruct the float weight matrix."""
@@ -143,13 +150,16 @@ def quantize_tensor_rtn(
 
 
 def dequantize(q: QuantizedTensor) -> Tensor:
-    """Invert :func:`quantize_tensor_rtn`."""
+    """Invert :func:`quantize_tensor_rtn`, undoing any column permutation."""
     out_features, in_features = q.original_shape
     n_groups = in_features // q.group_size
     codes = q.codes.float().reshape(out_features, n_groups, q.group_size)
     scales = q.scales.unsqueeze(-1)
     zeros = q.zeros.unsqueeze(-1)
-    return ((codes - zeros) * scales).reshape(out_features, in_features)
+    restored = ((codes - zeros) * scales).reshape(out_features, in_features)
+    if q.perm is not None:
+        restored = restored[:, torch.argsort(q.perm)]
+    return restored
 
 
 def quantize_rtn(

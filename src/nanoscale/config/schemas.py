@@ -501,6 +501,16 @@ class DistillConfig(BaseConfig):
     seq_len: PositiveInt = Field(256, description="Sequence length for off-policy batches.")
     batch_size: PositiveInt = Field(8, description="Sequences per micro-batch.")
     max_steps: PositiveInt = Field(200, description="Optimizer steps.")
+    warmup_steps: int = Field(
+        0,
+        ge=0,
+        description=(
+            "Plain-MLE warm-start steps before the configured objective takes over. "
+            "MiniLLM prescribes this: a randomly-initialised student generates noise, so "
+            "on-policy rollouts carry no usable signal until it can produce something. "
+            "Applied identically to every objective so comparisons stay controlled."
+        ),
+    )
     lr: float = Field(3e-4, gt=0.0, description="Student learning rate.")
     temperature: float = Field(2.0, gt=0.0, description="Hinton temperature tau (forward KL).")
     alpha_ce: UnitFloat = Field(
@@ -517,6 +527,17 @@ class DistillConfig(BaseConfig):
         ),
     )
     baseline_ema: UnitFloat = Field(0.9, description="EMA coefficient for the PG baseline.")
+    onpolicy_lr_scale: float = Field(
+        0.1,
+        gt=0.0,
+        le=1.0,
+        description=(
+            "Learning-rate multiplier applied during the on-policy phase of reverse-KL "
+            "distillation. A REINFORCE-style estimator is far higher-variance than a "
+            "supervised one, so it needs a smaller step at the same nominal LR; MiniLLM "
+            "uses a separate, much lower LR for this phase. Only affects 'reverse_kl'."
+        ),
+    )
     log_interval: PositiveInt = Field(10, description="Steps between log rows.")
     out_dir: str = Field("runs/distill", description="Run directory.")
     device: Literal["auto", "cpu", "cuda", "mps"] = Field("auto", description="Compute device.")

@@ -90,7 +90,12 @@ def main() -> int:
     sft_cfg = cfg.align.sft.merged(max_steps=args.sft_steps, device="cpu")
     sft_model = _fresh(base)
     sft_result = SFTTrainer(
-        sft_model, tok, sft_cfg, out_dir=args.runs / "sft", n_examples=3000
+        sft_model,
+        tok,
+        sft_cfg,
+        out_dir=args.runs / "sft",
+        n_examples=3000,
+        experiment_config=cfg,
     ).train()
 
     # --- preference optimization ---------------------------------------------
@@ -113,7 +118,9 @@ def main() -> int:
         )
         model = _fresh(sft_model)
         run_dir = args.runs / name.replace("+", "_")
-        trainer = PreferenceTrainer(model, tok, pref_cfg, out_dir=run_dir, n_pairs=1200)
+        trainer = PreferenceTrainer(
+            model, tok, pref_cfg, out_dir=run_dir, n_pairs=1200, experiment_config=cfg
+        )
         pref_results[name] = trainer.train()
         pref_models[name] = model
 

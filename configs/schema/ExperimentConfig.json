@@ -220,6 +220,13 @@
           "title": "Max Steps",
           "type": "integer"
         },
+        "warmup_steps": {
+          "default": 0,
+          "description": "Plain-MLE warm-start steps before the configured objective takes over. MiniLLM prescribes this: a randomly-initialised student generates noise, so on-policy rollouts carry no usable signal until it can produce something. Applied identically to every objective so comparisons stay controlled.",
+          "minimum": 0,
+          "title": "Warmup Steps",
+          "type": "integer"
+        },
         "lr": {
           "default": 0.0003,
           "description": "Student learning rate.",
@@ -275,6 +282,14 @@
           "maximum": 1.0,
           "minimum": 0.0,
           "title": "Baseline Ema",
+          "type": "number"
+        },
+        "onpolicy_lr_scale": {
+          "default": 0.1,
+          "description": "Learning-rate multiplier applied during the on-policy phase of reverse-KL distillation. A REINFORCE-style estimator is far higher-variance than a supervised one, so it needs a smaller step at the same nominal LR; MiniLLM uses a separate, much lower LR for this phase. Only affects 'reverse_kl'.",
+          "exclusiveMinimum": 0.0,
+          "maximum": 1.0,
+          "title": "Onpolicy Lr Scale",
           "type": "number"
         },
         "log_interval": {

@@ -178,6 +178,57 @@ Each entry corresponds to one phase of the build plan in `nanoscale_lm_spec.md`.
 - The synthetic "repetitive" rejection could reproduce the chosen response exactly for
   single-sentence answers, feeding DPO a pair labelled both preferred and dispreferred.
 
+### Phase 7 — Distillation
+
+**Added**
+
+- `nanoscale.distill.losses` — forward-KL (Hinton, with the τ² gradient-scale
+  correction), SeqKD, and MiniLLM-style on-policy reverse KL via a reward-to-go policy
+  gradient with a single-step regularisation term.
+- `nanoscale.distill.trainer` — a controlled comparison harness with an MLE warm-start
+  phase applied identically to every objective.
+- `scripts/distill_compare.py` and `results/distillation/`.
+
+**Findings** — reverse-KL reaches perplexity 2.50 vs forward-KL's 2.05 (worse) but a
+repetition rate of 0.0000 vs 0.0064 and SeqKD's 0.0372, and below the teacher's own
+0.0383. That is MiniLLM's qualitative result: mode-seeking students score worse on a
+coverage metric and degenerate less when generating.
+
+### Phase 8 — Quantization
+
+**Added**
+
+- `nanoscale.quantize` — RTN, GPTQ (Cholesky-based Hessian error compensation, lazy
+  block updates, activation ordering), AWQ-style scale search, and KV-cache
+  quantization with separate key/value bit-widths.
+- `scripts/quantize_frontier.py` and `results/quantization/`, plotting against
+  **effective** bits so the stored scales are counted.
+
+**Findings** — at 4 and 8 bits all methods tie with fp32 at this scale. At 2 bits GPTQ
+wins clearly (1.500 vs RTN's 1.541 and AWQ's 1.547), and does so while having the
+*highest* weight error — which is the method's whole thesis.
+
+### Phase 9 — Speculative decoding
+
+**Added**
+
+- `nanoscale.specdec` — the modified rejection rule as pure functions, draft–target
+  speculation with an exact cache invariant, and Medusa-style tree attention with
+  depth-derived position IDs.
+- `scripts/specdec_bench.py` and `results/speculative/`.
+
+**Findings** — with a distilled draft, 2.94 tokens per target forward pass at γ=6
+against 0.98 autoregressive, and it composes with GPTQ-4bit (2.91). Wall-clock is
+*worse* on a CPU at this scale, and the write-up explains why rather than omitting it.
+
+**Fixed**
+
+- GPTQ's `act_order` path re-quantized its own output to restore column order, adding a
+  second rounding pass on top of the error it had just minimised. It now carries the
+  permutation with the codes. This made GPTQ *worse* than RTN at 2 bits before the fix.
+- Medusa's packed tree used packing-order position IDs instead of depth-derived ones,
+  so RoPE placed sibling branches at the wrong distance from the prefix.
+
 **Notes**
 
 - The spec's headline parameter figures are approximate. The shapes from the spec's

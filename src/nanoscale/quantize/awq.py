@@ -95,7 +95,9 @@ def search_awq_scale(
         bits: Weight bit-width.
         group_size: Weights per scale group along the input dimension.
         symmetric: Symmetric (zero-point-free) quantization.
-        grid: Number of ``α`` values searched in ``[0, 1]``.
+        grid: Number of ``α`` values searched in ``[0, 1]``. ``0`` evaluates only
+            ``α = 0``, which is exactly plain RTN and is what the tests use as the
+            control arm.
 
     Returns:
         ``(best_alpha, best_scales, best_error)`` where ``best_error`` is the relative
@@ -112,7 +114,7 @@ def search_awq_scale(
     best_error = float("inf")
 
     for i in range(grid + 1):
-        alpha = i / grid
+        alpha = i / grid if grid > 0 else 0.0
         scales = salience.pow(alpha).clamp(1e-4, 1e4)
         # Normalising keeps the scaled weights in the same overall range across alphas,
         # so the comparison is about *relative* channel emphasis, not global magnitude.

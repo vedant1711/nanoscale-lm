@@ -1,0 +1,143 @@
+{
+  "git_sha": "7ba6387",
+  "hardware": "mps:apple-silicon | macOS-15.6-arm64-arm-64bit",
+  "checkpoint": "runs/nano/pretrain/final.pt",
+  "group_size": 64,
+  "baseline_loss": 0.38964,
+  "params": 4952064,
+  "rows": [
+    {
+      "method": "fp32",
+      "bits": 32,
+      "effective_bits": 32.0,
+      "loss": 0.38964,
+      "perplexity": 1.4764,
+      "mean_layer_error": 0.0
+    },
+    {
+      "method": "rtn",
+      "bits": 2,
+      "effective_bits": 2.5,
+      "loss": 0.43213,
+      "perplexity": 1.5405,
+      "mean_layer_error": 0.45904
+    },
+    {
+      "method": "rtn",
+      "bits": 3,
+      "effective_bits": 3.5,
+      "loss": 0.3909,
+      "perplexity": 1.4783,
+      "mean_layer_error": 0.19624
+    },
+    {
+      "method": "rtn",
+      "bits": 4,
+      "effective_bits": 4.5,
+      "loss": 0.38981,
+      "perplexity": 1.4767,
+      "mean_layer_error": 0.09168
+    },
+    {
+      "method": "rtn",
+      "bits": 8,
+      "effective_bits": 8.5,
+      "loss": 0.38964,
+      "perplexity": 1.4764,
+      "mean_layer_error": 0.00539
+    },
+    {
+      "method": "gptq",
+      "bits": 2,
+      "effective_bits": 2.5,
+      "loss": 0.40526,
+      "perplexity": 1.4997,
+      "mean_layer_error": 0.7141
+    },
+    {
+      "method": "gptq",
+      "bits": 3,
+      "effective_bits": 3.5,
+      "loss": 0.38963,
+      "perplexity": 1.4764,
+      "mean_layer_error": 0.29188
+    },
+    {
+      "method": "gptq",
+      "bits": 4,
+      "effective_bits": 4.5,
+      "loss": 0.38976,
+      "perplexity": 1.4766,
+      "mean_layer_error": 0.13512
+    },
+    {
+      "method": "gptq",
+      "bits": 8,
+      "effective_bits": 8.5,
+      "loss": 0.38964,
+      "perplexity": 1.4764,
+      "mean_layer_error": 0.00794
+    },
+    {
+      "method": "awq",
+      "bits": 2,
+      "effective_bits": 2.5,
+      "loss": 0.43621,
+      "perplexity": 1.5468,
+      "mean_layer_error": 0.36953
+    },
+    {
+      "method": "awq",
+      "bits": 3,
+      "effective_bits": 3.5,
+      "loss": 0.39081,
+      "perplexity": 1.4782,
+      "mean_layer_error": 0.1579
+    },
+    {
+      "method": "awq",
+      "bits": 4,
+      "effective_bits": 4.5,
+      "loss": 0.3897,
+      "perplexity": 1.4765,
+      "mean_layer_error": 0.07366
+    },
+    {
+      "method": "awq",
+      "bits": 8,
+      "effective_bits": 8.5,
+      "loss": 0.38962,
+      "perplexity": 1.4764,
+      "mean_layer_error": 0.00431
+    }
+  ],
+  "kv_rows": [
+    {
+      "seq_len": 4096.0,
+      "baseline_mb": 12.0,
+      "quantized_mb": 2.25,
+      "compression": 5.333333333333333,
+      "effective_bits_per_element": 3.0,
+      "logit_error": 0.09117106348276138,
+      "bits": 2.0
+    },
+    {
+      "seq_len": 4096.0,
+      "baseline_mb": 12.0,
+      "quantized_mb": 3.75,
+      "compression": 3.2,
+      "effective_bits_per_element": 5.0,
+      "logit_error": 0.015196992550045252,
+      "bits": 4.0
+    },
+    {
+      "seq_len": 4096.0,
+      "baseline_mb": 12.0,
+      "quantized_mb": 6.75,
+      "compression": 1.7777777777777777,
+      "effective_bits_per_element": 9.0,
+      "logit_error": 0.0008777596522122622,
+      "bits": 8.0
+    }
+  ]
+}

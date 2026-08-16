@@ -47,7 +47,7 @@ from pathlib import Path
 import torch
 from torch import Tensor
 
-from nanoscale.config import GRPOConfig
+from nanoscale.config import ExperimentConfig, GRPOConfig
 from nanoscale.model import NanoScaleLM
 from nanoscale.optim import AdamW
 from nanoscale.tokenizer import BPETokenizer, Message, render_prompt
@@ -169,6 +169,7 @@ class GRPOTrainer:
         config: GRPOConfig,
         *,
         out_dir: str | Path | None = None,
+        experiment_config: ExperimentConfig | None = None,
         tasks: list[ArithmeticTask] | None = None,
     ) -> None:
         """Prepare the policy, the frozen reference and the task pool."""
@@ -183,6 +184,7 @@ class GRPOTrainer:
 
         self.tasks = tasks or make_arithmetic_tasks(seed=config.seed)
         self.eval_tasks = make_arithmetic_tasks(seed=config.seed + 1, n=64)
+        self.experiment_config = experiment_config
         self.out_dir = Path(out_dir or config.out_dir)
         self.out_dir.mkdir(parents=True, exist_ok=True)
         self.optimizer = AdamW(
@@ -322,6 +324,7 @@ class GRPOTrainer:
             self.out_dir / "final.pt",
             model=self.model,
             state=TrainState(step=cfg.max_steps),
+            config=self.experiment_config,
             extra={"phase": "phase6-grpo"},
         )
         result = GRPOResult(
