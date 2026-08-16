@@ -81,6 +81,29 @@ Each entry corresponds to one phase of the build plan in `nanoscale_lm_spec.md`.
   hand-computed RMSNorm/SwiGLU values; parameter counts against the tier table;
   `ln(vocab)` initial loss; plus hypothesis properties over the whole config space.
 
+### Phase 3 — Optimizer
+
+**Added**
+
+- `nanoscale.optim.adamw` — decoupled-weight-decay Adam from scratch, matching
+  `torch.optim.AdamW` to 1e-12 including the exact `eps`-outside-the-sqrt placement.
+- `nanoscale.optim.muon` — Muon: momentum orthogonalized by a five-step quintic
+  Newton–Schulz iteration, with both the original shape-aware update scaling and the
+  RMS-matching (Moonlight) alternative.
+- `nanoscale.optim.cautious` — cautious weight decay: decay only where it agrees with
+  the optimizer's own update direction, plus a `wd_scale` hook for a decaying λ.
+- `nanoscale.optim.router` — the documented Muon/AdamW parameter split and a
+  `CompositeOptimizer` that presents both as one interface to the trainer.
+- 57 unit tests and 7 hypothesis properties covering all four Phase-3 acceptance
+  criteria.
+
+**Notes**
+
+- Two honest negative results are recorded as tests rather than omitted: AdamW beats
+  Muon on a convex single-matrix problem (Muon's win needs depth and stochasticity),
+  and long-horizon AdamW/torch divergence at aggressive hyperparameters is chaos
+  amplification, not a formula error — pinned by measuring the growth curve.
+
 **Notes**
 
 - The spec's headline parameter figures are approximate. The shapes from the spec's
