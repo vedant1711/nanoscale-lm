@@ -1,0 +1,62 @@
+{
+  "name": "architecture",
+  "question": "Do the modded-nanoGPT speedrun's architecture choices \u2014 QK-norm, zero-init output projections, SwiGLU \u2014 measurably help at this scale?",
+  "tier": "nano",
+  "target_loss": 0.8,
+  "git_sha": "c5739b2",
+  "hardware": "mps:apple-silicon | macOS-15.6-arm64-arm-64bit",
+  "base_overrides": [
+    "train.device=cpu",
+    "train.max_steps=400",
+    "train.token_budget=null",
+    "train.log_interval=5",
+    "train.eval_interval=50",
+    "train.ckpt_interval=100000"
+  ],
+  "rows": [
+    {
+      "variant": "default (QK-norm, zero-init, SwiGLU)",
+      "final_train_loss": 0.3896,
+      "final_val_loss": 0.3896,
+      "val_ppl": 1.476,
+      "steps_to_target": 50,
+      "seconds_to_target": 22.86,
+      "wall_clock_s": 187.79,
+      "tokens_per_s": 4362.3,
+      "run_dir": "runs/ablations/architecture/default"
+    },
+    {
+      "variant": "\u2212 QK-norm",
+      "final_train_loss": 0.3898,
+      "final_val_loss": 0.3893,
+      "val_ppl": 1.476,
+      "steps_to_target": 75,
+      "seconds_to_target": 33.05,
+      "wall_clock_s": 192.01,
+      "tokens_per_s": 4266.5,
+      "run_dir": "runs/ablations/architecture/no_qk_norm"
+    },
+    {
+      "variant": "\u2212 zero-init output",
+      "final_train_loss": 0.3852,
+      "final_val_loss": 0.3842,
+      "val_ppl": 1.468,
+      "steps_to_target": 45,
+      "seconds_to_target": 25.14,
+      "wall_clock_s": 216.6,
+      "tokens_per_s": 3782.2,
+      "run_dir": "runs/ablations/architecture/no_zero_init"
+    },
+    {
+      "variant": "ReLU\u00b2 instead of SwiGLU",
+      "final_train_loss": 0.3872,
+      "final_val_loss": 0.3862,
+      "val_ppl": 1.471,
+      "steps_to_target": 55,
+      "seconds_to_target": 25.93,
+      "wall_clock_s": 195.49,
+      "tokens_per_s": 4190.6,
+      "run_dir": "runs/ablations/architecture/relu2"
+    }
+  ]
+}

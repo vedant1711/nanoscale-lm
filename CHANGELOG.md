@@ -128,6 +128,56 @@ Each entry corresponds to one phase of the build plan in `nanoscale_lm_spec.md`.
   correct offset, so a resumed run silently re-trained on data it had already seen and
   diverged from an uninterrupted one. Data position is now derived from the step count.
 
+### Phase 5 — Ablations
+
+**Added**
+
+- `nanoscale.bench.ablation` — a controlled-A/B harness where every arm is one base
+  config plus named overrides, sharing seed, data order, schedule and step budget, and
+  where the reporting helper refuses to name a winner on a gap below single-seed noise.
+- `scripts/ablate.py` with two suites (optimizer, architecture), a `--replay` mode that
+  re-renders findings from the committed JSON without retraining, and committed results
+  in `results/ablations/`.
+
+**Findings** (nano tier, single seed — directional only)
+
+- **Muon + AdamW reaches the target loss in 50 steps vs AdamW's 105 (2.1×)** and ends
+  3.5% lower. This reproduces the spec's E3 claim qualitatively.
+- QK-norm, zero-init output projections and SwiGLU-vs-ReLU² all show **no measurable
+  difference in final loss** at this scale. Removing QK-norm does cost 1.5× more steps
+  to reach the target, which the write-up reports rather than rounding to "no effect".
+
+### Phase 6 — Alignment
+
+**Added**
+
+- `nanoscale.align.sft` — completion-masked SFT; prompt tokens are verified to receive
+  exactly zero gradient.
+- `nanoscale.align.losses` — DPO (with cDPO label smoothing) and SimPO, both matched
+  against hand-computed values on tiny fixtures.
+- `nanoscale.align.preference` — the trainer, with a properly frozen reference policy,
+  the length-exploitation diagnostic, and an RPO-style auxiliary NLL term.
+- `nanoscale.align.grpo` — the optional RLVR track: group-relative advantages, a
+  PPO-clipped surrogate, a k3 KL penalty, and a programmatic arithmetic verifier.
+- `nanoscale.eval.preference_eval` — a stated, length-insensitive programmatic judge
+  and a paired head-to-head harness.
+- `nanoscale.data.instruct` — instruction and preference data whose chosen/rejected
+  lengths are matched by construction, so the length diagnostic is interpretable.
+- `nanoscale align sft|preference|grpo` CLI and `scripts/align_pipeline.py`.
+
+**Findings**
+
+- All three preference arms reach 100% preference accuracy, but plain DPO's mean
+  per-token log-probability of the *chosen* response falls (−0.045) while the margin
+  rises: the objective satisfies itself by pushing both sides down. Adding the auxiliary
+  NLL anchor flips that to +0.010 — and DPO+NLL is the only arm that **wins** the
+  scripted head-to-head against the SFT model (3–0–37 vs DPO's 0–7–33).
+
+**Fixed**
+
+- The synthetic "repetitive" rejection could reproduce the chosen response exactly for
+  single-sentence answers, feeding DPO a pair labelled both preferred and dispreferred.
+
 **Notes**
 
 - The spec's headline parameter figures are approximate. The shapes from the spec's

@@ -14,6 +14,7 @@ from typing import Annotated
 import typer
 
 from nanoscale import __version__
+from nanoscale.align.cli import align_app
 from nanoscale.config import (
     TIERS,
     export_json_schemas,
@@ -37,6 +38,7 @@ config_app = typer.Typer(name="config", help="Inspect, resolve and export config
 app.add_typer(config_app)
 app.add_typer(tokenizer_app)
 app.add_typer(train_app)
+app.add_typer(align_app)
 
 log = get_logger("nanoscale.cli")
 

@@ -1,0 +1,40 @@
+{
+  "name": "optimizer",
+  "question": "Does routing hidden matmul weights to Muon beat sending everything to AdamW, at equal step budget and seed?",
+  "tier": "nano",
+  "target_loss": 0.8,
+  "git_sha": "c5739b2",
+  "hardware": "mps:apple-silicon | macOS-15.6-arm64-arm-64bit",
+  "base_overrides": [
+    "train.device=cpu",
+    "train.max_steps=400",
+    "train.token_budget=null",
+    "train.log_interval=5",
+    "train.eval_interval=50",
+    "train.ckpt_interval=100000"
+  ],
+  "rows": [
+    {
+      "variant": "AdamW only",
+      "final_train_loss": 0.4066,
+      "final_val_loss": 0.4039,
+      "val_ppl": 1.498,
+      "steps_to_target": 105,
+      "seconds_to_target": 33.51,
+      "wall_clock_s": 130.3,
+      "tokens_per_s": 6286.8,
+      "run_dir": "runs/ablations/optimizer/adamw"
+    },
+    {
+      "variant": "Muon + AdamW",
+      "final_train_loss": 0.3896,
+      "final_val_loss": 0.3896,
+      "val_ppl": 1.476,
+      "steps_to_target": 50,
+      "seconds_to_target": 21.09,
+      "wall_clock_s": 189.14,
+      "tokens_per_s": 4331.1,
+      "run_dir": "runs/ablations/optimizer/muon"
+    }
+  ]
+}

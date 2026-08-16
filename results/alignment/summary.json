@@ -1,0 +1,95 @@
+{
+  "git_sha": "c5739b2",
+  "hardware": "mps:apple-silicon | macOS-15.6-arm64-arm-64bit",
+  "checkpoint": "runs/nano/pretrain/final.pt",
+  "sft": {
+    "final_loss": 0.24831,
+    "best_val_loss": 0.22865,
+    "final_perplexity": 1.2819,
+    "steps": 250,
+    "supervised_tokens": 53711,
+    "wall_clock_s": 51.62
+  },
+  "preference": {
+    "dpo": {
+      "method": "dpo",
+      "final_loss": 0.00221,
+      "final_reward_margin": 7.88173,
+      "final_reward_accuracy": 1.0,
+      "steps": 150,
+      "wall_clock_s": 25.21,
+      "mean_chosen_len": 27.75,
+      "mean_rejected_len": 28.5,
+      "generated_len_before": 26.58,
+      "generated_len_after": 24.29,
+      "generated_len_growth": -2.29
+    },
+    "dpo+nll": {
+      "method": "dpo",
+      "final_loss": 0.22428,
+      "final_reward_margin": 7.16238,
+      "final_reward_accuracy": 1.0,
+      "steps": 150,
+      "wall_clock_s": 35.05,
+      "mean_chosen_len": 27.75,
+      "mean_rejected_len": 28.5,
+      "generated_len_before": 26.58,
+      "generated_len_after": 27.21,
+      "generated_len_growth": 0.62
+    },
+    "simpo": {
+      "method": "simpo",
+      "final_loss": 1e-05,
+      "final_reward_margin": 16.19752,
+      "final_reward_accuracy": 1.0,
+      "steps": 150,
+      "wall_clock_s": 14.79,
+      "mean_chosen_len": 27.75,
+      "mean_rejected_len": 28.5,
+      "generated_len_before": 26.58,
+      "generated_len_after": 26.5,
+      "generated_len_growth": -0.08
+    }
+  },
+  "head_to_head": {
+    "dpo": {
+      "label_a": "sft",
+      "label_b": "dpo",
+      "n_prompts": 40,
+      "wins_a": 7,
+      "wins_b": 0,
+      "ties": 33,
+      "win_rate_b": 0.0,
+      "mean_score_a": 2.6517,
+      "mean_score_b": 2.5849,
+      "mean_len_a": 27.65,
+      "mean_len_b": 24.45
+    },
+    "dpo+nll": {
+      "label_a": "sft",
+      "label_b": "dpo+nll",
+      "n_prompts": 40,
+      "wins_a": 0,
+      "wins_b": 3,
+      "ties": 37,
+      "win_rate_b": 1.0,
+      "mean_score_a": 2.6517,
+      "mean_score_b": 2.7001,
+      "mean_len_a": 27.65,
+      "mean_len_b": 27.2
+    },
+    "simpo": {
+      "label_a": "sft",
+      "label_b": "simpo",
+      "n_prompts": 40,
+      "wins_a": 4,
+      "wins_b": 0,
+      "ties": 36,
+      "win_rate_b": 0.0,
+      "mean_score_a": 2.6517,
+      "mean_score_b": 2.5972,
+      "mean_len_a": 27.65,
+      "mean_len_b": 26.07
+    }
+  }
+}

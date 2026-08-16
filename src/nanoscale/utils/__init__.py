@@ -11,11 +11,13 @@ from nanoscale.utils.device import (
 from nanoscale.utils.logging import MetricLogger, get_logger, setup_logging
 from nanoscale.utils.manifest import Manifest, git_sha, write_manifest
 from nanoscale.utils.seed import derive_seed, seed_all, seed_worker, temporary_seed
+from nanoscale.utils.torch_compat import backward
 
 __all__ = [
     "Manifest",
     "MetricLogger",
     "autocast_context",
+    "backward",
     "derive_seed",
     "get_logger",
     "git_sha",

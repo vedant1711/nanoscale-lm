@@ -118,7 +118,8 @@ def write_manifest(
     seed: int,
     config: ConfigLike | Mapping[str, Any],
     token_budget: int | None = None,
-    **metrics: float,
+    metrics: Mapping[str, float] | None = None,
+    **extra_metrics: float,
 ) -> Manifest:
     """Build, finish and write a manifest in one call.
 
@@ -129,7 +130,10 @@ def write_manifest(
         seed: The run's global seed.
         config: A NanoScale config object or a plain mapping.
         token_budget: Token budget for the run, if applicable.
-        **metrics: Final metrics recorded alongside the manifest.
+        metrics: Final metrics recorded alongside the manifest. Passing them as a
+            mapping rather than only as keyword arguments avoids a metric named
+            ``config`` or ``seed`` colliding with this function's own parameters.
+        **extra_metrics: Additional metrics, for call sites where keywords read better.
     """
     if isinstance(config, Mapping):
         cfg_dump = dict(config)
@@ -145,6 +149,6 @@ def write_manifest(
         config=cfg_dump,
         token_budget=token_budget,
     )
-    manifest.finish(**metrics)
+    manifest.finish(**{**(metrics or {}), **extra_metrics})
     manifest.write(out_dir)
     return manifest

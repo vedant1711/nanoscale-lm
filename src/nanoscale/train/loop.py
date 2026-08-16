@@ -393,7 +393,7 @@ class Trainer:
             seed=self.config.train.seed,
             config=self.config,
             token_budget=self.config.train.token_budget,
-            **{k: float(v) for k, v in summary.items() if isinstance(v, (int, float))},
+            metrics={k: float(v) for k, v in summary.items() if isinstance(v, int | float)},
         )
         log.info(
             "done: %d steps, %s tokens, val loss %.4f (ppl %.2f), %.1f tok/s",

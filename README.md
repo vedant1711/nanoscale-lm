@@ -23,8 +23,8 @@ Under construction, phase by phase, against `nanoscale_lm_spec.md`.
 | 2 | Model: GQA + RoPE + QK-norm + RMSNorm + SwiGLU + KV cache | ✅ |
 | 3 | Optimizer: AdamW + Muon (Newton–Schulz) | ✅ |
 | 4 | Pretraining loop | ✅ |
-| 5 | Optimizer & architecture ablations | ⬜ |
-| 6 | Alignment: SFT, DPO, SimPO, (optional) GRPO-RLVR | ⬜ |
+| 5 | Optimizer & architecture ablations | ✅ |
+| 6 | Alignment: SFT, DPO, SimPO, (optional) GRPO-RLVR | ✅ |
 | 7 | Distillation: forward-KL, SeqKD, reverse-KL on-policy | ⬜ |
 | 8 | Quantization: RTN, GPTQ, AWQ, KV-cache quant | ⬜ |
 | 9 | Speculative decoding: draft–target, Medusa | ⬜ |
