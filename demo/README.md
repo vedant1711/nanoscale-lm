@@ -44,6 +44,6 @@ that the identical code path scales to a real corpus on a free Colab GPU.
 
 ## Source
 
-Everything is in the [NanoScale-LM repository](https://github.com/nanoscale-lm/nanoscale-lm),
+Everything is in the [NanoScale-LM repository](https://github.com/vedant1711/nanoscale-lm),
 Apache-2.0. Every number shown here is produced by a committed script and stamped with
 the git SHA that produced it.

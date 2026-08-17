@@ -2,7 +2,7 @@ site_name: NanoScale-LM
 site_description: >-
   A small language model built from scratch, and the full efficiency stack that makes it
   cheap to serve.
-repo_url: https://github.com/nanoscale-lm/nanoscale-lm
+repo_url: https://github.com/vedant1711/nanoscale-lm
 edit_uri: ""
 
 theme:

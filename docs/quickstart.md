@@ -5,7 +5,7 @@ Three paths, in increasing order of commitment.
 ## 1. Run it locally (10 minutes, no GPU)
 
 ```bash
-git clone https://github.com/nanoscale-lm/nanoscale-lm
+git clone https://github.com/vedant1711/nanoscale-lm
 cd nanoscale-lm
 make install          # uv venv + editable install with dev extras
 make smoke            # tokenizer -> pretrain -> SFT -> DPO -> quantize -> speculate

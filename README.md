@@ -4,18 +4,19 @@
 
 **I built a language model from scratch and then made it deployable on hardware anyone can afford.**
 
-[![CI](https://github.com/nanoscale-lm/nanoscale-lm/actions/workflows/ci.yml/badge.svg)](https://github.com/nanoscale-lm/nanoscale-lm/actions/workflows/ci.yml)
-[![docs](https://github.com/nanoscale-lm/nanoscale-lm/actions/workflows/pages.yml/badge.svg)](https://nanoscale-lm.github.io/nanoscale-lm/)
+[![CI](https://github.com/vedant1711/nanoscale-lm/actions/workflows/ci.yml/badge.svg)](https://github.com/vedant1711/nanoscale-lm/actions/workflows/ci.yml)
+[![docs](https://github.com/vedant1711/nanoscale-lm/actions/workflows/pages.yml/badge.svg)](https://vedant1711.github.io/nanoscale-lm/)
 [![python](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)](pyproject.toml)
 [![mypy](https://img.shields.io/badge/mypy-strict-2a6db2)](pyproject.toml)
 [![ruff](https://img.shields.io/badge/lint-ruff-d7ff64)](pyproject.toml)
 [![tests](https://img.shields.io/badge/tests-563-brightgreen)](tests/)
 [![license](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
 
-📊 [Results & Methodology](https://nanoscale-lm.github.io/nanoscale-lm/) ·
-▶ [Open in Colab](notebooks/) ·
-▶ [Live Demo](demo/) ·
-🤗 [Model Weights](#checkpoints)
+📖 **[Read the full explainer](https://claude.ai/code/artifact/edb6018c-1c9b-42da-a750-7e4330f7c0ed)** — every algorithm, diagram, decision and measurement in one page ·
+📊 [Docs site](https://vedant1711.github.io/nanoscale-lm/) ·
+▶ [Notebooks](notebooks/) ·
+🎛 [Demo](demo/) ·
+💾 [Weights](artifacts/models/)
 
 </div>
 
@@ -31,7 +32,7 @@ GPTQ's Hessian error compensation, the speculative accept/reject rule. No high-l
 trainer library appears anywhere in `src/nanoscale/`.
 
 ```bash
-git clone https://github.com/nanoscale-lm/nanoscale-lm && cd nanoscale-lm
+git clone https://github.com/vedant1711/nanoscale-lm && cd nanoscale-lm
 make install
 make smoke     # tokenizer -> pretrain -> SFT -> DPO -> quantize -> speculate, 45s on CPU
 ```
@@ -198,11 +199,16 @@ Reproducibility here is a feature with tests, not a paragraph in a README.
 
 ### Checkpoints
 
-No weights are published to a model hub. Every checkpoint this project reports is
-**regenerable from the committed code and configs** — `make train-nano` reproduces the
-base model in 95 seconds, and the manifests under `runs/` record the git SHA, config hash
-and seed that produced each one. The `micro` and `small` tiers ship as recipes rather than
-as downloads.
+The `nano` models are committed under [`artifacts/models/`](artifacts/models/) — base, SFT,
+aligned, and the 279k-parameter distilled draft, stripped to weights plus their embedded
+config by `scripts/export_models.py`. That is 58 MB, small enough to live in git, and it is
+what lets the demo and the notebooks run from a fresh clone with no model hub.
+
+They are **derived artifacts, not sources of truth**: `results/` holds every reported
+number, and every checkpoint is regenerable — `make train-nano` reproduces the base model in
+95 seconds, and each manifest records the git SHA, config hash and seed behind it. The
+`micro` and `small` tiers ship as recipes; `scripts/fetch_tinystories.py` plus
+`configs/micro_tinystories.yaml` reproduces the natural-language run.
 
 ## Development
 
