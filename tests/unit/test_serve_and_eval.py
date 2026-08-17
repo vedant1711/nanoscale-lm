@@ -78,7 +78,15 @@ def test_perplexity_matches_a_hand_computed_value() -> None:
     assert result.perplexity == pytest.approx(vocab, rel=1e-6)
     assert result.nll == pytest.approx(math.log(vocab), rel=1e-6)
     assert result.n_tokens == 10
-    assert result.nll_stderr == pytest.approx(0.0, abs=1e-9)
+
+    # Every token here has an identical NLL, so the spread across tokens is zero and the
+    # standard error must be too. The tolerance is 1e-6 rather than 1e-9 because this is a
+    # *standard deviation of near-identical floats*: the per-token NLLs agree only to
+    # float32's ~1e-7, and log_softmax reduces in a different order on different BLAS
+    # backends, so the residual spread is platform-dependent. It was exactly 0.0 on the
+    # development machine and 7.9e-8 on the Linux CI runner. Demanding 1e-9 was asserting
+    # that two platforms round identically, which is not what this test is about.
+    assert result.nll_stderr == pytest.approx(0.0, abs=1e-6)
 
 
 def test_perplexity_is_token_weighted_not_batch_weighted(model: NanoScaleLM) -> None:
