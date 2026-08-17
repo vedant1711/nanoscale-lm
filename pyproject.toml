@@ -48,14 +48,18 @@ dev = [
 # Optional extras. None of these are needed for the `nano` CPU path, which is
 # what CI and `make smoke` exercise.
 data = ["datasets>=2.19", "huggingface-hub>=0.23"]
-compare = ["tiktoken>=0.7", "bitsandbytes>=0.43"]
+# External comparison points only -- never imported by `src/nanoscale/`.
+# `bitsandbytes` is deliberately not listed: it has no working macOS-ARM wheel, and making
+# the whole extra uninstallable for one optional reference number is a bad trade. Install
+# it separately on Linux/CUDA if you want the INT8 row.
+compare = ["tiktoken>=0.7", "transformers>=4.40"]
 docs = ["mkdocs-material>=9.5", "mkdocs>=1.6"]
 demo = ["gradio>=4.36"]
 
 [project.urls]
-Homepage = "https://github.com/nanoscale-lm/nanoscale-lm"
-Documentation = "https://nanoscale-lm.github.io/nanoscale-lm/"
-Repository = "https://github.com/nanoscale-lm/nanoscale-lm"
+Homepage = "https://github.com/vedant1711/nanoscale-lm"
+Documentation = "https://vedant1711.github.io/nanoscale-lm/"
+Repository = "https://github.com/vedant1711/nanoscale-lm"
 
 [project.scripts]
 nanoscale = "nanoscale.cli:app"
@@ -101,7 +105,10 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["D100", "D101", "D102", "D103", "D104", "ANN401"]
-"scripts/**" = ["D103"]
+# E402: several scripts must extend sys.path before importing `nanoscale`, so that they
+# run from a plain checkout without an editable install. That is a deliberate ordering,
+# not an oversight.
+"scripts/**" = ["D103", "E402"]
 "demo/**" = ["D103"]
 
 [tool.ruff.lint.pydocstyle]

@@ -2,6 +2,7 @@
   "nano-base": {
     "description": "nano tier, pretrained on the toy corpus",
     "source": "runs/nano/pretrain/final.pt",
+    "committed": true,
     "params": 4952064,
     "bytes": 19845034,
     "source_bytes": 41796699,
@@ -11,6 +12,7 @@
   "nano-sft": {
     "description": "nano tier after completion-masked SFT",
     "source": "runs/nano/sft/final.pt",
+    "committed": true,
     "params": 4952064,
     "bytes": 19838367,
     "source_bytes": 19846649,
@@ -20,6 +22,7 @@
   "nano-aligned": {
     "description": "nano tier after SFT then DPO with the RPO-style NLL anchor",
     "source": "runs/nano/dpo_nll/final.pt",
+    "committed": true,
     "params": 4952064,
     "bytes": 19838667,
     "source_bytes": 19846649,
@@ -29,10 +32,21 @@
   "nano-draft": {
     "description": "279k-parameter student from on-policy reverse-KL distillation; the speculative draft",
     "source": "runs/nano/distill/reverse_kl/final.pt",
+    "committed": true,
     "params": 279168,
     "bytes": 1134709,
     "source_bytes": 1145310,
     "step": 600,
     "sha256_16": "67cc41976c558a77"
+  },
+  "micro-tinystories": {
+    "description": "micro tier, pretrained on TinyStories -- the natural-language model",
+    "source": "runs/micro/tinystories/final.pt",
+    "committed": false,
+    "params": 40379904,
+    "bytes": 161592220,
+    "source_bytes": 390293899,
+    "step": 5208,
+    "sha256_16": "9ca7b6c767a5ce97"
   }
 }

@@ -30,6 +30,10 @@ checkpoints/
 # clone all work without a model hub or a retraining step. They are derived artifacts:
 # `results/` remains the source of truth for every reported number.
 !artifacts/models/*.pt
+# ...except exports over GitHub's file-size limit. The 40M `micro` model is 154 MB as
+# fp32 weights, so it belongs on a model hub rather than in git. `scripts/export_models.py`
+# labels each export with whether it is committable.
+artifacts/models/micro-*.pt
 wandb/
 site/
 

@@ -1,0 +1,85 @@
+{
+  "git_sha": "9e3a721",
+  "hardware": "mps:apple-silicon | macOS-15.6-arm64-arm-64bit",
+  "checkpoint": "runs/micro/tinystories/final.pt",
+  "chunks": 64,
+  "chunk_chars": 1800,
+  "rows": [
+    {
+      "name": "nanoscale-micro-tinystories",
+      "params": 40379904,
+      "vocab_size": 16384,
+      "step": 5208,
+      "train_tokens": 31997952,
+      "bits_per_byte": 0.54846,
+      "bits_per_byte_stderr": 0.00441,
+      "bytes_per_token": 4.0899,
+      "token_perplexity": 4.7342,
+      "n_bytes": 115179,
+      "n_tokens": 28162,
+      "corpus": "tinystories-valid"
+    },
+    {
+      "name": "gpt2",
+      "params": 124439808,
+      "vocab_size": 50257,
+      "bits_per_byte": 0.9384554634063511,
+      "bits_per_byte_stderr": 0.005340352632379356,
+      "bytes_per_token": 4.089437244807385,
+      "token_perplexity": 14.298131538272418,
+      "n_bytes": 115179,
+      "n_tokens": 28165,
+      "corpus": "tinystories-valid"
+    },
+    {
+      "name": "distilgpt2",
+      "params": 81912576,
+      "vocab_size": 50257,
+      "bits_per_byte": 1.0795498919657223,
+      "bits_per_byte_stderr": 0.0051246945603057505,
+      "bytes_per_token": 4.089437244807385,
+      "token_perplexity": 21.32910517091436,
+      "n_bytes": 115179,
+      "n_tokens": 28165,
+      "corpus": "tinystories-valid"
+    },
+    {
+      "name": "nanoscale-micro-tinystories",
+      "params": 40379904,
+      "vocab_size": 16384,
+      "step": 5208,
+      "train_tokens": 31997952,
+      "bits_per_byte": 3.28606,
+      "bits_per_byte_stderr": 0.10456,
+      "bytes_per_token": 3.3125,
+      "token_perplexity": 1891.1688,
+      "n_bytes": 583,
+      "n_tokens": 176,
+      "corpus": "out-of-domain"
+    },
+    {
+      "name": "gpt2",
+      "params": 124439808,
+      "vocab_size": 50257,
+      "bits_per_byte": 0.8318263339575611,
+      "bits_per_byte_stderr": 0.07802520732618945,
+      "bytes_per_token": 4.739837398373984,
+      "token_perplexity": 15.377206839246174,
+      "n_bytes": 583,
+      "n_tokens": 123,
+      "corpus": "out-of-domain"
+    },
+    {
+      "name": "distilgpt2",
+      "params": 81912576,
+      "vocab_size": 50257,
+      "bits_per_byte": 0.9593458516690696,
+      "bits_per_byte_stderr": 0.08547295525607179,
+      "bytes_per_token": 4.739837398373984,
+      "token_perplexity": 23.379032874530814,
+      "n_bytes": 583,
+      "n_tokens": 123,
+      "corpus": "out-of-domain"
+    }
+  ]
+}

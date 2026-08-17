@@ -1,0 +1,157 @@
+{
+  "name": "micro-tinystories",
+  "git_sha": "9e3a721",
+  "hardware": "mps:apple-silicon | macOS-15.6-arm64-arm-64bit",
+  "checkpoint": "runs/micro/tinystories/final.pt",
+  "params": 40379904,
+  "non_embedding_params": 23602688,
+  "vocab_size": 16384,
+  "step": 5208,
+  "train_tokens": 31997952,
+  "chinchilla_fraction": 0.03962,
+  "likelihood": {
+    "nll": 1.527925,
+    "nll_stderr": 0.007904,
+    "perplexity": 4.6086,
+    "perplexity_low": 4.5723,
+    "perplexity_high": 4.6452,
+    "n_tokens": 65536,
+    "bits_per_byte": 0.53814,
+    "bits_per_byte_stderr": 0.00278,
+    "bytes_per_token": 4.0962,
+    "token_perplexity": 4.6086,
+    "n_bytes": 268450
+  },
+  "calibration": {
+    "ece": 0.00741,
+    "mce": 0.01614,
+    "top1_accuracy": 0.61719,
+    "mean_confidence": 0.62092,
+    "overconfidence": 0.00373,
+    "n_predictions": 65536
+  },
+  "minimal_pairs": {
+    "overall_macro_accuracy": 0.7911,
+    "n_items": 856,
+    "n_phenomena": 9,
+    "n_above_chance": 7,
+    "chance": 0.5,
+    "phenomena": [
+      {
+        "phenomenon": "agreement_simple",
+        "accuracy": 0.94,
+        "ci_low": 0.8752,
+        "ci_high": 0.9722,
+        "correct": 94,
+        "n": 100,
+        "above_chance": true
+      },
+      {
+        "phenomenon": "determiner_noun",
+        "accuracy": 0.86,
+        "ci_low": 0.7786,
+        "ci_high": 0.9147,
+        "correct": 86,
+        "n": 100,
+        "above_chance": true
+      },
+      {
+        "phenomenon": "reflexive",
+        "accuracy": 1.0,
+        "ci_low": 0.9398,
+        "ci_high": 1.0,
+        "correct": 60,
+        "n": 60,
+        "above_chance": true
+      },
+      {
+        "phenomenon": "argument_structure",
+        "accuracy": 0.64,
+        "ci_low": 0.5424,
+        "ci_high": 0.7273,
+        "correct": 64,
+        "n": 100,
+        "above_chance": true
+      },
+      {
+        "phenomenon": "tense_consistency",
+        "accuracy": 0.98,
+        "ci_low": 0.93,
+        "ci_high": 0.9945,
+        "correct": 98,
+        "n": 100,
+        "above_chance": true
+      },
+      {
+        "phenomenon": "pronoun_gender",
+        "accuracy": 1.0,
+        "ci_low": 0.963,
+        "ci_high": 1.0,
+        "correct": 100,
+        "n": 100,
+        "above_chance": true
+      },
+      {
+        "phenomenon": "negation",
+        "accuracy": 0.5,
+        "ci_low": 0.4019,
+        "ci_high": 0.5981,
+        "correct": 48,
+        "n": 96,
+        "above_chance": false
+      },
+      {
+        "phenomenon": "agreement_attractor",
+        "accuracy": 0.44,
+        "ci_low": 0.3467,
+        "ci_high": 0.5377,
+        "correct": 44,
+        "n": 100,
+        "above_chance": false
+      },
+      {
+        "phenomenon": "entity_tracking",
+        "accuracy": 0.76,
+        "ci_low": 0.6677,
+        "ci_high": 0.8331,
+        "correct": 76,
+        "n": 100,
+        "above_chance": true
+      }
+    ]
+  },
+  "diversity": {
+    "distinct_1": 0.48498,
+    "distinct_2": 0.86739,
+    "distinct_3": 0.97357,
+    "self_bleu": 0.02742,
+    "repetition_rate": 0.01086,
+    "mean_length_words": 77.66667
+  },
+  "samples": [
+    {
+      "prompt": "Once upon a time there was a little girl named Mia who",
+      "completion": "loved to play outside. One day, she was playing in the garden when she saw something new. It was a big, green, green frog! Mia was so happy and started to bark. She wanted to play with the frog, but the frog did not want to play. Mia was sad and felt bad.\nMia's mom saw her crying and asked what happened. Mia told her mom about the frog. Her mom hugged her and said, \"It's okay, Mia"
+    },
+    {
+      "prompt": "Tom found a shiny red box in the garden. When he opened it,",
+      "completion": "he saw a beautiful flower. The flower was very pretty. Tom said, \"Wow! This flower is so pretty!\"\nTom wanted to show his friend, a little bird named Sue. He said, \"Sue, look at this pretty flower I found!\" Sue looked at the flower and said, \"Wow! That's a nice flower, Tom!\"\nTom and Sue played with the flower all day. They laughed and had fun. When the sun went down, they went"
+    },
+    {
+      "prompt": "The sun was setting when Ben walked home. On the way he saw",
+      "completion": "a big, colorful ball. He wanted to play with it, but he did not know how to get it. Ben was ignorant about the ball.\nBen had an idea. He ran to his house and came back with his friend, Sam. They both got ready to play with the ball. They played and had fun. Then, something unexpected happened. The ball started to bounce very high in the air. Ben and Sam were surprised.\nBen and Sam watched as the"
+    },
+    {
+      "prompt": "Lily and her brother wanted to build something. They decided to",
+      "completion": "build a new toy car together. They used sticks and leaves to make the car into a big tower. They were having so much fun.\nBut then, Lily and her brother started to fight over the blocks. Lily wanted to build a tower, but her brother wanted to build it too. They both pulled and pulled, but the blocks were too hard. They were both upset and did not know what to do.\nThen, their mom came in and saw th"
+    },
+    {
+      "prompt": "It was raining hard. The cat sat by the window and",
+      "completion": "watched the rain fall. \nSuddenly, the cat started to get wet. It was so wet! The cat was so sad. The rain had washed the cat's fur! The cat knew it had to be in the rain. It had been a bad day.\n<|endoftext|>\nOnce upon a time, there was a little girl named Lily. She had a big box of peppers. One day, she wanted to make a new toy for her friends. She had"
+    },
+    {
+      "prompt": "Anna had a problem she could not solve. She asked her friend",
+      "completion": ", Tom, \"Please help me solve this problem. I want to help you.\" Tom said, \"I can help you, but first, you must promise me that you will not be too lazy.\"\nAnna thought for a moment. She remembered what Tom said, and she decided to help Tom. They worked together to solve the problem. Finally, Tom was able to solve the problem. Tom was very happy, and so was Anna. From that day on, they became"
+    }
+  ]
+}

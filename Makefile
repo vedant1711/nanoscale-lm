@@ -82,6 +82,30 @@ specdec:  ## Benchmark speculative decoding against autoregressive
 	$(PY) scripts/specdec_bench.py runs/nano/pretrain/final.pt \
 		--draft runs/nano/distill/reverse_kl/final.pt
 
+.PHONY: evaluate
+evaluate:  ## Full evaluation report: bits/byte, minimal pairs, calibration, diversity
+	$(PY) scripts/evaluate.py runs/micro/tinystories/final.pt --name micro-tinystories
+
+.PHONY: baseline
+baseline:  ## Compare against GPT-2 / distilGPT-2 on tokenizer-independent bits-per-byte
+	$(PY) scripts/external_baseline.py runs/micro/tinystories/final.pt
+
+.PHONY: ablate-multiseed
+ablate-multiseed:  ## Ablations at 5 seeds with Welch's t-test and Cohen's d
+	$(PY) scripts/ablate_multiseed.py --seeds 5
+
+.PHONY: train-micro-tinystories
+train-micro-tinystories:  ## Fetch TinyStories and train the 40M natural-language model
+	$(PY) scripts/fetch_tinystories.py --mb 320 --valid-mb 12
+	$(PY) -m nanoscale.cli tokenizer train --tier micro \
+		--out artifacts/tokenizer/micro_tinystories.json
+	$(PY) -m nanoscale.cli train pretrain --config configs/micro_tinystories.yaml \
+		--tokenizer artifacts/tokenizer/micro_tinystories.json -o runs/micro/tinystories
+
+.PHONY: export-models
+export-models:  ## Strip checkpoints to committable inference-only weights
+	$(PY) scripts/export_models.py
+
 .PHONY: bench
 bench:  ## The unified results table across every variant
 	$(PY) scripts/bench_all.py

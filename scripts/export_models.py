@@ -35,6 +35,10 @@ ROOT = Path(__file__).resolve().parent.parent
 RUNS = ROOT / "runs"
 OUT = ROOT / "artifacts" / "models"
 
+#: GitHub rejects files over 100 MB and warns above 50 MB. Exports larger than this stay
+#: out of git; they are the ones destined for a model hub instead.
+COMMIT_LIMIT_BYTES = 50 * 2**20
+
 #: ``(exported name, source checkpoint, what it is)``.
 EXPORTS: tuple[tuple[str, Path, str], ...] = (
     (
@@ -116,10 +120,17 @@ def main() -> int:
             continue
 
         info = export_one(source, dest)
-        index[name] = {"description": description, "source": str(source.relative_to(ROOT)), **info}
+        committable = info["bytes"] <= COMMIT_LIMIT_BYTES
+        index[name] = {
+            "description": description,
+            "source": str(source.relative_to(ROOT)),
+            "committed": committable,
+            **info,
+        }
+        note = "" if committable else "  [too large for git -- publish to a model hub]"
         print(
             f"  {name}: {info['params']:>10,} params  "
-            f"{info['source_bytes'] / 2**20:5.1f} MB -> {info['bytes'] / 2**20:5.1f} MB"
+            f"{info['source_bytes'] / 2**20:5.1f} MB -> {info['bytes'] / 2**20:5.1f} MB{note}"
         )
 
     if args.check:
@@ -131,7 +142,11 @@ def main() -> int:
 
     (OUT / "index.json").write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8")
     total = sum(v.get("bytes", 0) for v in index.values())
-    print(f"\nwrote {len(index)} models to {OUT.relative_to(ROOT)} ({total / 2**20:.1f} MB total)")
+    committed = sum(v.get("bytes", 0) for v in index.values() if v.get("committed"))
+    print(
+        f"\nwrote {len(index)} models to {OUT.relative_to(ROOT)} "
+        f"({total / 2**20:.1f} MB total, {committed / 2**20:.1f} MB committable)"
+    )
     return 0
 
 

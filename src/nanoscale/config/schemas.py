@@ -305,6 +305,15 @@ class DataConfig(BaseConfig):
     hf_split: str = Field("train", description="HF split.")
     hf_text_field: str = Field("text", description="Field of the HF record holding raw text.")
     paths: tuple[str, ...] = Field((), description="Local paths when source='textfile'.")
+    doc_separator: str = Field(
+        "",
+        description=(
+            "Split .txt files on this literal before tokenizing; '' reads each file as one "
+            "document. Corpora distributed as flat text often use a marker such as "
+            "'<|endoftext|>' between documents, which must become the tokenizer's own EOS "
+            "rather than being learned as literal characters."
+        ),
+    )
     seq_len: PositiveInt = Field(256, description="Packed sequence length (must be <= ctx).")
     val_fraction: UnitFloat = Field(0.02, description="Fraction of tokens held out for validation.")
     shuffle_buffer: PositiveInt = Field(1024, description="Streaming shuffle buffer, in documents.")

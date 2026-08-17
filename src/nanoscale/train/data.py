@@ -107,8 +107,19 @@ class PackedTokens:
 # --------------------------------------------------------------------------------------
 
 
-def iter_text_documents(paths: Iterable[str | Path]) -> Iterator[str]:
-    """Yield documents from local ``.txt`` (whole file) or ``.jsonl`` (``text`` field)."""
+def iter_text_documents(paths: Iterable[str | Path], *, separator: str = "") -> Iterator[str]:
+    """Yield documents from local ``.txt`` or ``.jsonl`` (``text`` field).
+
+    Args:
+        paths: Files to read.
+        separator: When non-empty, split ``.txt`` content on this literal and yield each
+            piece as its own document. Flat-text corpora frequently mark document
+            boundaries with a string like ``<|endoftext|>``; without splitting, that
+            string is tokenized as ordinary characters and the model learns to *write the
+            marker* instead of learning the tokenizer's EOS. That is exactly what happened
+            to the first TinyStories run here — generations contained a literal
+            ``<|endoftext|>`` — so the split is a correctness fix, not a convenience.
+    """
     for raw in paths:
         path = Path(raw)
         if not path.exists():
@@ -124,7 +135,14 @@ def iter_text_documents(paths: Iterable[str | Path]) -> Iterator[str]:
                     if isinstance(text, str) and text:
                         yield text
         else:
-            yield path.read_text(encoding="utf-8")
+            content = path.read_text(encoding="utf-8")
+            if not separator:
+                yield content
+                continue
+            for piece in content.split(separator):
+                piece = piece.strip()
+                if piece:
+                    yield piece
 
 
 def iter_hf_documents(config: DataConfig, limit: int | None = None) -> Iterator[str]:
@@ -209,7 +227,7 @@ def build_packed_tokens(
     elif config.source == "textfile":
         if not config.paths:
             raise ValueError("data.source='textfile' requires data.paths.")
-        documents = iter_text_documents(config.paths)
+        documents = iter_text_documents(config.paths, separator=config.doc_separator)
     else:
         documents = iter_hf_documents(config)
 

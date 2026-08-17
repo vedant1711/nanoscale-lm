@@ -1,0 +1,173 @@
+{
+  "name": "architecture_multiseed",
+  "question": "Do the modded-nanoGPT speedrun's architecture choices \u2014 QK-norm, zero-init output projections, SwiGLU \u2014 measurably help at this scale?",
+  "tier": "nano",
+  "seeds": [
+    1337,
+    42,
+    7,
+    2024,
+    31337
+  ],
+  "alpha": 0.05,
+  "min_effect_size": 0.8,
+  "baseline": "default",
+  "git_sha": "9e3a721",
+  "hardware": "mps:apple-silicon | macOS-15.6-arm64-arm-64bit",
+  "arms": {
+    "default": {
+      "variant": "default (QK-norm, zero-init, SwiGLU)",
+      "n_seeds": 5,
+      "mean_val_loss": 0.38819,
+      "stdev": 0.00327,
+      "stderr": 0.00146,
+      "losses": [
+        0.38964,
+        0.39243,
+        0.38645,
+        0.38864,
+        0.38379
+      ],
+      "mean_steps_to_target": 53.0,
+      "steps_to_target": [
+        50,
+        55,
+        55,
+        50,
+        55
+      ]
+    },
+    "no_qk_norm": {
+      "variant": "\u2212 QK-norm",
+      "n_seeds": 5,
+      "mean_val_loss": 0.39649,
+      "stdev": 0.01387,
+      "stderr": 0.0062,
+      "losses": [
+        0.38929,
+        0.42077,
+        0.39527,
+        0.38797,
+        0.38917
+      ],
+      "mean_steps_to_target": 76.0,
+      "steps_to_target": [
+        75,
+        75,
+        80,
+        75,
+        75
+      ]
+    },
+    "no_zero_init": {
+      "variant": "\u2212 zero-init output",
+      "n_seeds": 5,
+      "mean_val_loss": 0.38372,
+      "stdev": 0.00179,
+      "stderr": 0.0008,
+      "losses": [
+        0.38417,
+        0.38226,
+        0.38408,
+        0.38631,
+        0.3818
+      ],
+      "mean_steps_to_target": 43.0,
+      "steps_to_target": [
+        45,
+        45,
+        40,
+        40,
+        45
+      ]
+    },
+    "relu2": {
+      "variant": "ReLU\u00b2 instead of SwiGLU",
+      "n_seeds": 5,
+      "mean_val_loss": 0.39165,
+      "stdev": 0.00997,
+      "stderr": 0.00446,
+      "losses": [
+        0.38623,
+        0.40881,
+        0.39003,
+        0.38975,
+        0.38343
+      ],
+      "mean_steps_to_target": 55.0,
+      "steps_to_target": [
+        55,
+        55,
+        55,
+        55,
+        55
+      ]
+    }
+  },
+  "comparisons": [
+    {
+      "variant": "\u2212 QK-norm",
+      "mean_val_loss": 0.39649,
+      "stderr": 0.0062,
+      "stdev": 0.01387,
+      "delta_vs_baseline": 0.0083,
+      "t": 1.3035,
+      "df": 4.44,
+      "p_value": 0.25586,
+      "cohens_d": 0.8244,
+      "significant": false,
+      "survives_correction": false,
+      "large_enough": true,
+      "verdict": "no difference",
+      "steps_t": 14.5465,
+      "steps_p": 0.0,
+      "steps_significant": true,
+      "variance_f": 18.02,
+      "variance_p": 0.016,
+      "variance_significant": true
+    },
+    {
+      "variant": "\u2212 zero-init output",
+      "mean_val_loss": 0.38372,
+      "stderr": 0.0008,
+      "stdev": 0.00179,
+      "delta_vs_baseline": -0.00447,
+      "t": -2.6803,
+      "df": 6.21,
+      "p_value": 0.03532,
+      "cohens_d": -1.6951,
+      "significant": true,
+      "survives_correction": false,
+      "large_enough": true,
+      "verdict": "not significant after correction",
+      "steps_t": -5.7735,
+      "steps_p": 0.00042,
+      "steps_significant": true,
+      "variance_f": 3.32,
+      "variance_p": 0.27205,
+      "variance_significant": false
+    },
+    {
+      "variant": "ReLU\u00b2 instead of SwiGLU",
+      "mean_val_loss": 0.39165,
+      "stderr": 0.00446,
+      "stdev": 0.00997,
+      "delta_vs_baseline": 0.00346,
+      "t": 0.7374,
+      "df": 4.85,
+      "p_value": 0.49498,
+      "cohens_d": 0.4664,
+      "significant": false,
+      "survives_correction": false,
+      "large_enough": false,
+      "verdict": "no difference",
+      "steps_t": 1.633,
+      "steps_p": 0.17781,
+      "steps_significant": false,
+      "variance_f": 9.32,
+      "variance_p": 0.05271,
+      "variance_significant": false
+    }
+  ],
+  "correction": "holm-bonferroni"
+}

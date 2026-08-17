@@ -1,0 +1,87 @@
+{
+  "name": "optimizer_multiseed",
+  "question": "Does routing hidden matmul weights to Muon beat sending everything to AdamW, at equal step budget and seed?",
+  "tier": "nano",
+  "seeds": [
+    1337,
+    42,
+    7,
+    2024,
+    31337
+  ],
+  "alpha": 0.05,
+  "min_effect_size": 0.8,
+  "baseline": "adamw",
+  "git_sha": "9e3a721",
+  "hardware": "mps:apple-silicon | macOS-15.6-arm64-arm-64bit",
+  "arms": {
+    "adamw": {
+      "variant": "AdamW only",
+      "n_seeds": 5,
+      "mean_val_loss": 0.42627,
+      "stdev": 0.04338,
+      "stderr": 0.0194,
+      "losses": [
+        0.4039,
+        0.40336,
+        0.42099,
+        0.50252,
+        0.40059
+      ],
+      "mean_steps_to_target": 106.0,
+      "steps_to_target": [
+        105,
+        105,
+        110,
+        110,
+        100
+      ]
+    },
+    "muon": {
+      "variant": "Muon + AdamW",
+      "n_seeds": 5,
+      "mean_val_loss": 0.38819,
+      "stdev": 0.00327,
+      "stderr": 0.00146,
+      "losses": [
+        0.38964,
+        0.39243,
+        0.38645,
+        0.38864,
+        0.38379
+      ],
+      "mean_steps_to_target": 53.0,
+      "steps_to_target": [
+        50,
+        55,
+        55,
+        50,
+        55
+      ]
+    }
+  },
+  "comparisons": [
+    {
+      "variant": "Muon + AdamW",
+      "mean_val_loss": 0.38819,
+      "stderr": 0.00146,
+      "stdev": 0.00327,
+      "delta_vs_baseline": -0.03808,
+      "t": -1.9575,
+      "df": 4.05,
+      "p_value": 0.12111,
+      "cohens_d": -1.238,
+      "significant": false,
+      "survives_correction": false,
+      "large_enough": true,
+      "verdict": "no difference",
+      "steps_t": -23.7023,
+      "steps_p": 0.0,
+      "steps_significant": true,
+      "variance_f": 176.39,
+      "variance_p": 0.00019,
+      "variance_significant": true
+    }
+  ],
+  "correction": "holm-bonferroni"
+}

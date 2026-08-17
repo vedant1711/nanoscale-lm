@@ -34,6 +34,11 @@ data:
   paths:
     - data/tinystories/train.txt
     - data/tinystories/valid.txt
+  # TinyStories' distributed .txt marks document boundaries with a literal
+  # "<|endoftext|>". Split on it so each story becomes its own document and the boundary
+  # becomes the tokenizer's EOS -- without this the model learns to *write the marker*,
+  # which is visible in the first run's samples.
+  doc_separator: "<|endoftext|>"
   # TinyStories documents are short -- a 256-token context covers a whole story, so a
   # longer one would mostly be spent attending across an <eos> boundary.
   seq_len: 256
