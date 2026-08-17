@@ -12,13 +12,22 @@ needs and a research loop does not:
 Partial-token streaming
 -----------------------
 Byte-level BPE means a single token can be part of a multi-byte UTF-8 codepoint, so
-decoding token-by-token can produce replacement characters mid-emoji. The streamer holds
-back bytes that do not yet form valid UTF-8 and flushes them once they do — which is why
-it decodes from a byte buffer rather than calling ``decode`` per token.
+decoding token-by-token can produce replacement characters mid-emoji. :class:`TextStreamer`
+uses Python's **incremental UTF-8 decoder**, which distinguishes the two cases that a
+naive try/except cannot:
+
+* bytes that are *incomplete but still potentially valid* — buffer them and emit nothing;
+* bytes that are *definitively invalid* — emit a replacement character and move on.
+
+A hand-rolled ``try: buffer.decode() except UnicodeDecodeError: return ""`` conflates
+them, and on an untrained model (whose tokens are effectively random bytes) it buffers
+the entire output and emits nothing until the final flush. That is not a hypothetical:
+it broke the stop-sequence check, which only sees text that has actually been emitted.
 """
 
 from __future__ import annotations
 
+import codecs
 import time
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass, field
@@ -43,28 +52,19 @@ class TextStreamer:
         """Create a streamer over ``tokenizer``."""
         self.tokenizer = tokenizer
         self.skip_special = skip_special
-        self._buffer = bytearray()
+        self._decoder = codecs.getincrementaldecoder("utf-8")("replace")
 
     def push(self, token: int) -> str:
         """Add one token; return whatever text is now safely decodable (often ``""``)."""
         if self.skip_special and token in self.tokenizer.id_to_special:
             return ""
-        self._buffer.extend(self.tokenizer.vocab[token])
-        try:
-            text = self._buffer.decode("utf-8")
-        except UnicodeDecodeError:
-            # An incomplete codepoint: wait for the bytes that finish it.
-            return ""
-        self._buffer.clear()
-        return text
+        return self._decoder.decode(self.tokenizer.vocab[token])
 
     def flush(self) -> str:
-        """Emit any remaining bytes, replacing an unfinished codepoint."""
-        if not self._buffer:
-            return ""
-        text = self._buffer.decode("utf-8", errors="replace")
-        self._buffer.clear()
-        return text
+        """Emit any remaining buffered bytes, replacing an unfinished codepoint."""
+        tail = self._decoder.decode(b"", final=True)
+        self._decoder.reset()
+        return tail
 
 
 @dataclass(slots=True)

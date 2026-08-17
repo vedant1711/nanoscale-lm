@@ -61,6 +61,43 @@ train-nano: tokenizer  ## Pretrain the nano tier on CPU and refresh its committe
 		--title "nano tier -- 400 steps on CPU"
 	$(PY) scripts/sample_generations.py runs/nano/pretrain/final.pt --name nano_base
 
+.PHONY: ablate
+ablate:  ## Run the Phase-5 controlled ablations
+	$(PY) scripts/ablate.py
+
+.PHONY: align
+align:  ## SFT -> {DPO, DPO+NLL, SimPO} plus the length-exploitation diagnostic
+	$(PY) scripts/align_pipeline.py runs/nano/pretrain/final.pt
+
+.PHONY: distill
+distill:  ## Compare the three distillation objectives
+	$(PY) scripts/distill_compare.py runs/nano/sft/final.pt
+
+.PHONY: quantize
+quantize:  ## Measure the bits-vs-accuracy frontier
+	$(PY) scripts/quantize_frontier.py runs/nano/pretrain/final.pt
+
+.PHONY: specdec
+specdec:  ## Benchmark speculative decoding against autoregressive
+	$(PY) scripts/specdec_bench.py runs/nano/pretrain/final.pt \
+		--draft runs/nano/distill/reverse_kl/final.pt
+
+.PHONY: bench
+bench:  ## The unified results table across every variant
+	$(PY) scripts/bench_all.py
+
+.PHONY: results
+results:  ## Regenerate docs/results.md from the committed artifacts
+	$(PY) scripts/build_docs_results.py
+
+.PHONY: docs
+docs:  ## Serve the documentation locally
+	$(PY) -m mkdocs serve
+
+.PHONY: smoke
+smoke:  ## End-to-end: tokenizer -> pretrain -> SFT -> DPO -> quantize -> speculate (CPU, <10 min)
+	$(PY) -m pytest tests/e2e -m slow -v -s
+
 .PHONY: train-micro
 train-micro:  ## Pretrain the micro tier (needs a GPU and the 'data' extra)
 	$(PY) -m nanoscale.cli train pretrain --tier micro -o runs/micro/pretrain

@@ -235,3 +235,59 @@ against 0.98 autoregressive, and it composes with GPTQ-4bit (2.91). Wall-clock i
   tier table are pinned exactly; the resulting parameter counts (total and
   non-embedding) are reported honestly and asserted in tests. See
   `DESIGN_DECISIONS.md`.
+
+### Phase 10 — Serving, benchmarks, demo and docs
+
+**Added**
+
+- `nanoscale.serve` — streaming generation with an incremental UTF-8 decoder, stop
+  sequences applied to the decoded text rather than to token IDs, sampling transforms
+  (temperature, top-k, top-p, repetition penalty) shared with the speculative path, and
+  a prefill/decode timing breakdown. `nanoscale serve generate|chat|eval`.
+- `nanoscale.bench` — a variant harness that measures params, weight footprint at
+  effective bit-width, KV footprint, prefill p50, decode throughput, latency p50/p95 and
+  peak memory, plus `scripts/bench_all.py` producing the unified table across base,
+  distilled, GPTQ-4bit, speculative and speculative+GPTQ.
+- `nanoscale.eval.tiny_bench` — 28 hand-written questions across subject–verb agreement,
+  coreference, schema completion and arithmetic, scored by likelihood with a binomial
+  standard error and an explicit chance line.
+- Documentation site (`mkdocs.yml`, `docs/`): home, quickstart, architecture,
+  methodology, results, limitations and an enterprise-scale chapter, published by a
+  Pages workflow.
+- `scripts/build_docs_results.py` — **generates** `docs/results.md` from the committed
+  per-measurement Markdown under `results/`, with stable section anchors, a table of
+  contents and figure copying. `--check` fails if the committed page has drifted, and
+  CI runs it.
+- `tests/e2e/test_smoke.py` and `make smoke` — the whole pipeline (tokenizer → pretrain
+  → SFT → DPO → quantize → speculate → evaluate) on CPU with a per-stage assertion and a
+  10-minute budget. Measured: **45 seconds**.
+- Two Colab notebooks: `colab_train_from_scratch.ipynb` (tokenizer, model, optimizer,
+  pretraining; CPU and GPU paths) and `colab_compress_and_serve.ipynb` (distillation,
+  quantization, speculative decoding, with the losslessness check run live).
+- A Gradio demo (`demo/`) with generation, variant comparison, tokenizer inspection and a
+  speculative-decoding visualizer, packaged with HF Space front-matter.
+- CI jobs for the end-to-end smoke pipeline, `mkdocs build --strict`, and the generated
+  results page.
+- `DESIGN_DECISIONS.md` D4–D10: accumulation dtype, the negative-results policy,
+  single-source-of-truth measurement, the alignment diagnostic, what the compression
+  numbers do and do not transfer, how losslessness is proven, and the three kinds of test.
+
+**Fixed**
+
+- `TextStreamer` buffered undecodable bytes indefinitely under a try/except around
+  `bytes.decode`, so a stop sequence appearing after any non-UTF-8 boundary was never
+  detected. Replaced with `codecs.getincrementaldecoder("utf-8")("replace")`.
+- The tiny benchmark's agreement probe scored exactly chance because its single-sentence
+  context was off-distribution for a model trained on multi-sentence stories. With a full
+  story prefix the base model scores 12/12 — the probe was broken, not the model.
+- The results page's cross-references resolved against auto-generated heading anchors
+  that changed whenever a measurement script's prose changed; sections now carry explicit
+  stable slugs.
+
+**Findings** — the unified table is where Arc 2 gets honest. Distillation gives 17.7×
+smaller weights and 2.4× decode throughput at a real capability cost (tiny bench 100% →
+67.9%). GPTQ-4bit gives 4.3× smaller weights at no measurable perplexity or benchmark
+cost. Speculative decoding cuts target forward passes 3× and is nonetheless *slower* in
+wall-clock here, because at 5M parameters on a CPU there is no memory-bandwidth
+bottleneck for it to relieve. The table states which of its columns generalise and which
+do not.

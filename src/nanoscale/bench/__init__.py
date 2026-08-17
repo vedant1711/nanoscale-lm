@@ -9,11 +9,21 @@ from nanoscale.bench.ablation import (
     Variant,
     describe_difference,
 )
+from nanoscale.bench.harness import (
+    BenchHarness,
+    BenchRow,
+    model_memory_bytes,
+    peak_memory_bytes,
+)
 
 __all__ = [
     "NOISE_THRESHOLD",
     "AblationResult",
     "AblationSuite",
+    "BenchHarness",
+    "BenchRow",
     "Variant",
     "describe_difference",
+    "model_memory_bytes",
+    "peak_memory_bytes",
 ]

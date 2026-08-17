@@ -22,6 +22,7 @@ from nanoscale.config import (
     load_experiment,
     save_experiment,
 )
+from nanoscale.serve.cli import serve_app
 from nanoscale.tokenizer.cli import tokenizer_app
 from nanoscale.train.cli import train_app
 from nanoscale.utils import get_logger, hardware_string
@@ -39,6 +40,7 @@ app.add_typer(config_app)
 app.add_typer(tokenizer_app)
 app.add_typer(train_app)
 app.add_typer(align_app)
+app.add_typer(serve_app)
 
 log = get_logger("nanoscale.cli")
 
