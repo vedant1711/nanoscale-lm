@@ -112,7 +112,12 @@ convention = "google"
 allow-star-arg-any = true
 
 [tool.mypy]
-python_version = "3.11"
+# Deliberately *not* pinning `python_version`. Pinning it to "3.11" makes mypy apply
+# 3.11 syntax rules to whatever stubs are installed -- and on a 3.12 interpreter the
+# numpy stubs use PEP 695 `type` statements, which mypy then rejects as a syntax error in
+# a third-party file we do not control. Letting mypy follow the running interpreter keeps
+# the CI matrix meaningful: each Python version is checked against its own stubs.
+# `requires-python = ">=3.11"` above is what actually constrains the language level.
 strict = true
 warn_unreachable = true
 disallow_any_generics = true
