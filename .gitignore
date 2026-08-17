@@ -25,12 +25,21 @@ checkpoints/
 *.pt
 *.bin
 *.safetensors
+
+# ...except the published inference-only models. These are stripped of optimizer state
+# by `scripts/export_models.py` and committed so the demo, the notebooks and a fresh
+# clone all work without a model hub or a retraining step. They are derived artifacts:
+# `results/` remains the source of truth for every reported number.
+!artifacts/models/*.pt
 wandb/
 site/
 
-# Generated corpora (regenerate with `python scripts/make_toy_corpus.py`)
+# Downloaded / generated corpora. Never committed: `scripts/fetch_tinystories.py`
+# re-fetches TinyStories by HTTP range request, and the toy corpus is generated
+# deterministically from a seed, so both are reproducible rather than stored.
 data/toy/
 data/cache/
+data/tinystories/
 
 # OS
 .DS_Store

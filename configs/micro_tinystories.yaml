@@ -1,0 +1,53 @@
+# micro tier on TinyStories -- the reported natural-language model.
+#
+# Why this config exists alongside `micro.yaml` (FineWeb-Edu):
+#
+# FineWeb-Edu is general web text. A 40M-parameter model given ~80M of its tokens learns
+# the *shape* of English -- plausible syntax, correct function words -- and produces
+# fluent nonsense, because the distribution is far wider than the capacity. TinyStories
+# (Eldan & Li, arXiv:2305.07759) was built for precisely this regime: the vocabulary and
+# grammar of a 3-4 year old's storybook, which is narrow enough that a sub-100M model can
+# actually close the gap between "syntax" and "coherent content".
+#
+# So this is a capability-matching decision, not a shortcut. `micro.yaml` keeps the
+# FineWeb-Edu path for anyone with the compute to train it to the full 20:1 budget; this
+# config is what produced the committed `micro` curve and samples.
+#
+# Reproduce:
+#   python scripts/fetch_tinystories.py --mb 320 --valid-mb 12
+#   nanoscale train pretrain --config configs/micro_tinystories.yaml -o runs/micro/tinystories
+preset: micro
+
+name: micro-tinystories
+
+tokenizer:
+  vocab_size: 16384
+
+model:
+  # SDPA is numerically identical to the manual path (pinned by test) and is the sane
+  # default for a real training run; `manual` stays the default in the presets because it
+  # is the readable implementation the project is about.
+  attn_impl: sdpa
+
+data:
+  source: textfile
+  paths:
+    - data/tinystories/train.txt
+    - data/tinystories/valid.txt
+  # TinyStories documents are short -- a 256-token context covers a whole story, so a
+  # longer one would mostly be spent attending across an <eos> boundary.
+  seq_len: 256
+  val_fraction: 0.01
+
+train:
+  device: mps
+  # ~32M tokens against the ~808M a 20:1 budget would want: 4% of compute-optimal. This
+  # is a wall-clock limit on the hardware available, not a claim, and the manifest records
+  # the Chinchilla fraction for every run so the shortfall is never hidden.
+  token_budget: 32000000
+  max_steps: 6000
+  batch_size: 24
+  grad_accum: 1
+  eval_interval: 200
+  log_interval: 25
+  ckpt_interval: 500

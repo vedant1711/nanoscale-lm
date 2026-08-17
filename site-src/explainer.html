@@ -1,0 +1,3262 @@
+<title>NanoScale-LM</title>
+<style>
+/* ============================================================ tokens
+   Light is the base palette; dark redefines only the tokens, guarded so an
+   explicit light choice beats a dark OS, and stamped again so the toggle wins
+   in both directions. Nothing below this block declares a literal colour. */
+:root {
+  --paper:       #F3F5F8;
+  --surface:     #FFFFFF;
+  --surface-2:   #E8EDF2;
+  --ink:         #0E141C;
+  --ink-2:       #465768;
+  --ink-3:       #7D8B9B;
+  --rule:        #D0D8E0;
+  --rule-strong: #A9B5C1;
+  --accent:      #12655F;
+  --accent-ink:  #0C4A45;
+  --accent-soft: #DBEDEB;
+  --warn:        #8F4715;
+  --warn-soft:   #F7E9DB;
+  --good:        #2C6A33;
+  --good-soft:   #E1EFE2;
+  --shadow:      0 1px 2px rgba(14,20,28,.05), 0 8px 24px -12px rgba(14,20,28,.18);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:       #0B0F14;
+    --surface:     #11171E;
+    --surface-2:   #161E27;
+    --ink:         #E2E8EF;
+    --ink-2:       #97A7B8;
+    --ink-3:       #6A7889;
+    --rule:        #222C37;
+    --rule-strong: #384654;
+    --accent:      #5AC9BF;
+    --accent-ink:  #8FDCD5;
+    --accent-soft: #0E2E2C;
+    --warn:        #E2984F;
+    --warn-soft:   #2C2013;
+    --good:        #77C182;
+    --good-soft:   #16281A;
+    --shadow:      0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"] {
+  --paper:       #0B0F14;
+  --surface:     #11171E;
+  --surface-2:   #161E27;
+  --ink:         #E2E8EF;
+  --ink-2:       #97A7B8;
+  --ink-3:       #6A7889;
+  --rule:        #222C37;
+  --rule-strong: #384654;
+  --accent:      #5AC9BF;
+  --accent-ink:  #8FDCD5;
+  --accent-soft: #0E2E2C;
+  --warn:        #E2984F;
+  --warn-soft:   #2C2013;
+  --good:        #77C182;
+  --good-soft:   #16281A;
+  --shadow:      0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+/* ============================================================ type + base */
+:root {
+  --serif: Charter, "Iowan Old Style", "Source Serif 4", "Palatino Linotype", Palatino, Georgia, serif;
+  --mono:  ui-monospace, SFMono-Regular, "SF Mono", Menlo, "JetBrains Mono", Consolas, monospace;
+  --col:   min(70ch, 100%);
+  --wide:  min(1140px, 100%);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 17.5px;
+  line-height: 1.68;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ============================================================ shell */
+.shell { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 0; }
+.rail {
+  position: sticky; top: 0; align-self: start;
+  height: 100vh; overflow-y: auto;
+  padding: 2rem 1.25rem 3rem 1.75rem;
+  border-right: 1px solid var(--rule);
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: 12px; line-height: 1.5;
+}
+.rail-brand {
+  font-family: var(--serif); font-size: 19px; font-weight: 700;
+  letter-spacing: -.01em; margin: 0 0 .15rem; color: var(--ink);
+}
+.rail-sub {
+  color: var(--ink-3); font-size: 10.5px; letter-spacing: .08em;
+  text-transform: uppercase; margin: 0 0 1.5rem;
+}
+.rail nav ol { list-style: none; margin: 0; padding: 0; }
+.rail nav > ol > li { margin-bottom: .1rem; }
+.rail a {
+  display: flex; gap: .55rem; text-decoration: none; color: var(--ink-2);
+  padding: .28rem .45rem; border-radius: 3px; border-left: 2px solid transparent;
+}
+.rail a:hover { color: var(--ink); background: var(--surface-2); }
+.rail a.on { color: var(--accent); border-left-color: var(--accent); background: var(--accent-soft); }
+.rail a .n { color: var(--ink-3); font-variant-numeric: tabular-nums; flex: none; }
+.rail a.on .n { color: var(--accent); }
+.rail .grp {
+  margin: 1.35rem 0 .4rem; padding-left: .45rem;
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-3); border-top: 1px solid var(--rule); padding-top: .9rem;
+}
+.rail .grp:first-of-type { border-top: 0; padding-top: 0; margin-top: .5rem; }
+
+.main { min-width: 0; padding: 0 2.5rem 8rem; }
+.wrap { max-width: var(--wide); margin: 0 auto; }
+.col  { max-width: var(--col); }
+
+@media (max-width: 940px) {
+  .shell { grid-template-columns: 1fr; }
+  .rail {
+    position: static; height: auto; border-right: 0;
+    border-bottom: 1px solid var(--rule); padding: 1.25rem 1.25rem 1.5rem;
+  }
+  .rail nav > ol { columns: 2; column-gap: 1.5rem; }
+  .main { padding: 0 1.15rem 5rem; }
+  body { font-size: 16.5px; }
+}
+
+/* ============================================================ headings */
+h1, h2, h3, h4 { text-wrap: balance; margin: 0; letter-spacing: -.012em; }
+h1 { font-size: clamp(2.4rem, 5.2vw, 3.6rem); line-height: 1.04; font-weight: 700; }
+h2 {
+  font-size: clamp(1.65rem, 3vw, 2.15rem); line-height: 1.15; font-weight: 700;
+  margin: 0 0 .5rem;
+}
+h3 { font-size: 1.28rem; line-height: 1.25; font-weight: 700; margin: 2.4rem 0 .55rem; }
+h4 {
+  font-family: var(--mono); font-size: .82rem; font-weight: 600;
+  letter-spacing: .07em; text-transform: uppercase; color: var(--ink-2);
+  margin: 1.9rem 0 .5rem;
+}
+p { margin: 0 0 1.05rem; }
+a { color: var(--accent); text-underline-offset: 2px; text-decoration-thickness: 1px; }
+strong { font-weight: 700; }
+em { font-style: italic; }
+
+/* ============================================================ sections */
+section { padding: 3.2rem 0 1rem; border-top: 1px solid var(--rule); }
+section:first-of-type { border-top: 0; }
+.sec-head { display: flex; gap: 1.1rem; align-items: baseline; margin-bottom: 1.6rem; }
+.sec-n {
+  font-family: var(--mono); font-size: .82rem; font-weight: 600; color: var(--accent);
+  letter-spacing: .06em; padding-top: .55rem; flex: none; font-variant-numeric: tabular-nums;
+}
+.sec-head .deck { color: var(--ink-2); font-size: 1.02rem; margin: .35rem 0 0; max-width: 62ch; }
+
+.eyebrow {
+  font-family: var(--mono); font-size: .7rem; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--ink-3); margin: 0 0 .7rem;
+}
+
+/* ============================================================ hero */
+.hero { padding: clamp(3rem, 8vh, 6rem) 0 3.2rem; border-top: 0; }
+.hero .lede {
+  font-size: clamp(1.12rem, 2.1vw, 1.32rem); line-height: 1.55; color: var(--ink-2);
+  max-width: 60ch; margin: 1.4rem 0 0;
+}
+.hero .lede b { color: var(--ink); font-weight: 700; }
+.kpis {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+  border-radius: 4px; overflow: hidden; margin: 2.6rem 0 0;
+}
+.kpi { background: var(--surface); padding: 1rem 1.1rem; }
+.kpi .v {
+  font-family: var(--mono); font-size: 1.35rem; font-weight: 600; color: var(--ink);
+  font-variant-numeric: tabular-nums; letter-spacing: -.02em; display: block;
+}
+.kpi .k {
+  font-family: var(--mono); font-size: .66rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink-3); margin-top: .35rem; display: block;
+}
+
+/* ============================================================ figures */
+figure { margin: 2rem 0; }
+figure svg { display: block; max-width: 100%; height: auto; margin: 0 auto; color: var(--ink); }
+figcaption {
+  font-size: .875rem; color: var(--ink-2); margin-top: .85rem;
+  max-width: 64ch; line-height: 1.55;
+}
+figcaption b { color: var(--ink); }
+.fig-frame {
+  border: 1px solid var(--rule); border-radius: 5px; background: var(--surface);
+  padding: 1.5rem 1.25rem; overflow-x: auto;
+}
+figure img { display: block; max-width: 100%; height: auto; border-radius: 3px; }
+
+/* ============================================================ code + math */
+code {
+  font-family: var(--mono); font-size: .855em; background: var(--surface-2);
+  padding: .1em .34em; border-radius: 3px; color: var(--ink);
+}
+pre {
+  font-family: var(--mono); font-size: .8rem; line-height: 1.6;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 5px;
+  padding: 1rem 1.15rem; overflow-x: auto; margin: 1.3rem 0; color: var(--ink);
+}
+pre code { background: none; padding: 0; font-size: inherit; }
+.math {
+  font-family: var(--mono); font-size: .88rem; line-height: 1.85;
+  background: var(--accent-soft); border-left: 2px solid var(--accent);
+  padding: .95rem 1.15rem; margin: 1.3rem 0; overflow-x: auto;
+  border-radius: 0 4px 4px 0; color: var(--ink);
+}
+.math .note { color: var(--ink-2); font-size: .82rem; }
+
+/* ============================================================ callouts */
+.note, .caveat, .win {
+  border: 1px solid var(--rule); border-left-width: 3px;
+  border-radius: 0 4px 4px 0; padding: 1rem 1.2rem; margin: 1.5rem 0;
+  font-size: .935rem; line-height: 1.6; background: var(--surface);
+}
+.note { border-left-color: var(--rule-strong); }
+.caveat { border-left-color: var(--warn); background: var(--warn-soft); }
+.win { border-left-color: var(--good); background: var(--good-soft); }
+.note > :last-child, .caveat > :last-child, .win > :last-child { margin-bottom: 0; }
+.note-t, .caveat-t, .win-t {
+  font-family: var(--mono); font-size: .68rem; letter-spacing: .13em;
+  text-transform: uppercase; display: block; margin-bottom: .45rem; font-weight: 600;
+}
+.note-t { color: var(--ink-3); }
+.caveat-t { color: var(--warn); }
+.win-t { color: var(--good); }
+
+/* ============================================================ tables */
+.tbl { overflow-x: auto; margin: 1.6rem 0; border: 1px solid var(--rule); border-radius: 5px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .85rem; }
+th, td { text-align: left; padding: .58rem .85rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+thead th {
+  font-family: var(--mono); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-2); font-weight: 600; background: var(--surface-2); white-space: nowrap;
+}
+tbody tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+tbody tr:hover { background: var(--surface-2); }
+td .sub { display: block; color: var(--ink-3); font-size: .8em; }
+.best { color: var(--good); font-weight: 700; }
+.worse { color: var(--warn); }
+
+/* ============================================================ lists */
+ul, ol { margin: 0 0 1.1rem; padding-left: 1.35rem; }
+li { margin-bottom: .48rem; }
+li::marker { color: var(--ink-3); }
+dl.defs { margin: 1.3rem 0; }
+dl.defs dt {
+  font-family: var(--mono); font-size: .82rem; font-weight: 600; color: var(--accent);
+  margin-top: 1rem;
+}
+dl.defs dd { margin: .2rem 0 0; }
+
+/* ============================================================ interactive bits */
+.demo {
+  border: 1px solid var(--rule); border-radius: 5px; background: var(--surface);
+  padding: 1.25rem; margin: 1.8rem 0;
+}
+.demo-bar { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin-bottom: 1rem; }
+button.btn {
+  font-family: var(--mono); font-size: .76rem; letter-spacing: .05em;
+  padding: .45rem .85rem; border-radius: 4px; cursor: pointer;
+  border: 1px solid var(--rule-strong); background: var(--surface-2); color: var(--ink);
+}
+button.btn:hover { border-color: var(--accent); color: var(--accent); }
+button.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+:root[data-theme="dark"] button.btn.primary,
+:root:not([data-theme="light"]) button.btn.primary { color: #08211F; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) button.btn.primary { color: #FFFFFF; } }
+button.btn:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.demo label { font-family: var(--mono); font-size: .74rem; color: var(--ink-2); display: flex; gap: .5rem; align-items: center; }
+input[type="range"] { accent-color: var(--accent); }
+.readout { font-family: var(--mono); font-size: .78rem; color: var(--ink-2); line-height: 1.75; }
+.readout b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* ============================================================ misc */
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.4rem; }
+.card {
+  border: 1px solid var(--rule); border-radius: 5px; background: var(--surface);
+  padding: 1.15rem 1.25rem;
+}
+.card h4 { margin-top: 0; }
+.card > :last-child { margin-bottom: 0; }
+.tag {
+  display: inline-block; font-family: var(--mono); font-size: .66rem; letter-spacing: .09em;
+  text-transform: uppercase; padding: .16em .5em; border-radius: 3px;
+  border: 1px solid var(--rule-strong); color: var(--ink-2); background: var(--surface-2);
+}
+.tag.acc { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.tag.warn { border-color: var(--warn); color: var(--warn); background: var(--warn-soft); }
+hr.soft { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+.footnote { font-size: .85rem; color: var(--ink-2); }
+.prose > * { max-width: var(--col); }
+.prose > .tbl, .prose > figure, .prose > .demo, .prose > .grid2, .prose > .kpis, .prose > .wide { max-width: 100%; }
+</style>
+
+<div class="shell">
+<aside class="rail">
+  <p class="rail-brand">NanoScale&#8209;LM</p>
+  <p class="rail-sub">Build &amp; deploy, from scratch</p>
+  <nav id="toc" aria-label="Contents">
+    <p class="grp">Orientation</p>
+    <ol>
+      <li><a href="#thesis"><span class="n">—</span><span>The thesis</span></a></li>
+      <li><a href="#reading"><span class="n">—</span><span>How to read this</span></a></li>
+      <li><a href="#baseline"><span class="n">00</span><span>Your starting point</span></a></li>
+    </ol>
+    <p class="grp">Arc 1 · Build the model</p>
+    <ol>
+      <li><a href="#tokenizer"><span class="n">01</span><span>Tokenizer</span></a></li>
+      <li><a href="#model"><span class="n">02</span><span>The architecture</span></a></li>
+      <li><a href="#optim"><span class="n">03</span><span>Muon &amp; AdamW</span></a></li>
+      <li><a href="#training"><span class="n">04</span><span>Training mechanics</span></a></li>
+      <li><a href="#ablations"><span class="n">05</span><span>Ablations</span></a></li>
+      <li><a href="#align"><span class="n">06</span><span>Alignment</span></a></li>
+    </ol>
+    <p class="grp">Arc 2 · Serve it cheaply</p>
+    <ol>
+      <li><a href="#cost"><span class="n">—</span><span>The cost model</span></a></li>
+      <li><a href="#distill"><span class="n">07</span><span>Distillation</span></a></li>
+      <li><a href="#quant"><span class="n">08</span><span>Quantization</span></a></li>
+      <li><a href="#spec"><span class="n">09</span><span>Speculative decoding</span></a></li>
+      <li><a href="#serve"><span class="n">10</span><span>Serving &amp; bench</span></a></li>
+    </ol>
+    <p class="grp">Evidence</p>
+    <ol>
+      <li><a href="#results"><span class="n">—</span><span>All results</span></a></li>
+      <li><a href="#negative"><span class="n">—</span><span>What went wrong</span></a></li>
+      <li><a href="#decisions"><span class="n">—</span><span>Design decisions</span></a></li>
+      <li><a href="#limits"><span class="n">—</span><span>Limits &amp; scale-up</span></a></li>
+      <li><a href="#repo"><span class="n">—</span><span>Run it yourself</span></a></li>
+    </ol>
+  </nav>
+</aside>
+
+<main class="main">
+<div class="wrap prose">
+<section class="hero" id="thesis">
+  <p class="eyebrow">A from-scratch PyTorch language model &amp; its full efficiency stack</p>
+  <h1>I built a language model from scratch, then made it cheap enough to actually serve.</h1>
+  <p class="lede">
+    Every algorithm here is written out in the repository: the BPE merges, attention with
+    GQA and RoPE, the Newton&ndash;Schulz orthogonalization inside the Muon optimizer, the DPO loss,
+    GPTQ's Hessian error compensation, the speculative-decoding accept/reject rule.
+    <b>No high-level trainer library appears anywhere in <code>src/nanoscale/</code>.</b>
+    This page explains all of it &mdash; the mathematics, the engineering, and the measurements,
+    including the ones that contradicted the plan.
+  </p>
+
+  <div class="kpis">
+    <div class="kpi"><span class="v">40.4M</span><span class="k">params, micro tier</span></div>
+    <div class="kpi"><span class="v">563</span><span class="k">tests, mypy strict</span></div>
+    <div class="kpi"><span class="v">17.7&times;</span><span class="k">distillation shrink</span></div>
+    <div class="kpi"><span class="v">4.3&times;</span><span class="k">4-bit weight shrink</span></div>
+    <div class="kpi"><span class="v">2.94</span><span class="k">tokens / target pass</span></div>
+    <div class="kpi"><span class="v">$0</span><span class="k">total compute spend</span></div>
+  </div>
+</section>
+
+<section id="reading">
+  <div class="sec-head">
+    <span class="sec-n">§</span>
+    <div>
+      <h2>How to read this</h2>
+      <p class="deck">
+        Written for someone whose deep-learning knowledge runs
+        ANN &rarr; CNN &rarr; RNN &rarr; LSTM &rarr; encoder&ndash;decoder &rarr; attention &rarr; Transformer,
+        and stops there.
+      </p>
+    </div>
+  </div>
+
+  <p>
+    If you understand a Transformer decoder &mdash; multi-head self-attention, the feed-forward
+    block, residual connections, layer normalization, causal masking, cross-entropy on
+    next-token prediction &mdash; you have every prerequisite for this page. Everything past that
+    point is developed here from first principles.
+  </p>
+  <p>
+    That is a deliberate choice about what "advanced" means. Almost nothing in a modern
+    language model is conceptually harder than attention. What happened between 2017 and now is
+    that a few dozen specific, individually-comprehensible modifications accumulated, each fixing
+    a concrete problem with the 2017 design. RoPE fixes how position is encoded. RMSNorm removes
+    a computation nobody could show was needed. Grouped-query attention fixes a memory bottleneck
+    that only appears at inference time. Muon fixes an assumption Adam makes about weight
+    matrices. Every one of them is a paragraph of motivation and a formula.
+  </p>
+  <p>
+    So this page is structured as a sequence of <em>deltas from what you already know</em>. Each
+    one states the problem with the baseline, the fix, the mathematics, and what it measured in
+    this repository. The two arcs are independent enough to read separately:
+  </p>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>Arc 1 &mdash; build the model</h4>
+      <p>
+        Tokenizer, architecture, optimizer, pretraining, alignment. This arc answers
+        <em>how is a language model actually made</em>, and ends with a trained, instruction-following
+        checkpoint.
+      </p>
+      <p class="footnote">Sections 01&ndash;06.</p>
+    </div>
+    <div class="card">
+      <h4>Arc 2 &mdash; make it cheap</h4>
+      <p>
+        Distillation, quantization, speculative decoding, serving. This arc answers
+        <em>why does inference cost what it costs, and what can be done about it</em>. It takes
+        Arc 1's checkpoint as input.
+      </p>
+      <p class="footnote">Sections 07&ndash;10, after a short detour on the inference cost model.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <span class="note-t">A note on the numbers</span>
+    <p>
+      Every measurement on this page was produced by a script committed to the repository, stamped
+      with the git commit and the hardware that produced it, and is regenerable offline from
+      committed data. Several results here are <em>negative</em> &mdash; the technique did not do
+      what the literature predicted at this scale. Those are reported in the same detail as the
+      positive ones, because a page where every prediction came true is a page that either got
+      lucky or stopped looking.
+    </p>
+  </div>
+</section>
+
+<section id="baseline">
+  <div class="sec-head">
+    <span class="sec-n">00</span>
+    <div>
+      <h2>Your starting point</h2>
+      <p class="deck">Fixing notation, and naming the four problems the rest of the page solves.</p>
+    </div>
+  </div>
+
+  <p>
+    Here is the model you already know, written the way this repository writes it. A decoder-only
+    Transformer maps a sequence of token IDs to a probability distribution over the next token at
+    every position simultaneously. Tokens go in, an embedding table turns each into a vector, a
+    stack of identical blocks refines those vectors, and a final linear layer projects each
+    vector to a score for every token in the vocabulary.
+  </p>
+
+  <figure>
+    <div class="fig-frame">
+      <svg viewBox="0 0 760 300" role="img" aria-label="The 2017 decoder-only Transformer block: post-norm residuals around multi-head attention and a ReLU feed-forward network, with learned absolute position embeddings added at the input.">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <g font-family="ui-monospace, monospace" font-size="12" fill="currentColor">
+          <!-- input -->
+          <text x="60" y="30" text-anchor="middle">tokens</text>
+          <line x1="60" y1="40" x2="60" y2="62" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar)"/>
+          <rect x="12" y="64" width="96" height="30" rx="3" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="60" y="83" text-anchor="middle">embedding</text>
+          <line x1="60" y1="96" x2="60" y2="126" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar)"/>
+          <rect x="12" y="128" width="96" height="30" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <text x="60" y="147" text-anchor="middle">+ pos emb</text>
+          <line x1="112" y1="143" x2="152" y2="143" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar)"/>
+
+          <!-- block -->
+          <rect x="156" y="34" width="404" height="220" rx="4" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="172" y="54" font-size="11" opacity=".7">&#215; N blocks</text>
+
+          <!-- attention sublayer -->
+          <rect x="182" y="72" width="150" height="34" rx="3" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="257" y="93" text-anchor="middle">multi-head attn</text>
+          <circle cx="376" cy="89" r="11" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="376" y="94" text-anchor="middle" font-size="13">+</text>
+          <line x1="334" y1="89" x2="363" y2="89" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar)"/>
+          <rect x="404" y="72" width="128" height="34" rx="3" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="468" y="93" text-anchor="middle">LayerNorm</text>
+          <line x1="388" y1="89" x2="401" y2="89" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar)"/>
+          <!-- skip -->
+          <path d="M 170 89 L 170 132 L 376 132 L 376 102" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".55" marker-end="url(#ar)"/>
+          <line x1="170" y1="89" x2="179" y2="89" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar)"/>
+          <text x="262" y="147" font-size="10.5" opacity=".7" text-anchor="middle">residual</text>
+
+          <!-- ffn sublayer -->
+          <rect x="182" y="176" width="150" height="34" rx="3" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="257" y="197" text-anchor="middle">FFN (ReLU)</text>
+          <circle cx="376" cy="193" r="11" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="376" y="198" text-anchor="middle" font-size="13">+</text>
+          <line x1="334" y1="193" x2="363" y2="193" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar)"/>
+          <rect x="404" y="176" width="128" height="34" rx="3" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="468" y="197" text-anchor="middle">LayerNorm</text>
+          <line x1="388" y1="193" x2="401" y2="193" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar)"/>
+          <path d="M 170 193 L 170 236 L 376 236 L 376 206" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".55" marker-end="url(#ar)"/>
+
+          <line x1="532" y1="89" x2="548" y2="89" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M 548 89 L 548 158 L 170 158 L 170 176" fill="none" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar)"/>
+
+          <!-- output -->
+          <line x1="560" y1="193" x2="596" y2="193" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar)"/>
+          <rect x="600" y="176" width="120" height="34" rx="3" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="660" y="197" text-anchor="middle">linear &rarr; V</text>
+          <text x="660" y="232" text-anchor="middle" font-size="11" opacity=".7">logits</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>
+      <b>The baseline this page departs from.</b> Post-norm residuals (normalize after adding),
+      learned absolute position embeddings added once at the input, a ReLU feed-forward network,
+      and every attention head with its own key and value projections. Each of those four choices
+      has since been replaced, and the sections below explain what replaced them and why.
+    </figcaption>
+  </figure>
+
+  <h3>Notation used throughout</h3>
+  <dl class="defs">
+    <dt>V, T, d, L, H</dt>
+    <dd>Vocabulary size, sequence length, model width (<code>d_model</code>), number of layers,
+        number of attention heads. <code>d_head = d / H</code>.</dd>
+    <dt>N, D</dt>
+    <dd>Parameter count and training-token count. The Chinchilla heuristic says a compute-optimal
+        run sets <code>D &asymp; 20N</code>.</dd>
+    <dt>&pi;<sub>&theta;</sub>(y | x)</dt>
+    <dd>The model treated as a policy: the probability it assigns to response <code>y</code> given
+        prompt <code>x</code>. Used from the alignment section onward.</dd>
+    <dt>p, q</dt>
+    <dd>In Arc 2, <code>p</code> is always the big/target/teacher distribution and <code>q</code>
+        the small/draft/student one. Keeping this consistent is what makes the distillation and
+        speculative-decoding sections rhyme.</dd>
+  </dl>
+
+  <h3>The four problems</h3>
+  <p>
+    Everything in Arc 1 is a response to one of the first three problems; everything in Arc 2
+    responds to the fourth. Naming them now makes the rest of the page a set of answers rather
+    than a list of techniques.
+  </p>
+
+  <div class="tbl">
+    <table>
+      <thead>
+        <tr><th>Problem</th><th>Why the 2017 design suffers</th><th>Answered in</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Position</b></td>
+          <td>Learned absolute position embeddings are a fixed-size table: the model cannot be run
+              on a sequence longer than the table, and it must learn "5 tokens apart" separately
+              at every absolute offset.</td>
+          <td>&sect;02 &mdash; RoPE</td>
+        </tr>
+        <tr>
+          <td><b>Trainability</b></td>
+          <td>Post-norm residuals mean the identity path is normalized at every layer, so deep
+              stacks need learning-rate warmup on a knife-edge. Attention logits grow without
+              bound during training and can saturate the softmax.</td>
+          <td>&sect;02 &mdash; pre-norm, RMSNorm, QK-norm, zero-init</td>
+        </tr>
+        <tr>
+          <td><b>Optimization</b></td>
+          <td>Adam rescales every weight <em>independently</em>. A weight matrix is not a bag of
+              independent scalars; its useful structure is spectral, and per-coordinate scaling
+              is blind to it.</td>
+          <td>&sect;03 &mdash; Muon</td>
+        </tr>
+        <tr>
+          <td><b>Serving cost</b></td>
+          <td>Generation is sequential and, at scale, bound by memory bandwidth rather than
+              arithmetic. Every token generated re-reads the entire weight matrix from memory.</td>
+          <td>Arc 2 &mdash; the cost model, then &sect;07&ndash;&sect;09</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<section id="tokenizer">
+  <div class="sec-head">
+    <span class="sec-n">01</span>
+    <div>
+      <h2>The tokenizer</h2>
+      <p class="deck">Byte-level BPE. Why a language model's vocabulary is a compression problem,
+      and why working over bytes eliminates an entire class of bug.</p>
+    </div>
+  </div>
+
+  <p>
+    Before any neural network runs, text has to become integers. The naive options are both bad.
+    <em>Characters</em> give a tiny vocabulary but very long sequences, and attention costs
+    <code>O(T&sup2;)</code>, so long sequences are expensive. <em>Words</em> give short sequences
+    but an unbounded vocabulary: you will always meet a word you did not see in training, and
+    every such word collapses to a single <code>&lt;unk&gt;</code> token that destroys information.
+  </p>
+  <p>
+    Byte-pair encoding is the compromise, and it is genuinely a compression algorithm before it is
+    an NLP one. Start with an alphabet. Repeatedly find the most frequent adjacent pair of symbols
+    in the corpus, and add a new symbol that means "that pair". Stop at the target vocabulary
+    size. Frequent sequences &mdash; <code>&nbsp;the</code>, <code>ing</code>, <code>&nbsp;Congratulations</code>
+    &mdash; become single tokens; rare ones stay decomposed into pieces.
+  </p>
+
+  <h3>Byte-level is the part that matters</h3>
+  <p>
+    The critical design choice is what the starting alphabet is. If it is Unicode characters, the
+    alphabet is effectively unbounded (there are ~150,000 assigned code points) and you are back to
+    needing an <code>&lt;unk&gt;</code>. If it is <b>the 256 possible byte values</b>, the alphabet
+    is exactly 256 and closed. Every possible string &mdash; any language, any emoji, any corrupted
+    file, any lone surrogate &mdash; is <em>some</em> sequence of bytes, so it is always encodable.
+  </p>
+  <div class="math">
+decode(encode(s)) == s&nbsp;&nbsp;<span class="note">for every string s, with no exceptions</span>
+  </div>
+  <p>
+    This is not a soft guarantee, it is a structural one, and the repository asserts it with
+    property-based tests that let <a href="https://hypothesis.readthedocs.io/">Hypothesis</a>
+    generate adversarial strings. There is no <code>&lt;unk&gt;</code> token in this tokenizer
+    because there cannot be one.
+  </p>
+
+  <h3>Pre-tokenization: the constraint that keeps merges sane</h3>
+  <p>
+    Left alone, BPE will happily learn a single token for <code>"&nbsp;of&nbsp;the"</code>, because
+    that string is extremely frequent. That is wasteful &mdash; it spends vocabulary slots on
+    phrase-level accidents instead of morphology &mdash; and it makes the tokenization of a word
+    depend on what precedes it. The fix is a <b>pre-tokenization regex</b> that first splits text
+    into chunks (roughly: words with their leading space, runs of digits, runs of punctuation), and
+    merges are only ever allowed <em>inside</em> a chunk.
+  </p>
+  <pre><code>// GPT-2's pattern, implemented in src/nanoscale/tokenizer/bpe.py
+'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+</code></pre>
+  <p>
+    This has a pleasant efficiency consequence. Because merges never cross chunk boundaries,
+    training does not need to rescan the corpus: it can count chunk <em>types</em> with their
+    frequencies, and maintain a <code>pair &rarr; which chunks contain it</code> inverted index so
+    that applying a merge only touches the chunks that actually contain that pair. Encoding gets
+    the same benefit as a cache keyed on the chunk, which is why this pure-Python tokenizer still
+    encodes at ~14 MB/s.
+  </p>
+
+  <div class="caveat">
+    <span class="caveat-t">A property I assumed and Hypothesis disproved</span>
+    <p>
+      I wrote a test asserting that token counts are <em>subadditive</em> under concatenation
+      &mdash; that <code>len(encode(a + b)) &le; len(encode(a)) + len(encode(b))</code>, on the
+      reasoning that concatenating can only create merge opportunities. Hypothesis found
+      <code>a = "eps"</code>, <code>b = "ep"</code>: one token each, but
+      <code>"epsep"</code> encodes to <b>three</b>. Concatenation creates a new chunk whose
+      greedy merge order differs from either part's, and greedy merging is not monotone.
+      The counterexample is now a named regression test, and the true property &mdash; token
+      counts <em>are</em> additive across pre-token boundaries &mdash; is tested instead.
+    </p>
+  </div>
+
+  <h3>What was measured</h3>
+  <p>
+    Two vocabularies are trained and committed. The <code>nano</code> tier uses 1,024 tokens
+    (761 learned merges) over the synthetic corpus; the <code>micro</code> tier uses 16,384
+    tokens (16,121 merges) over TinyStories. Correctness against a reference implementation is
+    checked as three separate claims rather than one vague "parity" number:
+  </p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Claim</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Pre-tokenization is <em>exactly</em> GPT-2's</td>
+          <td>Chunk-for-chunk identical to <code>tiktoken</code>'s split on every test passage.
+              This is the part that can be exactly equal, so it is tested for exact equality.</td>
+        </tr>
+        <tr>
+          <td>In-domain compression is comparable</td>
+          <td>4.19 bytes/token in-domain, 4.23 on a held-out seed &mdash; a 1,024-token vocabulary
+              matching a 50,257-token one on the distribution it was trained for.</td>
+        </tr>
+        <tr>
+          <td>Out-of-domain degradation is bounded</td>
+          <td>2.25 bytes/token on prose the vocabulary never saw, against <code>tiktoken</code>'s
+              4.79. <span class="worse">A 2.1&times; regression</span> &mdash; reported, not hidden.
+              A small in-domain vocabulary <em>should</em> degrade off-distribution; a test that
+              demanded parity here would be testing the wrong thing.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="footnote">
+    Longest learned tokens in the 16k TinyStories vocabulary:
+    <code>&nbsp;enthusiastically</code>, <code>&nbsp;Congratulations</code>,
+    <code>&nbsp;understandingly</code>, <code>&nbsp;recommendations</code> &mdash; whole words, which
+    is what a healthy merge schedule produces.
+  </p>
+</section>
+<section id="model">
+  <div class="sec-head">
+    <span class="sec-n">02</span>
+    <div>
+      <h2>The architecture</h2>
+      <p class="deck">Eight deltas from the 2017 block. Each one states the problem, the fix, and
+      what it cost or bought.</p>
+    </div>
+  </div>
+
+  <p>
+    This is the model the repository builds. Read it against the 2017 diagram above: the skeleton
+    is identical &mdash; attention sublayer, feed-forward sublayer, residuals, stacked N times
+    &mdash; and every difference is annotated below.
+  </p>
+
+  <figure>
+    <div class="fig-frame">
+      <svg viewBox="0 0 780 430" role="img" aria-label="The NanoScale-LM block: pre-norm residual stream, RMSNorm, grouped-query attention with QK-norm applied before RoPE, a KV cache, and a SwiGLU feed-forward network, with zero-initialized output projections on both sublayers.">
+        <defs>
+          <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+          </marker>
+          <marker id="ar2a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#12655F"/>
+          </marker>
+        </defs>
+        <g font-family="ui-monospace, monospace" font-size="12" fill="currentColor">
+
+          <!-- residual spine -->
+          <line x1="120" y1="52" x2="120" y2="386" stroke="currentColor" stroke-width="2.4"/>
+          <text x="104" y="46" text-anchor="end" font-size="11" opacity=".75">residual stream</text>
+          <text x="104" y="60" text-anchor="end" font-size="10" opacity=".55">(never normalized)</text>
+
+          <!-- in -->
+          <line x1="120" y1="20" x2="120" y2="50" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar2)"/>
+          <text x="130" y="26" font-size="11" opacity=".7">token embedding</text>
+
+          <!-- attention sublayer -->
+          <line x1="120" y1="96" x2="176" y2="96" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar2)"/>
+          <rect x="180" y="80" width="92" height="32" rx="3" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="226" y="100" text-anchor="middle">RMSNorm</text>
+          <line x1="272" y1="96" x2="298" y2="96" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar2)"/>
+
+          <rect x="302" y="62" width="300" height="112" rx="4" fill="none" stroke="#12655F" stroke-width="1.4"/>
+          <text x="314" y="80" font-size="10.5" fill="#12655F">grouped-query attention</text>
+          <text x="316" y="102" font-size="11.5">q,k &rarr; QK-norm &rarr; RoPE</text>
+          <text x="316" y="122" font-size="11.5">8 query heads / 4 kv heads</text>
+          <text x="316" y="142" font-size="11.5">causal softmax &middot; KV cache</text>
+          <text x="316" y="162" font-size="11.5" fill="#12655F">o_proj &nbsp;init = 0</text>
+
+          <line x1="602" y1="118" x2="646" y2="118" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M 646 118 L 646 200 L 133 200" fill="none" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar2)"/>
+          <circle cx="120" cy="200" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <text x="120" y="205" text-anchor="middle" font-size="13">+</text>
+
+          <!-- mlp sublayer -->
+          <line x1="120" y1="252" x2="176" y2="252" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar2)"/>
+          <rect x="180" y="236" width="92" height="32" rx="3" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="226" y="256" text-anchor="middle">RMSNorm</text>
+          <line x1="272" y1="252" x2="298" y2="252" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar2)"/>
+
+          <rect x="302" y="222" width="300" height="92" rx="4" fill="none" stroke="#12655F" stroke-width="1.4"/>
+          <text x="314" y="240" font-size="10.5" fill="#12655F">SwiGLU feed-forward</text>
+          <text x="316" y="262" font-size="11.5">SiLU(x&middot;W_gate) &#8857; (x&middot;W_up)</text>
+          <text x="316" y="282" font-size="11.5">&rarr; W_down</text>
+          <text x="316" y="302" font-size="11.5" fill="#12655F">W_down &nbsp;init = 0</text>
+
+          <line x1="602" y1="268" x2="646" y2="268" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M 646 268 L 646 340 L 133 340" fill="none" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar2)"/>
+          <circle cx="120" cy="340" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <text x="120" y="345" text-anchor="middle" font-size="13">+</text>
+
+          <text x="150" y="378" font-size="11" opacity=".7">&#215; N blocks, then RMSNorm &rarr; untied LM head</text>
+          <line x1="120" y1="386" x2="120" y2="410" stroke="currentColor" stroke-width="1.2" marker-end="url(#ar2)"/>
+          <text x="132" y="414" font-size="11" opacity=".7">logits</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>
+      <b>The residual stream is never normalized.</b> That is the single most consequential
+      difference from the 2017 diagram: normalization moved <em>inside</em> each branch, so there
+      is an unbroken identity path from the embedding to the logits. Both branch outputs are
+      initialized to exactly zero, so at step&nbsp;0 the whole stack computes the identity function.
+    </figcaption>
+  </figure>
+
+  <h3>2.1 &nbsp;Pre-norm residuals &mdash; the trainability fix</h3>
+  <p>
+    In the 2017 block the order is <code>x &rarr; sublayer &rarr; add &rarr; normalize</code>.
+    That means the residual stream itself is renormalized at every layer. Whatever the embedding
+    wrote into it gets rescaled L times before reaching the output, and the gradient flowing
+    backward is rescaled L times too. In practice deep post-norm stacks only train with carefully
+    tuned learning-rate warmup; without it they diverge.
+  </p>
+  <p>
+    The pre-norm arrangement is <code>x &rarr; normalize &rarr; sublayer &rarr; add</code>. The
+    normalization applies to the <em>input of the branch</em>, not to the stream. The stream itself
+    is a pure sum:
+  </p>
+  <div class="math">
+x<sub>out</sub> = x<sub>in</sub> + Attn(Norm(x<sub>in</sub>)) + MLP(Norm(&middot;))
+<span class="note">&part;x_out/&part;x_in contains an exact identity term, at every layer</span>
+  </div>
+  <p>
+    The gradient reaching layer 0 therefore contains an undamped copy of the gradient at the output.
+    This is why modern models are trained at depth without a warmup knife-edge, and it is the
+    reason the residual stream is often described as a "highway" that each block reads from and
+    writes to.
+  </p>
+
+  <h3>2.2 &nbsp;RMSNorm &mdash; delete the part nobody could justify</h3>
+  <p>
+    LayerNorm subtracts the mean, divides by the standard deviation, then applies a learned gain
+    and bias. RMSNorm keeps only the scaling:
+  </p>
+  <div class="math">
+LayerNorm(x) = &gamma; &#8857; (x &minus; &mu;) / &radic;(&sigma;&sup2; + &epsilon;) + &beta;
+RMSNorm(x)&nbsp;&nbsp; = &gamma; &#8857; x / &radic;(mean(x&sup2;) + &epsilon;)
+  </div>
+  <p>
+    Zhang &amp; Sennrich showed empirically that the mean-subtraction ("re-centering") contributes
+    nothing measurable, and that the useful work is entirely in the rescaling. Dropping it removes
+    one full pass over the vector, one reduction, and the bias parameters. At a 5M-parameter scale
+    that saving is invisible; at 70B it is not, and every current open model uses RMSNorm.
+  </p>
+  <div class="note">
+    <span class="note-t">An engineering detail that turned out to matter</span>
+    <p>
+      The <code>mean(x&sup2;)</code> reduction must accumulate in higher precision than the
+      activations, or bf16 training produces garbage. The obvious way to write that is
+      <code>x.float()</code>. But <code>.float()</code> means "cast to fp32" &mdash; which
+      promotes bf16 as intended and silently <em>demotes</em> float64. The repository's numerical
+      tests use fp64 reference implementations to get their sharpness, and this demotion capped
+      their agreement at 1e&minus;5 when the true agreement is 1e&minus;10. A test passing at a
+      tolerance five orders of magnitude looser than reality is not testing anything. There is now
+      a one-function module, <code>model/numerics.py</code>, whose whole job is
+      <code>accumulation_dtype()</code>: promote to at least fp32, never demote.
+    </p>
+  </div>
+
+  <h3>2.3 &nbsp;RoPE &mdash; position as a rotation</h3>
+  <p>
+    This is the delta most worth understanding properly, because the trick is genuinely elegant and
+    the implementations look opaque until you see it.
+  </p>
+  <p>
+    The problem with adding a learned position vector to the embedding is that it makes position
+    <em>absolute</em>. The model must learn, separately for every pair of absolute offsets, that
+    positions 5 and 7 are two apart in the same way that 105 and 107 are. And the table has a fixed
+    number of rows, so the model cannot run on longer sequences than it was trained on.
+  </p>
+  <p>
+    Rotary position embedding attacks this from the observation that attention only ever consumes
+    <code>q</code> and <code>k</code> through their <em>dot product</em>. So instead of adding
+    anything, rotate them. Split each head's <code>d_head</code>-dimensional query and key vector
+    into <code>d_head/2</code> consecutive pairs, and treat each pair as a point in a 2-D plane.
+    For a token at position <code>m</code>, rotate pair <code>j</code> by angle
+    <code>m&thinsp;&theta;<sub>j</sub></code>:
+  </p>
+  <div class="math">
+&theta;<sub>j</sub> = base<sup>&minus;2j/d_head</sup>&nbsp;&nbsp;<span class="note">base = 10000; low j rotates fast, high j rotates slowly</span>
+
+[ q<sub>2j</sub> ]   [ cos(m&theta;<sub>j</sub>)  &minus;sin(m&theta;<sub>j</sub>) ] [ q<sub>2j</sub> ]
+[ q<sub>2j+1</sub> ] &larr; [ sin(m&theta;<sub>j</sub>)&nbsp;&nbsp; cos(m&theta;<sub>j</sub>) ] [ q<sub>2j+1</sub> ]
+  </div>
+  <p>
+    Now the payoff. Rotation matrices compose by adding angles, and a rotation is orthogonal, so
+    <code>R<sub>m</sub><sup>T</sup>R<sub>n</sub> = R<sub>n&minus;m</sub></code>. Therefore:
+  </p>
+  <div class="math">
+&#10216; R<sub>m</sub>q , R<sub>n</sub>k &#10217; = q<sup>T</sup>R<sub>m</sub><sup>T</sup>R<sub>n</sub>k = q<sup>T</sup>R<sub>n&minus;m</sub>k
+<span class="note">the attention score depends on (n &minus; m) alone &mdash; relative position, for free</span>
+  </div>
+  <p>
+    No parameters were added. No table can be run off the end of. And the model learns
+    "two tokens apart" <em>once</em>, not once per absolute offset. The multi-frequency construction
+    &mdash; fast rotations in the early dimensions, slow ones in the late dimensions &mdash; is the
+    same idea as sinusoidal encodings: it gives the dot product a basis in which both short-range
+    and long-range offsets are distinguishable.
+  </p>
+
+  <figure>
+    <div class="fig-frame">
+      <svg viewBox="0 0 700 240" role="img" aria-label="A query-key pair rotated by their positions: the angle between them after rotation equals the difference of their positions times theta, so the dot product depends only on relative distance.">
+        <g font-family="ui-monospace, monospace" font-size="11.5" fill="currentColor">
+          <!-- left circle -->
+          <circle cx="150" cy="118" r="72" fill="none" stroke="currentColor" stroke-width="1" opacity=".3"/>
+          <line x1="70" y1="118" x2="230" y2="118" stroke="currentColor" stroke-width=".8" opacity=".25"/>
+          <line x1="150" y1="38" x2="150" y2="198" stroke="currentColor" stroke-width=".8" opacity=".25"/>
+          <line x1="150" y1="118" x2="212" y2="82" stroke="currentColor" stroke-width="1.8"/>
+          <text x="220" y="78">q (pos 3)</text>
+          <line x1="150" y1="118" x2="196" y2="60" stroke="#12655F" stroke-width="1.8"/>
+          <text x="196" y="50" fill="#12655F">k (pos 5)</text>
+          <path d="M 186 100 A 42 42 0 0 0 174 87" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".7"/>
+          <text x="150" y="215" text-anchor="middle" opacity=".7">angle between = 2&theta;</text>
+
+          <!-- right circle -->
+          <circle cx="470" cy="118" r="72" fill="none" stroke="currentColor" stroke-width="1" opacity=".3"/>
+          <line x1="390" y1="118" x2="550" y2="118" stroke="currentColor" stroke-width=".8" opacity=".25"/>
+          <line x1="470" y1="38" x2="470" y2="198" stroke="currentColor" stroke-width=".8" opacity=".25"/>
+          <line x1="470" y1="118" x2="418" y2="168" stroke="currentColor" stroke-width="1.8"/>
+          <text x="352" y="186">q (pos 103)</text>
+          <line x1="470" y1="118" x2="440" y2="184" stroke="#12655F" stroke-width="1.8"/>
+          <text x="428" y="204" fill="#12655F">k (pos 105)</text>
+          <path d="M 452 158 A 42 42 0 0 0 442 148" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".7"/>
+          <text x="470" y="215" text-anchor="middle" opacity=".7">angle between = 2&theta;</text>
+
+          <text x="310" y="118" text-anchor="middle" font-size="20" opacity=".5">=</text>
+          <text x="310" y="140" text-anchor="middle" font-size="10.5" opacity=".6">same score</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>
+      <b>Why the dot product only sees distance.</b> Both vectors of a pair get rotated by their own
+      absolute position, so the <em>angle between them</em> &mdash; which is what the dot product
+      measures &mdash; is the difference of those rotations. Tokens two apart look identical to
+      attention whether they sit at positions 3 and 5 or 103 and 105.
+    </figcaption>
+  </figure>
+
+  <div class="note">
+    <span class="note-t">Conventions differ, and mixing them is silent</span>
+    <p>
+      There are two layouts in the wild: <em>interleaved</em> pairs
+      (<code>[0,1], [2,3], &hellip;</code>, the original paper) and <em>split-half</em> pairs
+      (<code>[0, d/2], [1, d/2+1], &hellip;</code>, common in Hugging Face ports). Both are correct
+      rotations and both train, so mismatching them produces no error &mdash; only a checkpoint that
+      quietly does not transfer. This repository uses interleaved and pins it with a test against a
+      slow fp64 reference rotation written independently of the fast path.
+    </p>
+  </div>
+
+  <h3>2.4 &nbsp;Grouped-query attention &mdash; a fix for a problem you only see at inference</h3>
+  <p>
+    During training, attention reads the whole sequence at once and nothing is stored between
+    steps. During generation the picture inverts. Generating token <code>t+1</code> needs the keys
+    and values of all <code>t</code> previous tokens, and recomputing them every step would make
+    generation <code>O(T&sup2;)</code> per token. So they are cached &mdash; the <b>KV cache</b>
+    &mdash; and the cache is the thing that dominates inference memory.
+  </p>
+  <div class="math">
+KV bytes = 2 &times; L &times; n_kv &times; d_head &times; T &times; batch &times; bytes_per_element
+<span class="note">2 for K and V; grows linearly in sequence length <em>and</em> in batch size</span>
+  </div>
+  <p>
+    Put a real model in that formula. Llama-2-7B has <code>L=32</code>, 32 heads of
+    <code>d_head=128</code>, and standard multi-head attention, so <code>n_kv=32</code>. At a
+    4,096-token context in fp16, for <b>one single sequence</b>:
+  </p>
+  <div class="math">
+2 &times; 32 &times; 32 &times; 128 &times; 4096 &times; 1 &times; 2 bytes = <b>2.1 GB</b>
+  </div>
+  <p>
+    Two gigabytes of cache for one user, against 13&nbsp;GB of weights that are shared by everyone.
+    Batch sixteen users and the cache is 34&nbsp;GB &mdash; the cache, not the model, is what
+    decides how many people your GPU can serve. That is the bottleneck GQA exists to attack.
+  </p>
+  <p>
+    The observation is that <code>n_kv</code> does not have to equal the number of query heads.
+    Keep all <code>H</code> query heads &mdash; they are where attention's expressiveness lives
+    &mdash; but let groups of them <em>share</em> one key/value head. With
+    <code>n_kv = H</code> you have classic multi-head attention; with <code>n_kv = 1</code> you have
+    multi-query attention, which is maximally cheap and measurably hurts quality; GQA is the middle
+    that Ainslie et al. showed keeps almost all the quality.
+  </p>
+
+  <figure>
+    <div class="fig-frame">
+      <svg viewBox="0 0 720 220" role="img" aria-label="Multi-head attention gives every query head its own key-value head; grouped-query attention has pairs of query heads share one key-value head, halving the KV cache; multi-query attention shares a single key-value head across all queries.">
+        <g font-family="ui-monospace, monospace" font-size="11" fill="currentColor">
+          <!-- MHA -->
+          <text x="20" y="22" font-size="11.5" font-weight="600">MHA &nbsp;n_kv = 8</text>
+          <text x="20" y="38" font-size="10" opacity=".65">cache &times;1.0</text>
+          <g>
+            <rect x="20" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="44" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="68" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="92" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="116" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="140" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="164" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="188" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <text x="216" y="67" font-size="10" opacity=".7">Q</text>
+          </g>
+          <g stroke="currentColor" stroke-width=".9" opacity=".5">
+            <line x1="30" y1="72" x2="30" y2="104"/><line x1="54" y1="72" x2="54" y2="104"/>
+            <line x1="78" y1="72" x2="78" y2="104"/><line x1="102" y1="72" x2="102" y2="104"/>
+            <line x1="126" y1="72" x2="126" y2="104"/><line x1="150" y1="72" x2="150" y2="104"/>
+            <line x1="174" y1="72" x2="174" y2="104"/><line x1="198" y1="72" x2="198" y2="104"/>
+          </g>
+          <g fill="#12655F" opacity=".9">
+            <rect x="20" y="104" width="20" height="20" rx="2"/><rect x="44" y="104" width="20" height="20" rx="2"/>
+            <rect x="68" y="104" width="20" height="20" rx="2"/><rect x="92" y="104" width="20" height="20" rx="2"/>
+            <rect x="116" y="104" width="20" height="20" rx="2"/><rect x="140" y="104" width="20" height="20" rx="2"/>
+            <rect x="164" y="104" width="20" height="20" rx="2"/><rect x="188" y="104" width="20" height="20" rx="2"/>
+          </g>
+          <text x="216" y="119" font-size="10" opacity=".7">KV</text>
+
+          <!-- GQA -->
+          <text x="270" y="22" font-size="11.5" font-weight="600">GQA &nbsp;n_kv = 4</text>
+          <text x="270" y="38" font-size="10" fill="#12655F">cache &times;0.5 &mdash; used here</text>
+          <g>
+            <rect x="270" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="294" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="318" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="342" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="366" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="390" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="414" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="438" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+          </g>
+          <g stroke="currentColor" stroke-width=".9" opacity=".5">
+            <path d="M 280 72 L 292 104" fill="none"/><path d="M 304 72 L 292 104" fill="none"/>
+            <path d="M 328 72 L 340 104" fill="none"/><path d="M 352 72 L 340 104" fill="none"/>
+            <path d="M 376 72 L 388 104" fill="none"/><path d="M 400 72 L 388 104" fill="none"/>
+            <path d="M 424 72 L 436 104" fill="none"/><path d="M 448 72 L 436 104" fill="none"/>
+          </g>
+          <g fill="#12655F" opacity=".9">
+            <rect x="282" y="104" width="20" height="20" rx="2"/><rect x="330" y="104" width="20" height="20" rx="2"/>
+            <rect x="378" y="104" width="20" height="20" rx="2"/><rect x="426" y="104" width="20" height="20" rx="2"/>
+          </g>
+
+          <!-- MQA -->
+          <text x="520" y="22" font-size="11.5" font-weight="600">MQA &nbsp;n_kv = 1</text>
+          <text x="520" y="38" font-size="10" opacity=".65">cache &times;0.125</text>
+          <g>
+            <rect x="520" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="544" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="568" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="592" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="616" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="640" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="664" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+            <rect x="688" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
+          </g>
+          <g stroke="currentColor" stroke-width=".8" opacity=".4">
+            <path d="M 530 72 L 610 104" fill="none"/><path d="M 554 72 L 610 104" fill="none"/>
+            <path d="M 578 72 L 610 104" fill="none"/><path d="M 602 72 L 610 104" fill="none"/>
+            <path d="M 626 72 L 610 104" fill="none"/><path d="M 650 72 L 610 104" fill="none"/>
+            <path d="M 674 72 L 610 104" fill="none"/><path d="M 698 72 L 610 104" fill="none"/>
+          </g>
+          <rect x="600" y="104" width="20" height="20" rx="2" fill="#12655F" opacity=".9"/>
+
+          <text x="360" y="176" text-anchor="middle" font-size="11" opacity=".75">
+            query heads (hollow) stay at 8 in all three &mdash; only the shaded key/value heads are cut
+          </text>
+          <text x="360" y="196" text-anchor="middle" font-size="11" opacity=".75">
+            and the KV cache is exactly proportional to that shaded count
+          </text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>
+      <b>GQA cuts the cache, not the query capacity.</b> The <code>micro</code> tier here uses
+      8&nbsp;query heads over 4&nbsp;KV heads, halving cache memory. In the code this is implemented
+      by projecting <code>k</code> and <code>v</code> to <code>n_kv</code> heads and expanding them
+      with <code>repeat_kv</code> before the dot product &mdash; a view, not a copy, so nothing is
+      materialized.
+    </figcaption>
+  </figure>
+
+  <h3>2.5 &nbsp;QK-norm &mdash; keeping the softmax out of saturation</h3>
+  <p>
+    Attention scores are <code>q&middot;k / &radic;d_head</code>. Nothing bounds the norms of
+    <code>q</code> and <code>k</code>, and during training they tend to grow. Once the scores get
+    large, the softmax saturates: it becomes nearly one-hot, its gradient goes to nearly zero, and
+    that head stops learning. It is a slow, silent failure that shows up as a loss spike or a dead
+    head, not as an error.
+  </p>
+  <p>
+    The fix is one line: RMS-normalize <code>q</code> and <code>k</code> per-head before the dot
+    product, with a learned gain. The score's magnitude is now controlled by that learned gain
+    rather than by whatever the projections happened to drift to.
+  </p>
+  <div class="caveat">
+    <span class="caveat-t">Ordering matters, and the wrong order still trains</span>
+    <p>
+      QK-norm must be applied <em>before</em> RoPE, not after. Normalizing after rotating would
+      rescale the rotated vector and break the exact orthogonality the relative-position identity
+      depends on. Doing it in the wrong order produces a model that trains perfectly well and has
+      subtly wrong position handling &mdash; so the repository pins the order with an explicit test
+      rather than a comment.
+    </p>
+  </div>
+
+  <h3>2.6 &nbsp;SwiGLU &mdash; a gate on the feed-forward network</h3>
+  <p>
+    The 2017 feed-forward network is <code>ReLU(xW&#8321;)W&#8322;</code>: project up, threshold,
+    project down. SwiGLU splits the up-projection into two and uses one half to gate the other:
+  </p>
+  <div class="math">
+FFN<sub>2017</sub>(x) = ReLU(x W&#8321;) W&#8322;
+SwiGLU(x)&nbsp;&nbsp;&nbsp;  = ( SiLU(x W<sub>gate</sub>) &#8857; (x W<sub>up</sub>) ) W<sub>down</sub>
+<span class="note">SiLU(z) = z &middot; &sigma;(z);&nbsp; &#8857; is elementwise</span>
+  </div>
+  <p>
+    The gate is the point. In the ReLU version the only decision available per unit is
+    "pass or zero". In the gated version one branch computes a <em>value</em> and the other
+    computes, from the same input, a smooth multiplicative <em>weight</em> on that value &mdash;
+    so a unit can be attenuated by any amount rather than only switched off, and the attenuation is
+    input-dependent. Because three matrices replace two, the hidden width is conventionally scaled
+    by <code>2/3</code> (here to <code>8/3&nbsp;&middot;&nbsp;d</code> rounded to a multiple of 64)
+    so parameter count stays comparable.
+  </p>
+  <p>
+    Shazeer's paper introducing this is unusually honest: it offers no theoretical justification and
+    ends "we attribute their success, as all else, to divine benevolence." It won on benchmarks and
+    the field adopted it. The ungated ReLU&sup2; alternative from the modded-nanoGPT speedrun is
+    implemented here too, as a togglable ablation &mdash; see <a href="#ablations">&sect;05</a> for
+    what it actually measured.
+  </p>
+
+  <h3>2.7 &nbsp;Zero-init output projections and an untied head</h3>
+  <p>
+    Both sublayers' final projections (<code>o_proj</code> and <code>W_down</code>) are initialized
+    to exactly zero. At step 0 every block therefore outputs zero, the residual stream passes the
+    embedding through untouched, and the model computes the identity. Training starts from a
+    provably well-conditioned point and each block "switches itself on" as its gradient grows.
+  </p>
+  <p>
+    This has a testable consequence that the repository uses as a canary. If the model outputs
+    nothing but the embedding, and the embedding is small and roughly isotropic, the logits are
+    near-uniform, so the initial loss must be exactly the entropy of a uniform distribution over the
+    vocabulary:
+  </p>
+  <div class="math">
+loss(step 0) = ln(V)
+<span class="note">measured: 9.7041 for V = 16,384; ln(16384) = 9.70406 &mdash; agreement to five decimals</span>
+  </div>
+  <p>
+    If a refactor breaks the initialization, the very first logged number changes, and it changes
+    against a value derived from theory rather than from a previous run.
+  </p>
+  <p>
+    <b>Untying</b> the LM head means the output projection is a separate matrix from the input
+    embedding table rather than its transpose. Tying saves <code>V&times;d</code> parameters and was
+    standard when vocabularies were small relative to model width. It also forces one matrix to
+    serve two different jobs &mdash; "what does this token mean" and "how likely is this token here"
+    &mdash; and at modern vocabulary sizes the parameter saving is not worth the constraint.
+  </p>
+
+  <h3>2.8 &nbsp;Two optional heads</h3>
+  <p>
+    Both are implemented and off by default, because their effect is what the ablation harness
+    exists to measure rather than assert.
+  </p>
+  <dl class="defs">
+    <dt>tanh logit soft-cap</dt>
+    <dd>
+      <code>logits &larr; c &middot; tanh(logits / c)</code>. A smooth ceiling on logit magnitude
+      (Gemma-2 uses <code>c = 30</code>), which prevents a single overconfident logit from
+      dominating the softmax. Unlike clipping it is differentiable everywhere, so gradients keep
+      flowing through capped logits.
+    </dd>
+    <dt>multi-token prediction (MTP)</dt>
+    <dd>
+      Extra small heads that predict token <code>t+2</code>, <code>t+3</code>, &hellip; alongside the
+      main <code>t+1</code> head, as an auxiliary loss. The training argument is that forcing the
+      representation to carry information about tokens further ahead is a denser learning signal
+      than next-token alone. The <em>inference</em> argument is more interesting and is why this
+      belongs in a project with an Arc 2: those heads are already a draft model, which makes them
+      reusable for self-speculation with no separate network &mdash; the Medusa idea in
+      <a href="#spec">&sect;09</a>.
+    </dd>
+  </dl>
+
+  <h3>The size ladder</h3>
+  <p>
+    One architecture; only depth, width, context and token budget change. Parameter counts are
+    asserted as exact constants in the test suite &mdash; against both the analytic formula and the
+    built <code>nn.Module</code> &mdash; so an accidental architecture change fails loudly rather
+    than quietly shifting every number downstream.
+  </p>
+  <div class="tbl">
+    <table>
+      <thead>
+        <tr><th>Tier</th><th class="num">Params</th><th class="num">Non-embedding</th>
+            <th>L &times; d &times; H</th><th class="num">n_kv</th><th class="num">Context</th><th>Trains on</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>nano</code></td><td class="num">4,952,064</td><td class="num">4,427,776</td>
+            <td>6 &times; 256 &times; 4</td><td class="num">2</td><td class="num">256</td><td>laptop CPU, 95&nbsp;s</td></tr>
+        <tr><td><code>micro</code></td><td class="num">40,379,904</td><td class="num">23,602,688</td>
+            <td>8 &times; 512 &times; 8</td><td class="num">4</td><td class="num">512</td><td>free Colab T4</td></tr>
+        <tr><td><code>small</code></td><td class="num">125,849,856</td><td class="num">75,518,208</td>
+            <td>12 &times; 768 &times; 12</td><td class="num">4</td><td class="num">1024</td><td>scale-up recipe</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="footnote">
+    Both totals are reported because "parameter count" is ambiguous without saying whether
+    embeddings and an untied head are included. At <code>micro</code> the embedding table plus head
+    is 16.8M of the 40.4M &mdash; 42% of the model is the vocabulary interface, which is what small
+    models look like.
+  </p>
+</section>
+<section id="optim">
+  <div class="sec-head">
+    <span class="sec-n">03</span>
+    <div>
+      <h2>The optimizer: Muon</h2>
+      <p class="deck">Adam treats a weight matrix as a bag of independent numbers. It isn't one.
+      This is the largest single lever in the whole project.</p>
+    </div>
+  </div>
+
+  <p>
+    Start from what Adam does, because Muon is best understood as a critique of it. Adam keeps two
+    running averages per parameter &mdash; the gradient <code>m</code> and its square
+    <code>v</code> &mdash; and steps by <code>m / (&radic;v + &epsilon;)</code>. Dividing by the
+    root-mean-square gradient makes the step size roughly scale-invariant per coordinate: a weight
+    whose gradients are consistently tiny still moves, and one whose gradients are huge does not
+    blow up. AdamW's refinement is to apply weight decay <em>directly to the weight</em> rather than
+    through the gradient, so the decay is not itself rescaled by <code>v</code>.
+  </p>
+  <p>
+    Notice the word <em>per coordinate</em>. Adam's update rule is applied elementwise, which means
+    it makes an implicit assumption: that the parameters are exchangeable scalars whose only
+    relevant property is their own gradient history. For a bias vector or a norm gain, that is true.
+    For a <code>512&times;1536</code> weight matrix, it is false.
+  </p>
+
+  <h3>What a weight matrix actually does</h3>
+  <p>
+    A weight matrix is a linear map. Its meaningful structure is its <b>singular value
+    decomposition</b>, <code>W = U&Sigma;V<sup>T</sup></code>: a set of input directions
+    (columns of <code>V</code>), a set of output directions (columns of <code>U</code>), and a gain
+    <code>&sigma;<sub>i</sub></code> for each pairing. What the layer <em>does</em> is amplify some
+    directions and suppress others.
+  </p>
+  <p>
+    Raw gradients of such matrices are typically very badly conditioned &mdash; their top singular
+    value dominates the rest by orders of magnitude. So a gradient step, and an Adam step too, moves
+    the matrix mostly along one direction. The other directions get a step that is smaller by that
+    same factor, which is to say they barely move at all. You are doing a low-rank update while
+    paying for a full one.
+  </p>
+
+  <h3>The fix: orthogonalize the update</h3>
+  <p>
+    Muon's proposal is to take the momentum buffer <code>B</code>, decompose it, and throw away the
+    singular <em>values</em>, keeping only the directions:
+  </p>
+  <div class="math">
+B = U&Sigma;V<sup>T</sup>&nbsp;&nbsp;&rarr;&nbsp;&nbsp; update = UV<sup>T</sup>
+<span class="note">every singular value becomes exactly 1 &mdash; the nearest orthogonal matrix to B</span>
+  </div>
+  <p>
+    <code>UV<sup>T</sup></code> is the orthogonal polar factor of <code>B</code>: the closest
+    orthogonal matrix in Frobenius norm. Every direction the gradient identified now receives an
+    equally-sized step. The update still says <em>which way</em> to move each direction &mdash; that
+    information is entirely in <code>U</code> and <code>V</code> &mdash; it just refuses to let the
+    dominant direction monopolize the step budget.
+  </p>
+
+  <figure>
+    <div class="fig-frame">
+      <svg viewBox="0 0 700 250" role="img" aria-label="Singular value spectrum before and after orthogonalization: the raw momentum buffer has one dominant singular value and a long tail near zero, while the orthogonalized update has every singular value equal to one.">
+        <g font-family="ui-monospace, monospace" font-size="11" fill="currentColor">
+          <text x="30" y="20" font-size="11.5" font-weight="600">momentum buffer B</text>
+          <text x="30" y="36" font-size="10" opacity=".65">one direction takes the whole step</text>
+          <line x1="30" y1="180" x2="300" y2="180" stroke="currentColor" stroke-width="1"/>
+          <line x1="30" y1="180" x2="30" y2="56" stroke="currentColor" stroke-width="1"/>
+          <text x="24" y="60" text-anchor="end" font-size="9.5" opacity=".6">&sigma;</text>
+          <g fill="currentColor" opacity=".75">
+            <rect x="38" y="60" width="14" height="120"/>
+            <rect x="58" y="136" width="14" height="44"/>
+            <rect x="78" y="156" width="14" height="24"/>
+            <rect x="98" y="166" width="14" height="14"/>
+            <rect x="118" y="171" width="14" height="9"/>
+            <rect x="138" y="174" width="14" height="6"/>
+            <rect x="158" y="176" width="14" height="4"/>
+            <rect x="178" y="177" width="14" height="3"/>
+            <rect x="198" y="178" width="14" height="2"/>
+            <rect x="218" y="178" width="14" height="2"/>
+            <rect x="238" y="179" width="14" height="1"/>
+            <rect x="258" y="179" width="14" height="1"/>
+          </g>
+          <text x="165" y="200" text-anchor="middle" font-size="10" opacity=".6">singular value index</text>
+          <text x="165" y="222" text-anchor="middle" font-size="10.5" opacity=".8">condition number &asymp; 3.6 &times; 10&#8311;</text>
+
+          <text x="350" y="118" font-size="18" opacity=".5">&rarr;</text>
+          <text x="350" y="140" text-anchor="middle" font-size="9.5" opacity=".6">5 NS steps</text>
+
+          <text x="400" y="20" font-size="11.5" font-weight="600" fill="#12655F">orthogonalized update</text>
+          <text x="400" y="36" font-size="10" opacity=".65">every direction gets an equal step</text>
+          <line x1="400" y1="180" x2="670" y2="180" stroke="currentColor" stroke-width="1"/>
+          <line x1="400" y1="180" x2="400" y2="56" stroke="currentColor" stroke-width="1"/>
+          <g fill="#12655F" opacity=".85">
+            <rect x="408" y="76" width="14" height="104"/>
+            <rect x="428" y="76" width="14" height="104"/>
+            <rect x="448" y="76" width="14" height="104"/>
+            <rect x="468" y="76" width="14" height="104"/>
+            <rect x="488" y="76" width="14" height="104"/>
+            <rect x="508" y="76" width="14" height="104"/>
+            <rect x="528" y="76" width="14" height="104"/>
+            <rect x="548" y="76" width="14" height="104"/>
+            <rect x="568" y="77" width="14" height="103"/>
+            <rect x="588" y="78" width="14" height="102"/>
+            <rect x="608" y="80" width="14" height="100"/>
+            <rect x="628" y="84" width="14" height="96"/>
+          </g>
+          <line x1="400" y1="76" x2="670" y2="76" stroke="#12655F" stroke-width="1" stroke-dasharray="3 3" opacity=".6"/>
+          <text x="676" y="79" font-size="9.5" fill="#12655F">&sigma;=1</text>
+          <text x="535" y="222" text-anchor="middle" font-size="10.5" opacity=".8">condition number &asymp; 1.9 &times; 10&#8309;</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>
+      <b>What five Newton&ndash;Schulz steps do to a badly-conditioned update.</b> Measured on a
+      synthetic matrix with a logarithmic spectrum, exactly as the notebook reproduces it. Note
+      the honest part: after five steps the smallest directions are still under-amplified &mdash;
+      this is <em>not</em> a perfectly orthogonal matrix. It does not need to be. The purpose is to
+      stop the top direction monopolizing the step, and a ~190&times; spectral compression achieves
+      that at a fraction of an SVD's cost.
+    </figcaption>
+  </figure>
+
+  <h3>Newton&ndash;Schulz: orthogonalizing without an SVD</h3>
+  <p>
+    Computing an SVD every step for every weight matrix would be far more expensive than the
+    forward pass. Newton&ndash;Schulz iteration approximates the polar factor using
+    <em>only matrix multiplications</em> &mdash; which is exactly the operation accelerators are
+    built for. Normalize <code>B</code> so its spectral norm is at most 1, then iterate five times:
+  </p>
+  <div class="math">
+X &larr; a&middot;X + b&middot;X(X<sup>T</sup>X) + c&middot;X(X<sup>T</sup>X)&sup2;
+
+(a, b, c) = (3.4445, &minus;4.7750, 2.0315)
+  </div>
+  <p>
+    This is a quintic polynomial applied to the singular values: because <code>X</code> and
+    <code>X<sup>T</sup>X</code> share singular vectors, each <code>&sigma;</code> independently
+    follows <code>&sigma; &larr; a&sigma; + b&sigma;&sup3; + c&sigma;&#8309;</code>. Those specific
+    coefficients are not the textbook Newton&ndash;Schulz ones; Keller Jordan tuned them so the
+    polynomial pushes small singular values up aggressively in very few iterations, deliberately
+    trading a slight overshoot near <code>&sigma;=1</code> for speed. Five steps of three matmuls
+    is cheap enough to run every step on every hidden matrix.
+  </p>
+  <div class="math">
+update &larr; &radic;(max(1, rows/cols)) &times; orthogonalize(B)
+<span class="note">shape-aware scale, so the update's RMS magnitude is comparable across differently-shaped layers</span>
+  </div>
+
+  <h3>The router: which parameters get Muon</h3>
+  <p>
+    Muon applies to <b>2-D hidden weight matrices only</b>. Everything else &mdash; norm gains,
+    biases, the token embedding, and the LM head &mdash; goes to AdamW. The embedding and head are
+    two-dimensional, so this needs a reason rather than a shape check.
+  </p>
+  <p>
+    The reason is that they are not linear maps between hidden representations; they are
+    <em>lookup tables indexed by token</em>. Their rows are near-independent, each row's gradient is
+    sparse (only the tokens in this batch get one), and there is no meaningful spectrum to balance.
+    Orthogonalizing an embedding gradient mixes updates across unrelated tokens. This split is the
+    standard one, and the repository's router asserts it by parameter name.
+  </p>
+  <pre><code>Muon  : 4,423,680 params  [blocks.*.attn.{q,k,v,o}_proj, blocks.*.mlp.{gate,up,down}]
+AdamW :   528,384 params  [embed_tokens, lm_head, *.attn_norm, *.q_norm, *.k_norm, final_norm]</code></pre>
+
+  <h4>Cautious weight decay</h4>
+  <p>
+    A February 2026 refinement, implemented behind a flag: apply weight decay only to coordinates
+    where the decay direction agrees in sign with the optimizer's update. Where they disagree, decay
+    is actively fighting the gradient, and masking it out there empirically improves both Muon and
+    AdamW. The repository reports the fraction of coordinates masked, so the flag's effect is
+    observable rather than assumed.
+  </p>
+
+  <h3>What it measured</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Optimizer</th><th class="num">Final val loss</th><th class="num">Val ppl</th>
+                 <th class="num">Steps to target</th><th class="num">Seconds to target</th></tr></thead>
+      <tbody>
+        <tr><td>AdamW only</td><td class="num">0.4039</td><td class="num">1.498</td>
+            <td class="num">105</td><td class="num">33.5</td></tr>
+        <tr><td><b>Muon + AdamW</b></td><td class="num best">0.3896</td><td class="num best">1.476</td>
+            <td class="num best">50</td><td class="num best">21.1</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    <b>2.1&times; fewer steps to reach the same loss</b>, and 3.5% better final loss at an equal step
+    budget. Both arms share one seed, one data order, one schedule; they differ only in the
+    optimizer. This reproduces, at 5M parameters, the finding that the AdamW&rarr;Muon swap was the
+    single biggest lever in the modded-nanoGPT speedrun.
+  </p>
+
+  <div class="caveat">
+    <span class="caveat-t">Two results that made me revise what I was claiming</span>
+    <p>
+      <b>Muon loses to AdamW on a convex problem.</b> My first toy benchmark was single-matrix
+      least squares. Muon lost, clearly. That is not a bug &mdash; a convex quadratic in one matrix
+      is precisely the regime where Adam's per-coordinate scaling is near-optimal, and there is no
+      badly-conditioned <em>composition</em> of layers for orthogonalization to help with. Muon's
+      advantage appears on deep, badly-conditioned stacks. Both outcomes are now pinned as named
+      tests, because the negative one is what makes the positive one meaningful.
+    </p>
+    <p>
+      <b>My AdamW diverges from <code>torch.optim.AdamW</code> by 1.9e&minus;5 after 200 steps.</b>
+      That looks like a formula bug. It is not: I measured the divergence growth and it goes
+      1e&minus;17 &rarr; 1e&minus;15 &rarr; 1e&minus;12 &rarr; 1e&minus;5 over the run. That is
+      floating-point noise being amplified by a chaotic trajectory, not a systematic difference
+      &mdash; a formula error would show a constant or linearly-growing gap from step one. The test
+      asserts the <em>growth pattern</em>, which is a stronger statement than any fixed tolerance
+      would have been.
+    </p>
+  </div>
+</section>
+
+<section id="training">
+  <div class="sec-head">
+    <span class="sec-n">04</span>
+    <div>
+      <h2>Training mechanics</h2>
+      <p class="deck">The plumbing that separates a loop that runs from a loop that is correct.</p>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>Packing</h4>
+      <p>
+        Documents are concatenated with <code>&lt;eos&gt;</code> separators and sliced into
+        fixed-length windows, rather than padded per document. Padding a batch of 40-token stories
+        to 512 wastes 92% of the compute on tokens that contribute nothing. Packing wastes none.
+      </p>
+    </div>
+    <div class="card">
+      <h4>Token budgets, not epochs</h4>
+      <p>
+        Runs stop on tokens seen, following the Chinchilla 20:1 heuristic
+        (<code>D &asymp; 20N</code>). Every manifest records the <em>fraction</em> of the
+        compute-optimal budget actually covered, so an under-trained run is labelled as one instead
+        of being quietly compared against a fully-trained baseline.
+      </p>
+    </div>
+    <div class="card">
+      <h4>Gradient accumulation</h4>
+      <p>
+        Large effective batches on small memory: run <code>k</code> micro-batches, scale each loss
+        by <code>1/k</code>, step once. The subtlety is that the loss must be divided
+        <em>before</em> backward, not after, or gradient clipping sees a gradient <code>k</code>
+        times too large and clips a healthy update.
+      </p>
+    </div>
+    <div class="card">
+      <h4>Mixed precision with fp32 masters</h4>
+      <p>
+        Forward and backward in bf16; the master copy of every weight stays fp32. Without that, a
+        small update added to a large bf16 weight rounds away entirely and the parameter silently
+        stops learning. On CPU the autocast degrades to fp32 rather than erroring, which is what
+        keeps the whole pipeline runnable with no accelerator.
+      </p>
+    </div>
+    <div class="card">
+      <h4>Schedules</h4>
+      <p>
+        Cosine decay with linear warmup by default; warmup&ndash;stable&ndash;decay (WSD) behind a
+        flag. WSD's appeal is that the stable phase can be extended indefinitely and the decay
+        applied whenever you decide to stop &mdash; you do not have to know the total step count in
+        advance, which matters when your compute budget is "until Colab disconnects".
+      </p>
+    </div>
+    <div class="card">
+      <h4>Determinism as a tested property</h4>
+      <p>
+        Two runs at the same seed produce identical loss curves. A different seed produces a
+        different one (also tested &mdash; otherwise the first test could pass on a loop that ignores
+        the seed entirely). A committed golden trajectory pins what the model learns across
+        refactors.
+      </p>
+    </div>
+  </div>
+
+  <div class="caveat">
+    <span class="caveat-t">A real bug this found: resume was silently worse</span>
+    <p>
+      Checkpoint resume restored the model, the optimizer state and the RNG &mdash; and then started
+      the data iterator from the beginning of its epoch. The run continued, the loss curve looked
+      plausible, and final validation loss came out at 5.28 against 5.09 for the uninterrupted run.
+      The model was being re-shown data it had already seen while never reaching the tail of the
+      epoch. Nothing errored; the only symptom was a slightly worse number that would be easy to
+      blame on noise.
+    </p>
+    <p>
+      The fix is that <code>TokenBatcher.stream()</code> takes a starting batch offset and derives
+      the epoch and within-epoch position from it. The test is not "resume runs" but
+      <b>"resume produces the bit-identical trajectory to never having stopped"</b>, which is the
+      only version of the test that would have caught this.
+    </p>
+  </div>
+</section>
+<section id="ablations">
+  <div class="sec-head">
+    <span class="sec-n">05</span>
+    <div>
+      <h2>Ablations</h2>
+      <p class="deck">Controlled A/Bs on the architecture choices above. Three of the four
+      found nothing, which is the result.</p>
+    </div>
+  </div>
+
+  <p>
+    Every architectural claim in &sect;02 came from a paper that demonstrated it at a scale 100&ndash;1000&times;
+    larger than this. The honest thing to do is measure whether it reproduces here, and report the
+    answer either way. All arms share one seed, one data order, one schedule and a fixed step budget;
+    they differ only in the named field.
+  </p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Variant</th><th class="num">Val loss</th><th class="num">Val ppl</th>
+                 <th class="num">Steps to target</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td>default (QK-norm, zero-init, SwiGLU)</td><td class="num">0.3896</td><td class="num">1.476</td>
+            <td class="num">50</td><td>baseline</td></tr>
+        <tr><td>&minus; QK-norm</td><td class="num">0.3893</td><td class="num">1.476</td>
+            <td class="num worse">75</td><td>no loss difference; <b>1.5&times; more steps</b></td></tr>
+        <tr><td>&minus; zero-init output</td><td class="num">0.3842</td><td class="num">1.468</td>
+            <td class="num">45</td><td>no measurable difference</td></tr>
+        <tr><td>ReLU&sup2; instead of SwiGLU</td><td class="num">0.3862</td><td class="num">1.471</td>
+            <td class="num">55</td><td>no measurable difference</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    All three toggles land within 1.4% of the default on final loss, which is below the 2% threshold
+    this project is willing to call a result from a single seed. <b>Reported as "no measurable
+    difference"</b>, not as a win for whichever arm happened to come out ahead.
+  </p>
+  <p>
+    The one signal that <em>is</em> above noise is in the steps-to-target column: without QK-norm the
+    model needs 75 steps to reach the loss the default reaches in 50. The two converge to the same
+    place at different rates &mdash; which is exactly what a <em>stability</em> aid should do, and
+    exactly what a final-loss-only comparison would have missed.
+  </p>
+  <div class="note">
+    <span class="note-t">Why steps-to-target and not wall clock</span>
+    <p>
+      These arms ran sequentially on a shared laptop, so tokens/second is contaminated by whatever
+      else the machine was doing. A per-step cost difference that is real (Muon adds five
+      Newton&ndash;Schulz matmuls per 2-D weight) gets mixed with measurement noise. The step counts
+      are the result; the seconds columns are reported but explicitly labelled indicative.
+    </p>
+  </div>
+  <div class="caveat">
+    <span class="caveat-t">What a null result at this scale does and does not mean</span>
+    <p>
+      A small model on a narrow corpus is exactly the regime where stability aids have little to
+      stabilize. QK-norm exists because attention logits blow up over long training runs at
+      large width; 400 steps at <code>d=256</code> never gets there. The correct conclusion is
+      <em>"this experiment cannot see the effect"</em>, not <em>"the effect is not real"</em>.
+      These are directional confirmations, or non-confirmations, of findings obtained elsewhere.
+    </p>
+  </div>
+</section>
+
+<section id="align">
+  <div class="sec-head">
+    <span class="sec-n">06</span>
+    <div>
+      <h2>Alignment</h2>
+      <p class="deck">A pretrained model completes text. Turning it into something that answers
+      you takes SFT, then preference optimization &mdash; and the preference step has a failure
+      mode this project ran straight into.</p>
+    </div>
+  </div>
+
+  <h3>6.1 &nbsp;SFT, and why the mask matters</h3>
+  <p>
+    A pretrained model is a text continuer. Ask it a question and a reasonable continuation is
+    another question, because that is what documents containing questions look like. Supervised
+    fine-tuning fixes this by training on <code>(prompt, response)</code> pairs formatted with role
+    tokens.
+  </p>
+  <p>
+    The important detail is the <b>loss mask</b>. Cross-entropy is computed on the response tokens
+    only; prompt tokens contribute nothing. Training on the prompt teaches the model to
+    <em>generate prompts</em>, which is not the task, and it dilutes the gradient signal with tokens
+    the model will always be given rather than asked to produce. The repository verifies this with a
+    gradient check: perturbing a prompt-position label must leave the loss <em>exactly</em>
+    unchanged.
+  </p>
+
+  <h3>6.2 &nbsp;DPO, derived</h3>
+  <p>
+    Classical RLHF has three stages: collect human preferences, fit a reward model, then optimize
+    the language model against that reward with PPO. It works and it is a lot of machinery &mdash;
+    a second network to train, and an RL loop that is notoriously sensitive. Direct Preference
+    Optimization removes both. The derivation is short and worth following, because the conclusion
+    is genuinely surprising.
+  </p>
+  <p>
+    <b>Step 1.</b> Write down the RLHF objective: maximize reward, but stay close to the reference
+    policy so the model does not destroy its language ability chasing the reward.
+  </p>
+  <div class="math">
+max<sub>&pi;</sub> &nbsp;E<sub>x~D, y~&pi;</sub>[ r(x,y) ] &nbsp;&minus;&nbsp; &beta;&thinsp;KL( &pi;(&middot;|x) &#8214; &pi;<sub>ref</sub>(&middot;|x) )
+  </div>
+  <p>
+    <b>Step 2.</b> This constrained problem has a known closed-form solution. It is a standard
+    result &mdash; the optimum is the reference policy reweighted by exponentiated reward:
+  </p>
+  <div class="math">
+&pi;*(y|x) = (1 / Z(x)) &middot; &pi;<sub>ref</sub>(y|x) &middot; exp( r(x,y) / &beta; )
+<span class="note">Z(x) = &Sigma;<sub>y</sub> &pi;_ref(y|x)&thinsp;exp(r(x,y)/&beta;) &mdash; intractable, sums over all possible responses</span>
+  </div>
+  <p>
+    <b>Step 3.</b> Now invert it. Instead of solving for the policy given the reward, solve for the
+    <em>reward given the policy</em>:
+  </p>
+  <div class="math">
+r(x,y) = &beta;&thinsp;log( &pi;*(y|x) / &pi;<sub>ref</sub>(y|x) ) + &beta;&thinsp;log Z(x)
+  </div>
+  <p>
+    This says something strange: <b>any language model is already a reward model</b>, read off as
+    its log-ratio against a reference, up to a term that depends only on the prompt.
+  </p>
+  <p>
+    <b>Step 4.</b> Preferences are modelled with Bradley&ndash;Terry: the probability that
+    <code>y<sub>w</sub></code> is preferred over <code>y<sub>l</sub></code> is the sigmoid of their
+    reward difference. Substitute step 3 into it &mdash; and because both responses share the same
+    prompt, <code>&beta; log Z(x)</code> appears in both terms and <b>cancels exactly</b>:
+  </p>
+  <div class="math">
+P(y<sub>w</sub> &#8827; y<sub>l</sub> | x) = &sigma;( r(x,y<sub>w</sub>) &minus; r(x,y<sub>l</sub>) )
+
+= &sigma;( &beta; log(&pi;<sub>&theta;</sub>(y<sub>w</sub>|x)/&pi;<sub>ref</sub>(y<sub>w</sub>|x)) &minus; &beta; log(&pi;<sub>&theta;</sub>(y<sub>l</sub>|x)/&pi;<sub>ref</sub>(y<sub>l</sub>|x)) )
+<span class="note">the intractable Z(x) is gone</span>
+  </div>
+  <p>
+    <b>Step 5.</b> Maximize the likelihood of the observed preferences under that expression. That
+    is the DPO loss, and it is a plain supervised objective &mdash; no reward model, no sampling, no
+    RL:
+  </p>
+  <div class="math">
+L<sub>DPO</sub> = &minus;E [ log &sigma;( &beta;&thinsp;log(&pi;<sub>&theta;</sub>(y<sub>w</sub>|x)/&pi;<sub>ref</sub>(y<sub>w</sub>|x)) &minus; &beta;&thinsp;log(&pi;<sub>&theta;</sub>(y<sub>l</sub>|x)/&pi;<sub>ref</sub>(y<sub>l</sub>|x)) ) ]
+  </div>
+
+  <h3>6.3 &nbsp;The failure this project hit</h3>
+  <p>
+    Look at that loss again. It depends only on the <b>difference</b> of two log-ratios. There are
+    two ways to make a difference bigger: raise the first term, or lower the second. Nothing in the
+    objective prefers the first.
+  </p>
+  <p>
+    My DPO run looked healthy by every standard diagnostic. The implicit reward margin climbed
+    steadily to +7.88. Preference accuracy hit 100%. Then the aligned model went head-to-head
+    against the SFT model it started from and <b>lost 0&ndash;7&ndash;33</b>.
+  </p>
+  <p>
+    Logging the <em>absolute</em> log-probabilities rather than only their difference showed exactly
+    what happened:
+  </p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Method</th><th class="num">&Delta; log p(chosen)</th><th class="num">&Delta; log p(rejected)</th>
+                 <th class="num">&Delta; margin</th><th class="num">Wins&ndash;losses&ndash;ties vs SFT</th></tr></thead>
+      <tbody>
+        <tr><td>DPO</td><td class="num worse">&minus;0.0454</td><td class="num">&minus;4.2385</td>
+            <td class="num">+4.1931</td><td class="num worse">0&ndash;7&ndash;33</td></tr>
+        <tr><td><b>DPO + NLL anchor</b></td><td class="num best">+0.0104</td><td class="num">&minus;3.9170</td>
+            <td class="num">+3.9274</td><td class="num best">3&ndash;0&ndash;37</td></tr>
+        <tr><td>SimPO</td><td class="num worse">&minus;0.0223</td><td class="num">&minus;2.2134</td>
+            <td class="num">+2.1911</td><td class="num worse">0&ndash;4&ndash;36</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    The margin rose because the rejected response's likelihood fell off a cliff &mdash; and the
+    chosen response's likelihood fell too, just less far. The model was not learning to produce good
+    answers; it was learning to produce <em>nothing in particular</em>, slightly less unlike good
+    answers than bad ones. A rising margin was concealing a model getting worse at everything.
+  </p>
+  <div class="win">
+    <span class="win-t">The fix, and why it generalizes</span>
+    <p>
+      Add an auxiliary negative-log-likelihood term on the chosen response &mdash; the RPO-style
+      anchor, exposed here as <code>align.preference.sft_loss_weight</code>. It pins the
+      <em>absolute</em> likelihood so the objective can no longer satisfy itself by pushing
+      everything down. <code>&Delta; log p(chosen)</code> flips positive and the head-to-head becomes
+      <b>3&ndash;0&ndash;37</b>.
+    </p>
+    <p>
+      The transferable lesson is not about DPO. <em>Any</em> objective defined on a difference can
+      be satisfied by moving both terms. The remedy is never a better margin metric &mdash; it is
+      reporting the terms.
+    </p>
+  </div>
+
+  <h4>Length exploitation</h4>
+  <p>
+    The other known DPO pathology: <code>log &pi;(y)</code> is a <em>sum</em> over tokens, each
+    negative, so longer responses have systematically lower log-probability. The objective can be
+    partly satisfied by changing length rather than content, and DPO-tuned models are widely
+    observed to become verbose. The repository measures this directly &mdash; not by comparing the
+    lengths of training responses, which only describes the data, but by measuring what the model
+    actually <em>generates</em> for held-out prompts, before and after. Here mean generated length
+    went 26.6 &rarr; 24.3 tokens: no exploitation at this scale, on this data.
+  </p>
+
+  <h3>6.4 &nbsp;SimPO and GRPO</h3>
+  <dl class="defs">
+    <dt>SimPO &mdash; reference-free</dt>
+    <dd>
+      Drops <code>&pi;<sub>ref</sub></code> entirely, normalizes by length, and adds an explicit
+      target margin <code>&gamma;</code>:
+      <code>&minus;log &sigma;( (&beta;/|y<sub>w</sub>|)&thinsp;log &pi;(y<sub>w</sub>) &minus; (&beta;/|y<sub>l</sub>|)&thinsp;log &pi;(y<sub>l</sub>) &minus; &gamma; )</code>.
+      Length normalization attacks the verbosity bias at its root, and removing the reference model
+      halves the memory needed for preference tuning &mdash; you no longer hold a frozen copy of the
+      network. It produced the largest reward margin here (+16.2) and still lost its head-to-head,
+      which is a useful reminder that the margin is not the objective you care about.
+    </dd>
+    <dt>GRPO &mdash; RL with a verifiable reward</dt>
+    <dd>
+      For tasks where correctness can be checked by a program (arithmetic here), you do not need a
+      learned reward model at all. Sample a <em>group</em> of <code>G</code> completions per prompt,
+      score each 0/1, and use the group itself as the baseline:
+      <code>A<sub>i</sub> = (r<sub>i</sub> &minus; mean(r)) / std(r)</code>. No value network, which
+      is what makes this cheap enough to matter. The KL penalty to the reference uses the <b>k3
+      estimator</b>, <code>E[&rho; &minus; log &rho; &minus; 1]</code> with
+      <code>&rho; = &pi;<sub>ref</sub>/&pi;<sub>&theta;</sub></code> &mdash; unbiased, and unlike the
+      naive <code>&minus;log &rho;</code> it is guaranteed non-negative, so it cannot pay the policy
+      to move away from the reference.
+    </dd>
+  </dl>
+  <p class="footnote">
+    The judge used for head-to-head comparisons is programmatic and stated in the code: on-topic
+    overlap with the prompt, absence of degenerate repetition, and whether the model emitted
+    <code>&lt;eot&gt;</code> rather than running to the token cap. Those are the properties the
+    preference labels encode, so this measures <em>did the model learn the labels</em> &mdash; not
+    <em>is the model good</em>. It is deliberately length-insensitive, so a model that learned to
+    game length gains nothing from it.
+  </p>
+</section>
+<section id="cost">
+  <div class="sec-head">
+    <span class="sec-n">&#8594;</span>
+    <div>
+      <h2>The inference cost model</h2>
+      <p class="deck">One number explains every technique in Arc 2. Without it they look like
+      three unrelated tricks; with it they are three attacks on the same bottleneck.</p>
+    </div>
+  </div>
+
+  <p>
+    Generation has two phases with completely different cost characteristics, and conflating them
+    is the most common way to reason wrongly about inference.
+  </p>
+  <p>
+    <b>Prefill</b> processes the whole prompt at once. Every weight matrix is loaded from memory
+    once and multiplied against <code>T</code> token vectors. Lots of arithmetic per byte loaded
+    &mdash; this phase is <em>compute-bound</em>, and it parallelizes beautifully.
+  </p>
+  <p>
+    <b>Decode</b> generates one token at a time, and each token depends on the one before it, so it
+    cannot be parallelized across time. To produce a single token you must read <em>every weight in
+    the model</em> from memory and use each one for exactly one multiply-accumulate.
+  </p>
+  <div class="math">
+arithmetic intensity of decode = 2N FLOPs / (N &times; bytes_per_weight)
+&nbsp;&nbsp;fp16: 2N / 2N = <b>1 FLOP per byte</b>
+  </div>
+  <p>
+    Now compare that to what the hardware wants. An A100 delivers roughly 312 TFLOP/s of bf16
+    arithmetic against 1.5&nbsp;TB/s of memory bandwidth &mdash; a ratio of about <b>200 FLOPs per
+    byte</b>. Decode offers it one. The arithmetic units sit idle by a factor of two hundred while
+    the memory bus does all the work.
+  </p>
+  <p>
+    Make that concrete. A 7B model in fp16 is 14&nbsp;GB. Reading 14&nbsp;GB at 1.5&nbsp;TB/s takes
+    9.3&nbsp;ms. So the hard ceiling is about <b>107 tokens/second</b>, for a single sequence, no
+    matter how fast the GPU can multiply. You are not compute-limited. You are waiting for memory.
+  </p>
+
+  <figure>
+    <div class="fig-frame">
+      <svg viewBox="0 0 720 250" role="img" aria-label="Prefill is compute bound because one weight read serves many tokens; decode is memory bound because one weight read serves a single token, leaving the arithmetic units idle.">
+        <g font-family="ui-monospace, monospace" font-size="11" fill="currentColor">
+          <text x="30" y="22" font-size="12" font-weight="600">PREFILL &mdash; compute bound</text>
+          <rect x="30" y="38" width="60" height="106" rx="3" fill="none" stroke="currentColor" stroke-width="1.3"/>
+          <text x="60" y="86" text-anchor="middle" font-size="10">weights</text>
+          <text x="60" y="102" text-anchor="middle" font-size="10">14 GB</text>
+          <path d="M 92 91 L 128 91" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar3)"/>
+          <text x="110" y="82" text-anchor="middle" font-size="9.5" opacity=".7">1&times;</text>
+          <g fill="#12655F" opacity=".85">
+            <rect x="134" y="40" width="13" height="13" rx="2"/><rect x="151" y="40" width="13" height="13" rx="2"/>
+            <rect x="168" y="40" width="13" height="13" rx="2"/><rect x="185" y="40" width="13" height="13" rx="2"/>
+            <rect x="134" y="57" width="13" height="13" rx="2"/><rect x="151" y="57" width="13" height="13" rx="2"/>
+            <rect x="168" y="57" width="13" height="13" rx="2"/><rect x="185" y="57" width="13" height="13" rx="2"/>
+            <rect x="134" y="74" width="13" height="13" rx="2"/><rect x="151" y="74" width="13" height="13" rx="2"/>
+            <rect x="168" y="74" width="13" height="13" rx="2"/><rect x="185" y="74" width="13" height="13" rx="2"/>
+            <rect x="134" y="91" width="13" height="13" rx="2"/><rect x="151" y="91" width="13" height="13" rx="2"/>
+            <rect x="168" y="91" width="13" height="13" rx="2"/><rect x="185" y="91" width="13" height="13" rx="2"/>
+            <rect x="134" y="108" width="13" height="13" rx="2"/><rect x="151" y="108" width="13" height="13" rx="2"/>
+            <rect x="168" y="108" width="13" height="13" rx="2"/><rect x="185" y="108" width="13" height="13" rx="2"/>
+            <rect x="134" y="125" width="13" height="13" rx="2"/><rect x="151" y="125" width="13" height="13" rx="2"/>
+            <rect x="168" y="125" width="13" height="13" rx="2"/><rect x="185" y="125" width="13" height="13" rx="2"/>
+          </g>
+          <text x="166" y="160" text-anchor="middle" font-size="10" opacity=".75">24 prompt tokens</text>
+          <text x="166" y="176" text-anchor="middle" font-size="10" opacity=".75">per weight read</text>
+          <text x="166" y="200" text-anchor="middle" font-size="10.5" fill="#12655F">ALUs saturated</text>
+
+          <line x1="330" y1="30" x2="330" y2="215" stroke="currentColor" stroke-width="1" opacity=".25"/>
+
+          <text x="380" y="22" font-size="12" font-weight="600">DECODE &mdash; memory bound</text>
+          <rect x="380" y="38" width="60" height="106" rx="3" fill="none" stroke="currentColor" stroke-width="1.3"/>
+          <text x="410" y="86" text-anchor="middle" font-size="10">weights</text>
+          <text x="410" y="102" text-anchor="middle" font-size="10">14 GB</text>
+          <path d="M 442 91 L 478 91" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar3)"/>
+          <text x="460" y="82" text-anchor="middle" font-size="9.5" opacity=".7">1&times;</text>
+          <rect x="484" y="84" width="13" height="13" rx="2" fill="#12655F" opacity=".85"/>
+          <g stroke="currentColor" stroke-width=".9" opacity=".22" fill="none">
+            <rect x="501" y="84" width="13" height="13" rx="2"/><rect x="518" y="84" width="13" height="13" rx="2"/>
+            <rect x="535" y="84" width="13" height="13" rx="2"/><rect x="552" y="84" width="13" height="13" rx="2"/>
+            <rect x="484" y="67" width="13" height="13" rx="2"/><rect x="501" y="67" width="13" height="13" rx="2"/>
+            <rect x="518" y="67" width="13" height="13" rx="2"/><rect x="535" y="67" width="13" height="13" rx="2"/>
+            <rect x="552" y="67" width="13" height="13" rx="2"/>
+            <rect x="484" y="101" width="13" height="13" rx="2"/><rect x="501" y="101" width="13" height="13" rx="2"/>
+            <rect x="518" y="101" width="13" height="13" rx="2"/><rect x="535" y="101" width="13" height="13" rx="2"/>
+            <rect x="552" y="101" width="13" height="13" rx="2"/>
+          </g>
+          <text x="522" y="160" text-anchor="middle" font-size="10" opacity=".75">1 token</text>
+          <text x="522" y="176" text-anchor="middle" font-size="10" opacity=".75">per weight read</text>
+          <text x="522" y="200" text-anchor="middle" font-size="10.5" opacity=".65">ALUs ~99.5% idle</text>
+
+          <text x="360" y="238" text-anchor="middle" font-size="10.5" opacity=".8">
+            every Arc 2 technique either shrinks the bytes read, or gets more tokens out of one read
+          </text>
+        </g>
+        <defs>
+          <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+    <figcaption>
+      <b>The asymmetry that Arc 2 exploits.</b> Prefill amortizes one weight read over the whole
+      prompt. Decode amortizes it over one token. The gap between those two is where every
+      inference optimization lives.
+    </figcaption>
+  </figure>
+
+  <div class="win">
+    <span class="win-t">Now the three techniques stop looking arbitrary</span>
+    <p style="margin-bottom:.6rem">Each attacks the same ratio from a different side:</p>
+    <ul style="margin-bottom:0">
+      <li><b>Distillation</b> shrinks <code>N</code> &mdash; there are simply fewer weights to read.</li>
+      <li><b>Quantization</b> shrinks <code>bytes_per_weight</code> &mdash; the same weights, in a
+          quarter of the bytes.</li>
+      <li><b>Speculative decoding</b> increases the <em>numerator</em> &mdash; verify several
+          candidate tokens in one pass, so one weight read yields several tokens instead of one.</li>
+    </ul>
+  </div>
+  <div class="caveat">
+    <span class="caveat-t">And this is exactly why the wall-clock results in this project are honest but unimpressive</span>
+    <p>
+      At 5M parameters on a CPU, there <em>is</em> no memory-bandwidth bottleneck. The weights fit
+      comfortably in cache, and a forward pass is dominated by Python dispatch overhead. Quantization
+      removes bytes that were not costing anything, and speculation adds Python work to save passes
+      that were cheap. So the repository measures <b>speculative decoding as 0.79&times; slower</b>
+      in wall clock while cutting target forward passes 3&times;. Both numbers are real. The
+      pass-count reduction is the hardware-independent one, and it is the one reported as the result.
+    </p>
+  </div>
+</section>
+<section id="distill">
+  <div class="sec-head">
+    <span class="sec-n">07</span>
+    <div>
+      <h2>Distillation</h2>
+      <p class="deck">Train a small model to imitate a big one. The interesting question is not
+      <em>how</em> &mdash; it is <em>which direction of the KL divergence you minimize</em>, because
+      the two answers behave oppositely.</p>
+    </div>
+  </div>
+
+  <p>
+    A trained model's output distribution carries far more information than the one-hot label it was
+    trained on. Told the next token is <code>&nbsp;cat</code>, the label says nothing else. The
+    teacher's distribution says <code>&nbsp;cat</code> 0.6, <code>&nbsp;dog</code> 0.25,
+    <code>&nbsp;kitten</code> 0.1 &mdash; encoding that dogs are more like cats than staplers are.
+    Hinton called these the <em>dark knowledge</em> in the logits, and distillation is training a
+    student on that distribution rather than on the labels.
+  </p>
+
+  <h3>7.1 &nbsp;Forward KL &mdash; the baseline, and its problem</h3>
+  <div class="math">
+L = &alpha;&thinsp;H(y, student) + (1 &minus; &alpha;)&thinsp;&tau;&sup2;&thinsp;KL( teacher<sub>&tau;</sub> &#8214; student<sub>&tau;</sub> )
+<span class="note">&tau; softens both distributions; the &tau;&sup2; factor restores the gradient magnitude, which softening scales by 1/&tau;&sup2;</span>
+  </div>
+  <p>
+    Write out what <code>KL(p &#8214; q) = &Sigma; p log(p/q)</code> punishes. The sum is weighted by
+    <code>p</code>, so it only cares about places the <em>teacher</em> puts mass. And wherever the
+    teacher has mass and the student has none, <code>log(p/q) &rarr; &infin;</code>. The student is
+    therefore forced to put probability <em>everywhere the teacher does</em>, including the long
+    low-confidence tail. This is <b>mode-covering</b>.
+  </p>
+  <p>
+    For a student with comparable capacity that is fine. For a student 17&times; smaller it is a
+    trap: it cannot represent the teacher's full distribution, so being punished for every gap
+    forces it to smear probability thinly across regions it cannot model well &mdash; including the
+    empty space between modes, where the teacher has nothing but the student now does.
+  </p>
+
+  <h3>7.2 &nbsp;Reverse KL &mdash; permission to give up</h3>
+  <p>
+    Swap the arguments. <code>KL(q &#8214; p) = &Sigma; q log(q/p)</code> is weighted by the
+    <em>student</em>, so it only cares about places the student puts mass, and the infinite penalty
+    now lands where the student puts mass and the teacher does not. The student may ignore as much
+    of the teacher as it likes, provided everything it <em>does</em> claim is something the teacher
+    agrees with. This is <b>mode-seeking</b>, and for an undersized student it is the right trade.
+  </p>
+
+  <figure>
+    <div class="fig-frame">
+      <svg viewBox="0 0 660 190" role="img" aria-label="A bimodal teacher distribution fitted by a limited student: minimizing forward KL produces a broad distribution covering both modes and the empty valley between them, while minimizing reverse KL produces a narrow distribution locked onto one mode.">
+        <g font-family="ui-monospace, monospace" font-size="10.5" fill="currentColor">
+          <g transform="translate(10,14)">
+            <text x="18" y="0" font-size="11" font-weight="600">forward KL &mdash; mode covering</text>
+            <line x1="18" y1="132" x2="282" y2="132" stroke="currentColor" stroke-width=".9" opacity=".4"/>
+            <polyline points="18.0,132.0 19.7,132.0 21.3,132.0 23.0,132.0 24.6,132.0 26.3,132.0 27.9,132.0 29.6,132.0 31.2,132.0 32.8,132.0 34.5,132.0 36.1,132.0 37.8,132.0 39.5,132.0 41.1,132.0 42.8,132.0 44.4,132.0 46.1,131.9 47.7,131.9 49.3,131.9 51.0,131.8 52.6,131.7 54.3,131.6 55.9,131.4 57.6,131.1 59.2,130.8 60.9,130.3 62.6,129.7 64.2,128.9 65.9,127.9 67.5,126.7 69.1,125.2 70.8,123.3 72.4,121.2 74.1,118.6 75.8,115.7 77.4,112.4 79.0,108.8 80.7,104.9 82.3,100.7 84.0,96.5 85.6,92.2 87.3,88.0 89.0,84.0 90.6,80.4 92.2,77.2 93.9,74.7 95.5,72.9 97.2,71.9 98.9,71.7 100.5,72.3 102.1,73.7 103.8,75.9 105.5,78.7 107.1,82.1 108.8,85.9 110.4,90.1 112.0,94.3 113.7,98.6 115.4,102.8 117.0,106.9 118.7,110.6 120.3,114.1 122.0,117.2 123.6,119.9 125.2,122.3 126.9,124.3 128.6,126.0 130.2,127.4 131.9,128.5 133.5,129.3 135.2,130.0 136.8,130.6 138.5,131.0 140.1,131.3 141.8,131.5 143.4,131.6 145.1,131.7 146.7,131.8 148.3,131.8 150.0,131.9 151.7,131.8 153.3,131.8 155.0,131.7 156.6,131.6 158.2,131.5 159.9,131.3 161.6,131.0 163.2,130.6 164.8,130.0 166.5,129.3 168.1,128.5 169.8,127.4 171.5,126.0 173.1,124.3 174.7,122.3 176.4,119.9 178.1,117.2 179.7,114.1 181.3,110.6 183.0,106.9 184.7,102.8 186.3,98.6 187.9,94.3 189.6,90.1 191.2,85.9 192.9,82.1 194.5,78.7 196.2,75.9 197.8,73.7 199.5,72.3 201.2,71.7 202.8,71.9 204.5,72.9 206.1,74.7 207.7,77.2 209.4,80.4 211.1,84.0 212.7,88.0 214.3,92.2 216.0,96.5 217.7,100.7 219.3,104.9 220.9,108.8 222.6,112.4 224.2,115.7 225.9,118.6 227.5,121.2 229.2,123.3 230.8,125.2 232.5,126.7 234.2,127.9 235.8,128.9 237.5,129.7 239.1,130.3 240.8,130.8 242.4,131.1 244.1,131.4 245.7,131.6 247.3,131.7 249.0,131.8 250.7,131.9 252.3,131.9 254.0,131.9 255.6,132.0 257.2,132.0 258.9,132.0 260.6,132.0 262.2,132.0 263.8,132.0 265.5,132.0 267.2,132.0 268.8,132.0 270.4,132.0 272.1,132.0 273.8,132.0 275.4,132.0 277.1,132.0 278.7,132.0 280.4,132.0 282.0,132.0" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".5"/>
+            <polyline points="18.0,130.5 19.7,130.4 21.3,130.3 23.0,130.1 24.6,130.0 26.3,129.8 27.9,129.7 29.6,129.5 31.2,129.3 32.8,129.1 34.5,128.9 36.1,128.7 37.8,128.5 39.5,128.3 41.1,128.0 42.8,127.8 44.4,127.5 46.1,127.2 47.7,126.9 49.3,126.6 51.0,126.3 52.6,126.0 54.3,125.6 55.9,125.3 57.6,124.9 59.2,124.5 60.9,124.1 62.6,123.7 64.2,123.3 65.9,122.8 67.5,122.4 69.1,121.9 70.8,121.4 72.4,120.9 74.1,120.4 75.8,119.9 77.4,119.4 79.0,118.9 80.7,118.3 82.3,117.8 84.0,117.2 85.6,116.7 87.3,116.1 89.0,115.5 90.6,114.9 92.2,114.3 93.9,113.7 95.5,113.1 97.2,112.6 98.9,112.0 100.5,111.4 102.1,110.8 103.8,110.2 105.5,109.6 107.1,109.0 108.8,108.5 110.4,107.9 112.0,107.4 113.7,106.8 115.4,106.3 117.0,105.8 118.7,105.3 120.3,104.9 122.0,104.4 123.6,104.0 125.2,103.5 126.9,103.1 128.6,102.8 130.2,102.4 131.9,102.1 133.5,101.8 135.2,101.5 136.8,101.3 138.5,101.1 140.1,100.9 141.8,100.7 143.4,100.6 145.1,100.5 146.7,100.4 148.3,100.3 150.0,100.3 151.7,100.3 153.3,100.4 155.0,100.5 156.6,100.6 158.2,100.7 159.9,100.9 161.6,101.1 163.2,101.3 164.8,101.5 166.5,101.8 168.1,102.1 169.8,102.4 171.5,102.8 173.1,103.1 174.7,103.5 176.4,104.0 178.1,104.4 179.7,104.9 181.3,105.3 183.0,105.8 184.7,106.3 186.3,106.8 187.9,107.4 189.6,107.9 191.2,108.5 192.9,109.0 194.5,109.6 196.2,110.2 197.8,110.8 199.5,111.4 201.2,112.0 202.8,112.6 204.5,113.1 206.1,113.7 207.7,114.3 209.4,114.9 211.1,115.5 212.7,116.1 214.3,116.7 216.0,117.2 217.7,117.8 219.3,118.3 220.9,118.9 222.6,119.4 224.2,119.9 225.9,120.4 227.5,120.9 229.2,121.4 230.8,121.9 232.5,122.4 234.2,122.8 235.8,123.3 237.5,123.7 239.1,124.1 240.8,124.5 242.4,124.9 244.1,125.3 245.7,125.6 247.3,126.0 249.0,126.3 250.7,126.6 252.3,126.9 254.0,127.2 255.6,127.5 257.2,127.8 258.9,128.0 260.6,128.3 262.2,128.5 263.8,128.7 265.5,128.9 267.2,129.1 268.8,129.3 270.4,129.5 272.1,129.7 273.8,129.8 275.4,130.0 277.1,130.1 278.7,130.3 280.4,130.4 282.0,130.5" fill="none" stroke="#12655F" stroke-width="2.2"/>
+            <text x="150" y="152" text-anchor="middle" opacity=".7">puts mass in the valley the teacher never visits</text>
+          </g>
+          <g transform="translate(360,14)">
+            <text x="18" y="0" font-size="11" font-weight="600">reverse KL &mdash; mode seeking</text>
+            <line x1="18" y1="132" x2="282" y2="132" stroke="currentColor" stroke-width=".9" opacity=".4"/>
+            <polyline points="18.0,132.0 19.7,132.0 21.3,132.0 23.0,132.0 24.6,132.0 26.3,132.0 27.9,132.0 29.6,132.0 31.2,132.0 32.8,132.0 34.5,132.0 36.1,132.0 37.8,132.0 39.5,132.0 41.1,132.0 42.8,132.0 44.4,132.0 46.1,131.9 47.7,131.9 49.3,131.9 51.0,131.8 52.6,131.7 54.3,131.6 55.9,131.4 57.6,131.1 59.2,130.8 60.9,130.3 62.6,129.7 64.2,128.9 65.9,127.9 67.5,126.7 69.1,125.2 70.8,123.3 72.4,121.2 74.1,118.6 75.8,115.7 77.4,112.4 79.0,108.8 80.7,104.9 82.3,100.7 84.0,96.5 85.6,92.2 87.3,88.0 89.0,84.0 90.6,80.4 92.2,77.2 93.9,74.7 95.5,72.9 97.2,71.9 98.9,71.7 100.5,72.3 102.1,73.7 103.8,75.9 105.5,78.7 107.1,82.1 108.8,85.9 110.4,90.1 112.0,94.3 113.7,98.6 115.4,102.8 117.0,106.9 118.7,110.6 120.3,114.1 122.0,117.2 123.6,119.9 125.2,122.3 126.9,124.3 128.6,126.0 130.2,127.4 131.9,128.5 133.5,129.3 135.2,130.0 136.8,130.6 138.5,131.0 140.1,131.3 141.8,131.5 143.4,131.6 145.1,131.7 146.7,131.8 148.3,131.8 150.0,131.9 151.7,131.8 153.3,131.8 155.0,131.7 156.6,131.6 158.2,131.5 159.9,131.3 161.6,131.0 163.2,130.6 164.8,130.0 166.5,129.3 168.1,128.5 169.8,127.4 171.5,126.0 173.1,124.3 174.7,122.3 176.4,119.9 178.1,117.2 179.7,114.1 181.3,110.6 183.0,106.9 184.7,102.8 186.3,98.6 187.9,94.3 189.6,90.1 191.2,85.9 192.9,82.1 194.5,78.7 196.2,75.9 197.8,73.7 199.5,72.3 201.2,71.7 202.8,71.9 204.5,72.9 206.1,74.7 207.7,77.2 209.4,80.4 211.1,84.0 212.7,88.0 214.3,92.2 216.0,96.5 217.7,100.7 219.3,104.9 220.9,108.8 222.6,112.4 224.2,115.7 225.9,118.6 227.5,121.2 229.2,123.3 230.8,125.2 232.5,126.7 234.2,127.9 235.8,128.9 237.5,129.7 239.1,130.3 240.8,130.8 242.4,131.1 244.1,131.4 245.7,131.6 247.3,131.7 249.0,131.8 250.7,131.9 252.3,131.9 254.0,131.9 255.6,132.0 257.2,132.0 258.9,132.0 260.6,132.0 262.2,132.0 263.8,132.0 265.5,132.0 267.2,132.0 268.8,132.0 270.4,132.0 272.1,132.0 273.8,132.0 275.4,132.0 277.1,132.0 278.7,132.0 280.4,132.0 282.0,132.0" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".5"/>
+            <polyline points="18.0,132.0 19.7,132.0 21.3,132.0 23.0,132.0 24.6,132.0 26.3,132.0 27.9,132.0 29.6,132.0 31.2,132.0 32.8,132.0 34.5,132.0 36.1,132.0 37.8,132.0 39.5,132.0 41.1,132.0 42.8,132.0 44.4,132.0 46.1,132.0 47.7,132.0 49.3,132.0 51.0,132.0 52.6,132.0 54.3,132.0 55.9,132.0 57.6,132.0 59.2,132.0 60.9,132.0 62.6,132.0 64.2,132.0 65.9,132.0 67.5,132.0 69.1,132.0 70.8,132.0 72.4,132.0 74.1,132.0 75.8,132.0 77.4,132.0 79.0,132.0 80.7,132.0 82.3,132.0 84.0,132.0 85.6,132.0 87.3,132.0 89.0,132.0 90.6,132.0 92.2,132.0 93.9,132.0 95.5,132.0 97.2,132.0 98.9,132.0 100.5,132.0 102.1,132.0 103.8,132.0 105.5,132.0 107.1,132.0 108.8,132.0 110.4,132.0 112.0,132.0 113.7,132.0 115.4,132.0 117.0,132.0 118.7,132.0 120.3,132.0 122.0,132.0 123.6,132.0 125.2,132.0 126.9,132.0 128.6,132.0 130.2,132.0 131.9,132.0 133.5,132.0 135.2,132.0 136.8,132.0 138.5,132.0 140.1,132.0 141.8,132.0 143.4,131.9 145.1,131.9 146.7,131.9 148.3,131.8 150.0,131.7 151.7,131.6 153.3,131.4 155.0,131.2 156.6,130.8 158.2,130.4 159.9,129.8 161.6,129.0 163.2,127.9 164.8,126.6 166.5,125.0 168.1,122.9 169.8,120.4 171.5,117.4 173.1,113.8 174.7,109.7 176.4,104.9 178.1,99.5 179.7,93.4 181.3,86.9 183.0,79.8 184.7,72.4 186.3,64.8 187.9,57.1 189.6,49.6 191.2,42.4 192.9,35.8 194.5,30.0 196.2,25.2 197.8,21.5 199.5,19.1 201.2,18.0 202.8,18.4 204.5,20.1 206.1,23.2 207.7,27.5 209.4,32.8 211.1,39.0 212.7,45.9 214.3,53.3 216.0,60.9 217.7,68.6 219.3,76.1 220.9,83.4 222.6,90.2 224.2,96.5 225.9,102.2 227.5,107.3 229.2,111.8 230.8,115.7 232.5,119.0 234.2,121.7 235.8,124.0 237.5,125.9 239.1,127.3 240.8,128.5 242.4,129.4 244.1,130.1 245.7,130.6 247.3,131.0 249.0,131.3 250.7,131.5 252.3,131.7 254.0,131.8 255.6,131.8 257.2,131.9 258.9,131.9 260.6,132.0 262.2,132.0 263.8,132.0 265.5,132.0 267.2,132.0 268.8,132.0 270.4,132.0 272.1,132.0 273.8,132.0 275.4,132.0 277.1,132.0 278.7,132.0 280.4,132.0 282.0,132.0" fill="none" stroke="#12655F" stroke-width="2.2"/>
+            <text x="150" y="152" text-anchor="middle" opacity=".7">abandons one mode, commits to the other</text>
+          </g>
+          <text x="330" y="186" text-anchor="middle" font-size="10" opacity=".55">grey: teacher &nbsp;&middot;&nbsp; teal: student</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>
+      <b>The same teacher, the same student capacity, opposite failure modes.</b> A student that must
+      cover everything ends up assigning real probability to the gap between modes &mdash; text that
+      is a blend of two plausible continuations and is itself implausible. A student allowed to
+      abandon a mode produces narrower but self-consistent output. This is why perplexity ranks these
+      two backwards from generation quality.
+    </figcaption>
+  </figure>
+
+  <h3>7.3 &nbsp;Why reverse KL needs a policy gradient</h3>
+  <p>
+    There is a catch that makes reverse KL harder to implement than forward KL. The expectation
+    <code>&Sigma; q log(q/p)</code> is taken over the <em>student's own</em> distribution, and the
+    student is what you are differentiating. You cannot just backpropagate through a sample. This is
+    the standard score-function situation, and MiniLLM's contribution is the machinery to make it
+    stable:
+  </p>
+  <ul>
+    <li><b>On-policy sampling.</b> Trajectories come from the student, which also fixes
+        <em>exposure bias</em> &mdash; the mismatch where a model trained only on teacher-generated
+        prefixes has never seen its own mistakes and cannot recover from them.</li>
+    <li><b>Reward-to-go decomposition.</b> Credit each token with the reward accumulated from that
+        point forward, rather than a single sequence-level score, which drastically cuts variance.</li>
+    <li><b>Single-step regularization.</b> A per-token term added directly, sidestepping the
+        policy-gradient estimator for the part that does not need it.</li>
+  </ul>
+
+  <div class="caveat">
+    <span class="caveat-t">The failure that taught me why the warm-start is not optional</span>
+    <p>
+      My first reverse-KL runs produced students with perplexity <b>1028</b>, against 28 and 129 for
+      the other two objectives. I assumed a bug in the policy gradient. There was no bug. A policy
+      gradient optimizes the distribution of trajectories the policy actually generates &mdash; and a
+      randomly-initialized student generates noise. Reverse KL was faithfully teaching it to produce
+      slightly less surprising noise, from a starting point it could never escape.
+    </p>
+    <p>
+      MiniLLM's paper says to warm-start with plain MLE. Adding that (applied identically to all
+      three arms, so the comparison stays controlled) moved the three to 2.05&thinsp;/&thinsp;4.45&thinsp;/&thinsp;41.
+      Then scaling the learning rate down for the on-policy phase &mdash; a policy gradient is far
+      higher-variance than a supervised loss &mdash; gave the final
+      2.05&thinsp;/&thinsp;4.45&thinsp;/&thinsp;2.50. Both fixes are config fields with defaults, not
+      hard-coded constants, so their effect stays measurable.
+    </p>
+  </div>
+
+  <h3>7.4 &nbsp;What was measured</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Objective</th><th class="num">Student val ppl</th><th class="num">Repetition rate</th>
+                 <th class="num">Gen length</th><th class="num">Wall clock</th></tr></thead>
+      <tbody>
+        <tr><td>forward KL</td><td class="num best">2.0536</td><td class="num">0.0064</td><td class="num">45.5</td><td class="num">18.2&nbsp;s</td></tr>
+        <tr><td>SeqKD</td><td class="num">4.4499</td><td class="num worse">0.0372</td><td class="num">39.2</td><td class="num">33.5&nbsp;s</td></tr>
+        <tr><td><b>reverse KL, on-policy</b></td><td class="num">2.4974</td><td class="num best">0.0000</td><td class="num">30.2</td><td class="num">18.1&nbsp;s</td></tr>
+        <tr><td><em>teacher, for reference</em></td><td class="num">&mdash;</td><td class="num">0.0383</td><td class="num">46.8</td><td class="num">&mdash;</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    <b>Reverse KL has worse perplexity and better generations &mdash; and that is the MiniLLM finding,
+    reproduced.</b> It is not a contradiction. Perplexity rewards a model for spreading probability
+    over everything in the evaluation set, which is precisely the mode-covering behaviour reverse KL
+    is designed to avoid. A mode-seeking student scores worse on a coverage metric and degenerates
+    less when it actually generates.
+  </p>
+  <p>
+    The sharpest number in that table is the repetition rate: <b>0.0000 for the reverse-KL student
+    against 0.0383 for its own teacher</b>. Distilling on-policy against a teacher's
+    <em>distribution</em> is not the same as copying its outputs, and the student can end up
+    better-behaved than the model it learned from. Judging these three by perplexity alone would have
+    ranked them backwards, which is exactly why the repetition diagnostic is reported beside it.
+  </p>
+  <p class="footnote">
+    Compression: 4,952,064 &rarr; 279,168 parameters (17.7&times; overall, 29.9&times; on
+    non-embedding parameters). Teacher and student share a tokenizer by necessity, so the embedding
+    table and LM head are the same width in both and their cost is irreducible &mdash; the
+    non-embedding figure is the one that describes the actual depth and width reduction.
+  </p>
+</section><section id="quant">
+  <div class="sec-head">
+    <span class="sec-n">08</span>
+    <div>
+      <h2>Quantization</h2>
+      <p class="deck">Store weights in 4 bits instead of 32. The good algorithms all rest on one
+      idea: minimize the error in what the layer <em>outputs</em>, not in the weights themselves.</p>
+    </div>
+  </div>
+
+  <p>
+    The mechanism is simple. Pick a scale, round each weight to the nearest point on a
+    <code>2<sup>k</sup></code>-point grid, store the integer:
+  </p>
+  <div class="math">
+s = (max &minus; min) / (2<sup>k</sup> &minus; 1)&nbsp;&nbsp;&nbsp;z = &minus;round(min / s)
+q = clamp( round(w / s) + z , 0 , 2<sup>k</sup>&minus;1 )&nbsp;&nbsp;&nbsp;&#373; = s&thinsp;(q &minus; z)
+  </div>
+  <p>
+    One scale for a whole matrix is far too coarse &mdash; a single outlier weight stretches the
+    grid and everything else collapses onto a few levels. So scales are computed per <b>group</b> of
+    columns (64 here). That costs storage, and the repository accounts for it honestly:
+  </p>
+  <div class="math">
+effective bits = k + (scale_bits + zero_bits) / group_size
+&nbsp;&nbsp;4-bit, group 64, fp16 scale + fp16 zero = 4 + 32/64 = <b>4.5 bits</b>
+<span class="note">every "4-bit" figure in this project is plotted at 4.5</span>
+  </div>
+
+  <h3>8.1 &nbsp;Why round-to-nearest is not the best you can do</h3>
+  <p>
+    RTN rounds every weight independently to its closest grid point. That minimizes
+    <code>&#8214;W &minus; &#372;&#8214;</code>, the error in the weights. But nobody cares about the
+    weights. A layer exists to compute <code>WX</code>, and what matters is:
+  </p>
+  <div class="math">
+minimize &nbsp;&#8214; WX &minus; &#372;X &#8214;&sup2;<sub>F</sub>
+<span class="note">weighted by the actual input statistics X, not by the weights alone</span>
+  </div>
+  <p>
+    Those are different objectives. A weight multiplying an input channel that is almost always zero
+    can be rounded badly at no cost; a weight multiplying a high-variance channel cannot. And
+    crucially, the rounding errors <em>interact</em> &mdash; if one weight rounds up, another can
+    round down to partially cancel it in the output.
+  </p>
+
+  <h3>8.2 &nbsp;GPTQ: spend the error where it does least damage</h3>
+  <p>
+    Expand that objective and the second-order structure appears immediately. The Hessian of the
+    reconstruction error with respect to the weights of one row is:
+  </p>
+  <div class="math">
+H = 2 X X<sup>T</sup>
+<span class="note">estimated from a few hundred calibration sequences; identical for every row of the layer</span>
+  </div>
+  <p>
+    GPTQ (following Optimal Brain Quantization) processes columns one at a time. Quantize column
+    <code>q</code>, measure the error you just introduced, and then <b>adjust all the
+    not-yet-quantized columns</b> to compensate for it &mdash; using the Hessian to work out which
+    adjustment best cancels the error in the output:
+  </p>
+  <div class="math">
+&delta;<sub>remaining</sub> = &minus; ( w<sub>q</sub> &minus; &#373;<sub>q</sub> ) / [H<sup>&minus;1</sup>]<sub>qq</sub> &times; [H<sup>&minus;1</sup>]<sub>q,:</sub>
+  </div>
+  <p>
+    The later columns absorb the earlier columns' mistakes. By the end, the accumulated output error
+    is far smaller than independent rounding would give &mdash; even though the individual weights
+    have moved <em>further</em> from their original values.
+  </p>
+  <p>
+    Three engineering details make this practical rather than theoretical, and all three are in the
+    repository: a <b>Cholesky factorization</b> of <code>H<sup>&minus;1</sup></code> for numerical
+    stability (the naive iterative inverse-update becomes indefinite and produces NaNs on real
+    layers), <b>lazy block updates</b> that batch the compensation over 128 columns instead of
+    applying it one at a time, and <b>activation ordering</b> &mdash; quantizing the
+    highest-activation-magnitude columns first, while the largest pool of un-quantized columns is
+    still available to absorb their error.
+  </p>
+
+  <div class="caveat">
+    <span class="caveat-t">A real bug: activation ordering made GPTQ worse than RTN</span>
+    <p>
+      With <code>act_order</code> enabled, my 2-bit GPTQ was <em>losing</em> to plain round-to-nearest.
+      The cause: to restore the original column order after quantizing in permuted order, the code
+      was un-permuting the <em>dequantized</em> matrix &mdash; which meant re-quantizing it, adding a
+      second, uncompensated rounding pass on top of the error the algorithm had just carefully
+      minimized. The fix is to carry the permutation <em>with</em> the integer codes
+      (<code>QuantizedTensor.perm</code>) and apply it at dequantization time, so the codes are only
+      ever produced once. After the fix GPTQ wins at every bit-width where there is anything to win.
+    </p>
+  </div>
+  <div class="caveat">
+    <span class="caveat-t">And a bug in my <em>test</em>, not my code</span>
+    <p>
+      I wrote a test asserting "GPTQ's advantage comes from the Hessian's off-diagonal structure",
+      checking that GPTQ's edge over RTN disappears with white (uncorrelated) calibration activations.
+      It failed &mdash; error compensation helps even with white activations, because the benefit
+      comes from sequentially absorbing error at all, not only from cross-channel correlation. The
+      hypothesis was wrong, not the implementation. It is now two narrower tests that are each true.
+      While fixing it I also found the test was measuring <code>act_order</code>'s effect as exactly
+      zero &mdash; because I built the synthetic activations with <code>logspace</code>, which is
+      already sorted, so the "ordering" permutation was the identity. A shuffle now makes it
+      non-vacuous.
+    </p>
+  </div>
+
+  <h3>8.3 &nbsp;AWQ: protect the channels that matter</h3>
+  <p>
+    A different attack on the same problem. AWQ observes that a small fraction of weight channels
+    are <em>salient</em> &mdash; they multiply consistently large activations, so their error
+    dominates the output. Rather than compensating after the fact, scale those channels up by
+    <code>s</code> before quantizing and divide the corresponding activation by <code>s</code>:
+  </p>
+  <div class="math">
+W X = (W &middot; diag(s)) &middot; (diag(s)<sup>&minus;1</sup> X)
+<span class="note">mathematically identical &mdash; but the scaled-up channels now span more of the quantization grid, so their <em>relative</em> rounding error shrinks</span>
+  </div>
+  <p>
+    No mixed precision, no second pass over the data at inference: the scaling is folded into the
+    weights, and <code>s</code> is found by a small grid search on calibration statistics.
+  </p>
+
+  <h3>8.4 &nbsp;What was measured</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Method</th><th class="num">Nominal bits</th><th class="num">Effective bits</th>
+                 <th class="num">Val perplexity</th><th class="num">vs fp32</th><th class="num">Mean layer weight error</th></tr></thead>
+      <tbody>
+        <tr><td>FP32</td><td class="num">32</td><td class="num">32.0</td><td class="num">1.4764</td><td class="num">1.000&times;</td><td class="num">0.0</td></tr>
+        <tr><td>RTN</td><td class="num">4</td><td class="num">4.5</td><td class="num">1.4767</td><td class="num">1.000&times;</td><td class="num">0.0917</td></tr>
+        <tr><td>GPTQ</td><td class="num">4</td><td class="num">4.5</td><td class="num">1.4766</td><td class="num">1.000&times;</td><td class="num">0.1351</td></tr>
+        <tr><td>AWQ</td><td class="num">4</td><td class="num">4.5</td><td class="num">1.4765</td><td class="num">1.000&times;</td><td class="num">0.0737</td></tr>
+        <tr><td>RTN</td><td class="num">3</td><td class="num">3.5</td><td class="num">1.4783</td><td class="num">1.001&times;</td><td class="num">0.1962</td></tr>
+        <tr><td><b>GPTQ</b></td><td class="num">3</td><td class="num">3.5</td><td class="num best">1.4764</td><td class="num">1.000&times;</td><td class="num">0.2919</td></tr>
+        <tr><td>RTN</td><td class="num">2</td><td class="num">2.5</td><td class="num worse">1.5405</td><td class="num">1.043&times;</td><td class="num">0.4590</td></tr>
+        <tr><td><b>GPTQ</b></td><td class="num">2</td><td class="num">2.5</td><td class="num best">1.4997</td><td class="num">1.016&times;</td><td class="num">0.7141</td></tr>
+        <tr><td>AWQ</td><td class="num">2</td><td class="num">2.5</td><td class="num worse">1.5468</td><td class="num">1.048&times;</td><td class="num">0.3695</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="win">
+    <span class="win-t">The row that proves the whole argument</span>
+    <p>
+      At 2 bits, GPTQ has the <b>worst weight error of the three</b> (0.714 against RTN's 0.459 and
+      AWQ's 0.370) and the <b>best perplexity</b> (1.4997 against 1.5405 and 1.5468). It deliberately
+      moves weights further from their original values in order to move the layer's <em>outputs</em>
+      closer. If you had been measuring weight error, you would have concluded GPTQ was the worst
+      method here. That inversion is the entire thesis of second-order quantization, and it shows up
+      cleanly at 5M parameters.
+    </p>
+  </div>
+  <div class="caveat">
+    <span class="caveat-t">Negative result: GPTQ does not beat RTN at 4 bits here</span>
+    <p>
+      The plan predicted GPTQ would beat RTN at 4 bits "by a clear margin". It does not &mdash; all
+      three methods are indistinguishable from fp32 (1.4767 / 1.4766 / 1.4765 against a 1.4764
+      baseline). There is no margin left to win: a 5M-parameter model on a narrow corpus has little
+      redundancy for 4-bit rounding to destroy in the first place. The separation only appears at 2
+      and 3 bits, where there is real damage to compensate for. Reporting a tie is the honest
+      outcome, and the prediction is left in the write-up rather than quietly deleted.
+    </p>
+  </div>
+
+  <h4>KV-cache quantization</h4>
+  <p>
+    The weights are not the only thing occupying memory bandwidth. As
+    <a href="#cost">the cost model</a> showed, the KV cache can exceed the model itself at long
+    context and large batch. It is quantized with the same machinery &mdash; per-token, per-head
+    scales, with independent bit-widths for keys and values, since keys are empirically more
+    sensitive than values. The repository reports the memory saved and the perplexity cost side by
+    side, at several context lengths, because the trade only becomes worthwhile as context grows.
+  </p>
+</section>
+<section id="spec">
+  <div class="sec-head">
+    <span class="sec-n">09</span>
+    <div>
+      <h2>Speculative decoding</h2>
+      <p class="deck">Guess several tokens with a cheap model, check them all with the expensive one
+      in a single pass, and &mdash; this is the surprising part &mdash; get output that is
+      <em>exactly</em> as if the expensive model had generated every token itself.</p>
+    </div>
+  </div>
+
+  <p>
+    Recall the cost model: a decode step reads every weight to produce one token, and the arithmetic
+    units are 99.5% idle. That idle capacity is the opportunity. A forward pass over
+    <code>&gamma;+1</code> positions costs almost exactly the same wall-clock time as a pass over
+    one position, because both are bounded by the same weight read.
+  </p>
+  <p>
+    So: let a small draft model generate <code>&gamma;</code> candidate tokens autoregressively
+    (cheap &mdash; it is a small model). Then feed the whole candidate sequence to the target model
+    in <b>one</b> forward pass. Because the sequence is known, the target can score every position in
+    parallel, exactly as in training. Now decide which candidates to keep.
+  </p>
+
+  <figure>
+    <div class="fig-frame">
+      <svg viewBox="0 0 740 250" role="img" aria-label="The draft model proposes four tokens sequentially in four cheap passes; the target model scores all five positions in one expensive pass; the first three are accepted, the fourth is rejected and replaced by a sample from the residual distribution, yielding four tokens for one target pass.">
+        <defs>
+          <marker id="ar4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <g font-family="ui-monospace, monospace" font-size="11" fill="currentColor">
+          <text x="20" y="20" font-size="11.5" font-weight="600">1 &mdash; draft proposes &gamma;=4, sequentially (4 cheap passes)</text>
+          <g>
+            <rect x="20" y="32" width="86" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="1" opacity=".55"/>
+            <text x="63" y="51" text-anchor="middle" opacity=".7">prefix&hellip;</text>
+            <rect x="112" y="32" width="72" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <text x="148" y="51" text-anchor="middle">&nbsp;the</text>
+            <rect x="190" y="32" width="72" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <text x="226" y="51" text-anchor="middle">&nbsp;cat</text>
+            <rect x="268" y="32" width="72" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <text x="304" y="51" text-anchor="middle">&nbsp;sat</text>
+            <rect x="346" y="32" width="72" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <text x="382" y="51" text-anchor="middle">&nbsp;down</text>
+          </g>
+
+          <text x="20" y="92" font-size="11.5" font-weight="600">2 &mdash; target scores all 5 positions in ONE pass</text>
+          <rect x="20" y="102" width="398" height="26" rx="3" fill="none" stroke="#12655F" stroke-width="1.4"/>
+          <text x="219" y="119" text-anchor="middle" fill="#12655F">single target forward pass &rarr; p&#8321; p&#8322; p&#8323; p&#8324; p&#8325;</text>
+
+          <text x="20" y="160" font-size="11.5" font-weight="600">3 &mdash; accept/reject, left to right</text>
+          <g>
+            <rect x="112" y="170" width="72" height="28" rx="3" fill="#12655F" fill-opacity=".18" stroke="#12655F" stroke-width="1.3"/>
+            <text x="148" y="189" text-anchor="middle">&nbsp;the</text>
+            <text x="148" y="214" text-anchor="middle" font-size="9.5" fill="#12655F">accept</text>
+            <rect x="190" y="170" width="72" height="28" rx="3" fill="#12655F" fill-opacity=".18" stroke="#12655F" stroke-width="1.3"/>
+            <text x="226" y="189" text-anchor="middle">&nbsp;cat</text>
+            <text x="226" y="214" text-anchor="middle" font-size="9.5" fill="#12655F">accept</text>
+            <rect x="268" y="170" width="72" height="28" rx="3" fill="#12655F" fill-opacity=".18" stroke="#12655F" stroke-width="1.3"/>
+            <text x="304" y="189" text-anchor="middle">&nbsp;sat</text>
+            <text x="304" y="214" text-anchor="middle" font-size="9.5" fill="#12655F">accept</text>
+            <rect x="346" y="170" width="72" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="4 3" opacity=".5"/>
+            <text x="382" y="189" text-anchor="middle" opacity=".45" text-decoration="line-through">&nbsp;down</text>
+            <text x="382" y="214" text-anchor="middle" font-size="9.5" opacity=".65">reject</text>
+            <rect x="426" y="170" width="94" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="1.3"/>
+            <text x="473" y="189" text-anchor="middle">&nbsp;quietly</text>
+            <text x="473" y="214" text-anchor="middle" font-size="9.5" opacity=".8">from residual</text>
+          </g>
+
+          <line x1="548" y1="40" x2="548" y2="210" stroke="currentColor" stroke-width="1" opacity=".25"/>
+          <text x="640" y="100" text-anchor="middle" font-size="26" fill="#12655F">4</text>
+          <text x="640" y="122" text-anchor="middle" font-size="10.5" opacity=".75">tokens produced</text>
+          <text x="640" y="150" text-anchor="middle" font-size="26">1</text>
+          <text x="640" y="172" text-anchor="middle" font-size="10.5" opacity=".75">target pass spent</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>
+      <b>One target pass, four tokens.</b> Note the last box: a rejection is not wasted work. The
+      target's distribution at that position is already computed, so the round always yields at
+      least one token &mdash; speculation degrades to ordinary autoregressive decoding in the worst
+      case, never worse.
+    </figcaption>
+  </figure>
+
+  <h3>9.1 &nbsp;The accept rule, and why it is exactly lossless</h3>
+  <p>
+    The naive approach &mdash; accept a draft token if the target also likes it &mdash; would bias
+    the output. The correct rule is a form of rejection sampling:
+  </p>
+  <div class="math">
+draw x ~ q(&middot;)&nbsp;&nbsp;<span class="note">the draft's proposal</span>
+accept with probability &nbsp;min( 1 , p(x) / q(x) )
+on rejection, draw from &nbsp;norm( max(0, p &minus; q) )&nbsp;&nbsp;<span class="note">the residual</span>
+  </div>
+  <p>
+    The claim is that the token you end up with is distributed <em>exactly</em> as <code>p</code>.
+    Here is the whole proof; it is four lines.
+  </p>
+  <div class="math">
+P(output = x)
+&nbsp;&nbsp;= P(draft proposed x) &middot; P(accept | x) &nbsp;+&nbsp; P(reject) &middot; P(residual gives x)
+
+P(proposed x, accepted) = q(x) &middot; min(1, p(x)/q(x)) = <b>min(p(x), q(x))</b>
+
+P(reject) = 1 &minus; &Sigma;<sub>y</sub> min(p(y), q(y)) = &Sigma;<sub>y</sub> max(0, p(y) &minus; q(y))
+<span class="note">since &Sigma;p = 1, and p = min(p,q) + max(0, p&minus;q) pointwise</span>
+
+P(residual gives x) = max(0, p(x) &minus; q(x)) / &Sigma;<sub>y</sub> max(0, p(y) &minus; q(y))
+
+&rArr; P(output = x) = min(p(x), q(x)) + max(0, p(x) &minus; q(x)) = <b>p(x)</b>&nbsp;&nbsp;&#8718;
+  </div>
+  <p>
+    The normalizing constant of the residual is exactly the rejection probability, so the two cancel.
+    Notice what the proof does <em>not</em> assume: nothing about <code>q</code> at all. The draft can
+    be a badly-trained model, a random one, or an adversarial one, and the output distribution is
+    still exactly the target's. A bad draft costs you speed, never correctness.
+  </p>
+
+  <div class="demo" id="specdemo">
+    <p class="eyebrow" style="margin-bottom:.75rem">Interactive &mdash; verify it yourself</p>
+    <p style="font-size:.94rem; margin-bottom:1rem; max-width:64ch">
+      A deliberately poor draft <code>q</code> against a target <code>p</code> over six tokens. Draw
+      samples through the accept/reject rule above and watch the empirical distribution converge to
+      <code>p</code> &mdash; not to <code>q</code>, and not to anything in between.
+    </p>
+    <div class="demo-bar">
+      <button class="btn primary" id="sd-draw">Draw 200 samples</button>
+      <button class="btn" id="sd-draw2">Draw 5,000</button>
+      <button class="btn" id="sd-reset">Reset</button>
+    </div>
+    <svg id="sd-svg" viewBox="0 0 660 210" role="img" aria-label="Bar chart comparing the draft distribution q, the target distribution p, and the empirical distribution of tokens produced by speculative sampling, which converges to p." style="width:100%;height:auto"></svg>
+    <p class="readout" id="sd-out">No samples drawn yet.</p>
+  </div>
+
+  <h3>9.2 &nbsp;What actually costs what</h3>
+  <p>
+    The expected number of tokens per target pass, for acceptance rate <code>&alpha;</code> and
+    draft length <code>&gamma;</code>, is the mean of a truncated geometric:
+  </p>
+  <div class="math">
+E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus; &alpha;)
+  </div>
+  <p>
+    This explains the shape of the results below. Larger <code>&gamma;</code> has diminishing returns
+    &mdash; each extra proposal is only reached if all before it were accepted &mdash; while the
+    draft cost grows linearly in <code>&gamma;</code>. There is an optimum, and it moves with
+    <code>&alpha;</code>.
+  </p>
+
+  <h3>9.3 &nbsp;Medusa: speculation without a second model</h3>
+  <p>
+    Maintaining a separate draft model is operationally annoying: two checkpoints, two tokenizers to
+    keep in sync, extra memory. Medusa's alternative is to bolt extra prediction heads onto the
+    target itself &mdash; exactly the multi-token-prediction heads from
+    <a href="#model">&sect;02.8</a>. Head <code>k</code> predicts token <code>t+k</code>, each head
+    proposes its top few candidates, and the cross product forms a <em>tree</em> of candidate
+    continuations.
+  </p>
+  <p>
+    Verifying a tree in one pass needs a custom attention mask: every node must attend to its
+    ancestors and to nothing else, so that sibling branches cannot see each other. The nodes are
+    flattened into a sequence and the mask encodes ancestry.
+  </p>
+  <div class="caveat">
+    <span class="caveat-t">A real bug: tree attention with the wrong position IDs</span>
+    <p>
+      My packed tree evaluated differently from the same paths evaluated one at a time. The mask was
+      correct; the position IDs were not. I was numbering nodes by their index in the flattened
+      packing order, but a node's position for RoPE purposes is its <b>depth in the tree</b> &mdash;
+      two siblings at depth 2 are both at prefix_len + 2, regardless of where they landed in the
+      packing. With packing-order IDs, RoPE placed sibling branches at different distances from the
+      prefix and quietly scored them wrong. The fix is a <code>tree_position_ids()</code> function
+      derived from depth, and a test that compares packed-tree evaluation against per-path
+      evaluation token for token.
+    </p>
+  </div>
+
+  <h3>9.4 &nbsp;What was measured</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Arm</th><th class="num">Target passes</th><th class="num">Tokens / pass</th>
+                 <th class="num">Acceptance</th><th class="num">Tokens/s</th><th class="num">vs baseline</th></tr></thead>
+      <tbody>
+        <tr><td>autoregressive</td><td class="num">520</td><td class="num">0.98</td><td class="num">&mdash;</td><td class="num">677.4</td><td class="num">1.00&times;</td></tr>
+        <tr><td>speculative &gamma;=2</td><td class="num">245</td><td class="num">2.09</td><td class="num">0.590</td><td class="num">483.2</td><td class="num worse">0.71&times;</td></tr>
+        <tr><td>speculative &gamma;=4</td><td class="num">203</td><td class="num">2.52</td><td class="num">0.424</td><td class="num">463.2</td><td class="num worse">0.68&times;</td></tr>
+        <tr><td><b>speculative &gamma;=6</b></td><td class="num best">174</td><td class="num best">2.94</td><td class="num">0.367</td><td class="num">535.5</td><td class="num worse">0.79&times;</td></tr>
+        <tr><td>autoregressive + GPTQ-4bit</td><td class="num">520</td><td class="num">0.98</td><td class="num">&mdash;</td><td class="num">774.8</td><td class="num best">1.14&times;</td></tr>
+        <tr><td>speculative &gamma;=6 + GPTQ-4bit</td><td class="num">176</td><td class="num">2.91</td><td class="num">0.362</td><td class="num">535.8</td><td class="num worse">0.79&times;</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    <b>3&times; fewer target forward passes</b> at &gamma;=6, and the two levers compose &mdash; you can
+    speculate against a quantized target and keep essentially the same acceptance rate (0.367 vs
+    0.362), because 4-bit quantization barely moves the target's distribution.
+  </p>
+  <div class="caveat">
+    <span class="caveat-t">And it is slower in wall clock, by 21%</span>
+    <p>
+      Read the target-pass column, not the tokens/second column. Speculation converts a
+      memory-bandwidth problem into a compute problem, and at 5M parameters on a CPU there is no
+      memory-bandwidth problem to convert &mdash; a forward pass is dominated by Python dispatch, and
+      speculation <em>adds</em> dispatch (the draft's &gamma; sequential passes, the accept loop, the
+      cache surgery) to save passes that were cheap. The pass reduction is the real, hardware-independent
+      result; the wall-clock number is honest and does not generalize, and both are reported.
+    </p>
+  </div>
+</section>
+
+<script>
+(function () {
+  "use strict";
+  var svg = document.getElementById("sd-svg");
+  if (!svg) return;
+
+  var TOK = [" the", " a", " cat", " dog", " sat", " ran"];
+  var p = [0.40, 0.05, 0.22, 0.08, 0.19, 0.06];   // target
+  var q = [0.15, 0.30, 0.10, 0.25, 0.05, 0.15];   // a deliberately poor draft
+  var counts = [0, 0, 0, 0, 0, 0];
+  var total = 0, accepted = 0;
+
+  // residual: norm(max(0, p - q))
+  var resid = p.map(function (v, i) { return Math.max(0, v - q[i]); });
+  var residZ = resid.reduce(function (a, b) { return a + b; }, 0);
+
+  function pick(dist) {
+    var r = Math.random(), c = 0;
+    for (var i = 0; i < dist.length; i++) { c += dist[i]; if (r < c) return i; }
+    return dist.length - 1;
+  }
+
+  function drawOne() {
+    var x = pick(q);                                  // draft proposes
+    total++;
+    if (Math.random() < Math.min(1, p[x] / q[x])) {   // accept?
+      accepted++; counts[x]++; return;
+    }
+    counts[pick(resid.map(function (v) { return v / residZ; }))]++;  // resample residual
+  }
+
+  var W = 660, H = 210, L = 40, B = 160, BW = 88, GAP = 12;
+
+  function render() {
+    var emp = counts.map(function (c) { return total ? c / total : 0; });
+    var tv = 0;
+    for (var i = 0; i < 6; i++) tv += Math.abs(emp[i] - p[i]);
+    tv /= 2;
+
+    var maxv = 0.45, s = [];
+    s.push('<g font-family="ui-monospace, monospace" font-size="10" fill="currentColor">');
+    s.push('<line x1="' + L + '" y1="' + B + '" x2="' + (W - 10) + '" y2="' + B + '" stroke="currentColor" stroke-width="1" opacity=".35"/>');
+
+    for (var i = 0; i < 6; i++) {
+      var x0 = L + i * (BW + GAP);
+      var w = (BW - 6) / 3;
+      var vals = [q[i], p[i], emp[i]];
+      var fills = ['none', 'none', '#12655F'];
+      var strokes = ['currentColor', '#12655F', '#12655F'];
+      var dash = ['3 2', '0', '0'];
+      var op = [0.55, 1, 0.85];
+      for (var j = 0; j < 3; j++) {
+        var h = Math.max(0, vals[j] / maxv * (B - 34));
+        s.push('<rect x="' + (x0 + j * w).toFixed(1) + '" y="' + (B - h).toFixed(1) +
+               '" width="' + (w - 3).toFixed(1) + '" height="' + h.toFixed(1) +
+               '" fill="' + fills[j] + '" fill-opacity="' + op[j] + '" stroke="' + strokes[j] +
+               '" stroke-width="1.1" stroke-dasharray="' + dash[j] + '"/>');
+      }
+      s.push('<text x="' + (x0 + BW / 2 - 3) + '" y="' + (B + 15) + '" text-anchor="middle" opacity=".8">' +
+             TOK[i].replace(/ /g, "␣") + '</text>');
+    }
+
+    // legend
+    s.push('<g transform="translate(' + L + ',182)">');
+    s.push('<rect x="0" y="-8" width="11" height="10" fill="none" stroke="currentColor" stroke-dasharray="3 2" opacity=".55"/>');
+    s.push('<text x="17" y="1" opacity=".75">draft q</text>');
+    s.push('<rect x="86" y="-8" width="11" height="10" fill="none" stroke="#12655F" stroke-width="1.1"/>');
+    s.push('<text x="103" y="1" opacity=".75">target p</text>');
+    s.push('<rect x="182" y="-8" width="11" height="10" fill="#12655F" fill-opacity=".85"/>');
+    s.push('<text x="199" y="1" opacity=".75">speculative output</text>');
+    s.push('</g>');
+    s.push('</g>');
+    svg.innerHTML = s.join("");
+
+    var out = document.getElementById("sd-out");
+    if (!total) { out.textContent = "No samples drawn yet."; return; }
+    out.innerHTML =
+      "samples <b>" + total.toLocaleString() + "</b> &nbsp;·&nbsp; draft accepted <b>" +
+      (100 * accepted / total).toFixed(1) + "%</b> of the time &nbsp;·&nbsp; " +
+      "total variation distance to <b>p</b>: <b>" + tv.toFixed(4) + "</b>" +
+      "<br>the draft's own distance to p is <b>0.5100</b>, and its proposals are accepted " +
+      "<b>49%</b> of the time in theory — yet the output matches <b>p</b>, not <b>q</b>.";
+  }
+
+  function run(n) { for (var i = 0; i < n; i++) drawOne(); render(); }
+  document.getElementById("sd-draw").addEventListener("click", function () { run(200); });
+  document.getElementById("sd-draw2").addEventListener("click", function () { run(5000); });
+  document.getElementById("sd-reset").addEventListener("click", function () {
+    counts = [0, 0, 0, 0, 0, 0]; total = 0; accepted = 0; render();
+  });
+  render();
+})();
+</script>
+<section id="serve">
+  <div class="sec-head">
+    <span class="sec-n">10</span>
+    <div>
+      <h2>Serving and the unified benchmark</h2>
+      <p class="deck">Five variants, one table, and an explicit statement of which columns
+      generalize beyond this hardware.</p>
+    </div>
+  </div>
+
+  <p>
+    The serving layer is deliberately small: streaming generation with a KV cache, sampling
+    transforms (temperature, top-k, top-p, repetition penalty) shared with the speculative path so
+    the two cannot drift apart, stop-sequence handling, and a prefill/decode timing breakdown.
+  </p>
+
+  <div class="caveat">
+    <span class="caveat-t">A real bug: the streamer swallowed stop sequences</span>
+    <p>
+      Streaming means decoding tokens to text as they arrive &mdash; and a multi-byte UTF-8
+      character can straddle a token boundary, so <code>bytes.decode()</code> on a partial buffer
+      throws. My first implementation wrapped it in <code>try/except</code> and held the bytes back
+      until they decoded. That is correct for a split character and <em>catastrophic</em> for a
+      genuinely invalid byte: the buffer never decodes, so it grows forever, and every subsequent
+      stop-sequence check runs against text that is missing everything after that point. Generation
+      silently ignores its stop sequences from then on.
+    </p>
+    <p>
+      The fix is to use the thing designed for this &mdash;
+      <code>codecs.getincrementaldecoder("utf-8")("replace")</code> &mdash; which holds back genuinely
+      incomplete sequences and emits a replacement character for genuinely invalid ones, so the
+      buffer always drains.
+    </p>
+  </div>
+
+  <h3>The variants table</h3>
+  <p>
+    Every Arc 2 lever, measured on the same prompt, the same token count, and the same machine, with
+    the composed variants included.
+  </p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Variant</th><th class="num">Params</th><th class="num">Weights</th>
+        <th class="num">KV @ ctx</th><th class="num">Decode tok/s</th><th class="num">Latency p50</th>
+        <th class="num">Val ppl</th><th class="num">Tiny bench</th></tr></thead>
+      <tbody>
+        <tr><td>base (fp32)</td><td class="num">4,952,064</td><td class="num">18.89 MB</td>
+            <td class="num">0.47 MB</td><td class="num">729.2</td><td class="num">91.3 ms</td>
+            <td class="num">1.4764</td><td class="num best">100.0%</td></tr>
+        <tr><td>distilled (reverse-KL)</td><td class="num best">279,168</td><td class="num best">1.06 MB</td>
+            <td class="num">0.06 MB</td><td class="num best">1765.8</td><td class="num best">21.6 ms</td>
+            <td class="num worse">2.5222</td><td class="num worse">67.9% &plusmn; 8.8</td></tr>
+        <tr><td>GPTQ 4-bit</td><td class="num">4,952,064</td><td class="num">4.38 MB</td>
+            <td class="num">0.47 MB</td><td class="num">756.0</td><td class="num">87.8 ms</td>
+            <td class="num">1.4766</td><td class="num best">100.0%</td></tr>
+        <tr><td>speculative (&gamma;=6)</td><td class="num">5,231,232</td><td class="num">19.96 MB</td>
+            <td class="num">0.53 MB</td><td class="num worse">597.3</td><td class="num">107.2 ms</td>
+            <td class="num">1.4764</td><td class="num">&mdash;</td></tr>
+        <tr><td>speculative + GPTQ 4-bit</td><td class="num">5,231,232</td><td class="num">5.44 MB</td>
+            <td class="num">0.53 MB</td><td class="num worse">583.5</td><td class="num">109.7 ms</td>
+            <td class="num">1.4766</td><td class="num">&mdash;</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>How to read this table</h4>
+  <dl class="defs">
+    <dt>The weight column is the representation size, not the tensor size</dt>
+    <dd>
+      The 4-bit rows are <em>simulated</em> in fp32, because there is no int4 CPU kernel to run them
+      on. Reading the footprint off the tensors would therefore report a 4-bit model as 32-bit. The
+      figure shown is computed from the effective bit-width including the stored scales &mdash; the
+      size the model <em>would</em> occupy with a real kernel.
+    </dd>
+    <dt>Speculative rows include the draft's weights and cache</dt>
+    <dd>
+      Speculation is not free in memory; it trades space for target passes. Reporting only the
+      target's footprint would hide the trade.
+    </dd>
+    <dt>Decode throughput does not generalize; the pass counts do</dt>
+    <dd>
+      This is a CPU measurement at 5M parameters, where a forward pass is bound by Python dispatch
+      rather than weight loading. Both compression levers therefore show their memory win and no
+      speed win, and speculation shows a speed <em>loss</em>. The
+      <a href="#cost">cost model</a> explains exactly why, and the target-pass reduction &mdash;
+      which is hardware-independent &mdash; is the number to carry away.
+    </dd>
+    <dt>The tiny benchmark is saturated</dt>
+    <dd>
+      28 hand-written questions across subject&ndash;verb agreement, coreference, schema completion
+      and arithmetic, scored by likelihood against a stated 50% chance line. The base model gets
+      100%, so it is a <em>degradation detector</em> for Arc 2, not a quality ladder. An unchanged
+      score means compression did not break the capabilities it probes, and nothing stronger.
+    </dd>
+  </dl>
+
+  <div class="win">
+    <span class="win-t">The one clean composition result</span>
+    <p>
+      Distillation gives 17.7&times; smaller weights and 2.4&times; the decode throughput, at a real
+      capability cost (tiny bench 100% &rarr; 67.9%). GPTQ-4bit gives 4.3&times; smaller weights at
+      <em>no</em> measurable perplexity or benchmark cost. And speculation composes with quantization:
+      running the target 4-bit changes the acceptance rate from 0.367 to 0.362, which is to say
+      not at all &mdash; because 4-bit quantization barely moves the distribution the draft is trying
+      to predict.
+    </p>
+  </div>
+
+  <div class="caveat">
+    <span class="caveat-t">A test bug worth confessing: the benchmark was measuring nothing</span>
+    <p>
+      One tiny-benchmark category scored <em>exactly</em> 0.5 &mdash; chance &mdash; which I first read
+      as "the model has not learned agreement". It had. The probe presented a single sentence, but
+      the model was trained on multi-sentence stories, so the prompt was structurally
+      off-distribution and the model was effectively being asked a question in a format it had never
+      seen. Rewriting the probe to use a full story prefix took the same model from 6/12 to 12/12.
+      The lesson is that an evaluation returning exactly chance is more likely to be broken than
+      informative, and that "the model is bad" is the more comfortable conclusion, which is why it
+      needs checking first.
+    </p>
+  </div>
+</section>
+<section id="results">
+  <div class="sec-head">
+    <span class="sec-n">&#9633;</span>
+    <div>
+      <h2>All results</h2>
+      <p class="deck">Every number produced by a committed script, stamped with the git commit and
+      hardware that produced it, and regenerable offline from committed data.</p>
+    </div>
+  </div>
+
+  <h3>The natural-language model</h3>
+  <p>
+    The <code>micro</code> tier, 40.4M parameters, trained on TinyStories &mdash; a corpus of short
+    stories written with the vocabulary of a small child, built by Eldan &amp; Li precisely to test
+    whether sub-100M models can be coherent. That capability match is the point: the same 40M
+    parameters given general web text learn the <em>shape</em> of English and produce fluent
+    nonsense, because the distribution is far wider than the capacity.
+  </p>
+
+  <figure>
+    <div class="fig-frame">
+<svg viewBox="0 0 660 250" role="img" aria-label="micro · 40.4M params · TinyStories · Apple Silicon GPU. Loss falls from ln(16384)." style="width:100%;height:auto">
+<g font-family="ui-monospace, monospace" font-size="10" fill="currentColor">
+<line x1="52" y1="206.0" x2="644" y2="206.0" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="44" y="209.5" text-anchor="end" opacity=".6">0.0</text>
+<line x1="52" y1="170.8" x2="644" y2="170.8" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="44" y="174.3" text-anchor="end" opacity=".6">2.2</text>
+<line x1="52" y1="135.6" x2="644" y2="135.6" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="44" y="139.1" text-anchor="end" opacity=".6">4.4</text>
+<line x1="52" y1="100.4" x2="644" y2="100.4" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="44" y="103.9" text-anchor="end" opacity=".6">6.6</text>
+<line x1="52" y1="65.2" x2="644" y2="65.2" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="44" y="68.7" text-anchor="end" opacity=".6">8.8</text>
+<line x1="52" y1="30.0" x2="644" y2="30.0" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="44" y="33.5" text-anchor="end" opacity=".6">11.0</text>
+<text x="52.0" y="222" text-anchor="middle" opacity=".6">0</text>
+<text x="200.0" y="222" text-anchor="middle" opacity=".6">131</text>
+<text x="348.0" y="222" text-anchor="middle" opacity=".6">262</text>
+<text x="496.0" y="222" text-anchor="middle" opacity=".6">393</text>
+<text x="644.0" y="222" text-anchor="middle" opacity=".6">525</text>
+<text x="348" y="244" text-anchor="middle" opacity=".55">step</text>
+<text x="16" y="118" text-anchor="middle" opacity=".55" transform="rotate(-90 16 118)">cross-entropy (nats/token)</text>
+<line x1="52" y1="50.7" x2="644" y2="50.7" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3" opacity=".45"/>
+<text x="640" y="44.7" text-anchor="end" opacity=".65">ln(V) = 9.70 &#8212; uniform-guess floor</text>
+<polyline points="53.1,50.7 80.2,67.3 108.4,108.0 136.6,129.8 164.8,146.2 193.0,149.0 221.1,154.6 249.3,158.0 277.5,156.3 305.7,161.0 333.9,160.6 362.1,164.1 390.3,161.7 418.5,165.1 446.7,166.4 474.9,163.5 503.0,163.1 531.2,166.1 559.4,167.1 587.6,168.3 615.8,165.6 644.0,169.0" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".45"/>
+<polyline points="277.5,158.6 503.0,165.9" fill="none" stroke="#12655F" stroke-width="2"/>
+<circle cx="277.5" cy="158.6" r="2.6" fill="#12655F"/>
+<circle cx="503.0" cy="165.9" r="2.6" fill="#12655F"/>
+<circle cx="503.0" cy="165.9" r="4.6" fill="none" stroke="#12655F" stroke-width="1.4"/>
+<text x="495.0" y="155.9" text-anchor="end" fill="#12655F" font-size="11">2.506 &#183; ppl 12.25</text>
+<text x="52" y="18" font-size="11" font-weight="600">micro · 40.4M params · TinyStories · Apple Silicon GPU</text>
+<line x1="494" y1="14" x2="512" y2="14" stroke="currentColor" stroke-width="1.2" opacity=".45"/>
+<text x="517" y="17" opacity=".7">train</text>
+<line x1="556" y1="14" x2="574" y2="14" stroke="#12655F" stroke-width="2"/>
+<text x="579" y="17" opacity=".7">validation</text>
+</g></svg>
+    </div>
+    <figcaption>
+      <b>Starting exactly at ln(16384) = 9.7041, as the zero-init scheme predicts.</b> The first
+      logged loss was 9.7041 &mdash; agreement to five decimals with a value derived from theory, not
+      from a previous run. This is an in-progress run against a deliberately reduced budget; see the
+      caveat below.
+    </figcaption>
+  </figure>
+
+  <p>Sampled from that checkpoint at 3.07M tokens, temperature 0.7:</p>
+  <div class="note">
+    <span class="note-t">prompt &rarr; completion</span>
+    <p style="margin-bottom:.8rem">
+      <em>Tom found a shiny red box in the garden. When he opened it,</em>
+      he found a shiny red ball. The red ball was very pretty. Tom played with the red ball all day.
+      He made it very happy. He was so happy to have his red ball back. But then, something
+      unexpected happened. The red ball started to move and fell down. Tom and his red ball were
+      stuck in the tree.
+    </p>
+    <p style="margin-bottom:0">
+      <em>Once upon a time there was a little girl named Mia who</em>
+      loved to play with her toys. One day, she found a big bowl of the paper in her room. She was
+      very happy to see what was inside the box. Mia's mom said, "Sue, it is time to clean the box."
+    </p>
+  </div>
+  <p>
+    Read that carefully, because the failures are as informative as the successes. The grammar is
+    correct throughout. Tense, agreement and pronoun reference hold across sentences. Dialogue is
+    punctuated properly. Narrative structure &mdash; setup, complication, "But then, something
+    unexpected happened" &mdash; is clearly learned. What breaks is <em>entity tracking</em>: the
+    bowl becomes paper becomes a box, and Mia's mother calls her Sue. That is exactly the
+    signature of an under-trained model: syntax is learned from local statistics and arrives early;
+    maintaining a consistent world state across a paragraph needs far more data.
+  </p>
+  <div class="caveat">
+    <span class="caveat-t">This run is under-trained, deliberately and measurably</span>
+    <p>
+      A Chinchilla-optimal budget for 40.4M parameters is ~808M tokens. This run has seen 3.07M
+      &mdash; <b>0.4% of compute-optimal</b> &mdash; because it is training on a laptop GPU at
+      ~2,270 tokens/second, and the full budget would take four days. The run is continuing against a
+      32M-token target. Every manifest records the Chinchilla fraction precisely so an under-trained
+      run is labelled as one rather than quietly compared against a fully-trained baseline. The
+      honest headline is <em>the pipeline produces coherent English from scratch on free hardware</em>,
+      not <em>this is a good language model</em>.
+    </p>
+  </div>
+
+  <h3>The CI/teaching tier</h3>
+  <figure>
+    <div class="fig-frame">
+<svg viewBox="0 0 660 250" role="img" aria-label="nano · 5.0M params · toy corpus · 95 s on a laptop CPU. Loss falls from ln(1024) to 0.385." style="width:100%;height:auto">
+<g font-family="ui-monospace, monospace" font-size="10" fill="currentColor">
+<line x1="52" y1="206.0" x2="644" y2="206.0" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="44" y="209.5" text-anchor="end" opacity=".6">0.0</text>
+<line x1="52" y1="170.8" x2="644" y2="170.8" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="44" y="174.3" text-anchor="end" opacity=".6">1.6</text>
+<line x1="52" y1="135.6" x2="644" y2="135.6" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="44" y="139.1" text-anchor="end" opacity=".6">3.2</text>
+<line x1="52" y1="100.4" x2="644" y2="100.4" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="44" y="103.9" text-anchor="end" opacity=".6">4.8</text>
+<line x1="52" y1="65.2" x2="644" y2="65.2" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="44" y="68.7" text-anchor="end" opacity=".6">6.4</text>
+<line x1="52" y1="30.0" x2="644" y2="30.0" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="44" y="33.5" text-anchor="end" opacity=".6">8.0</text>
+<text x="52.0" y="222" text-anchor="middle" opacity=".6">0</text>
+<text x="200.0" y="222" text-anchor="middle" opacity=".6">100</text>
+<text x="348.0" y="222" text-anchor="middle" opacity=".6">200</text>
+<text x="496.0" y="222" text-anchor="middle" opacity=".6">300</text>
+<text x="644.0" y="222" text-anchor="middle" opacity=".6">400</text>
+<text x="348" y="244" text-anchor="middle" opacity=".55">step</text>
+<text x="16" y="118" text-anchor="middle" opacity=".55" transform="rotate(-90 16 118)">cross-entropy (nats/token)</text>
+<line x1="52" y1="53.5" x2="644" y2="53.5" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3" opacity=".45"/>
+<text x="640" y="47.5" text-anchor="end" opacity=".65">ln(V) = 6.93 &#8212; uniform-guess floor</text>
+<polyline points="53.5,53.5 66.8,84.4 81.6,153.8 96.4,180.1 111.2,186.7 126.0,189.6 140.8,190.9 155.6,191.6 170.4,192.7 185.2,192.1 200.0,192.9 214.8,193.3 229.6,193.9 244.4,193.1 259.2,194.0 274.0,193.8 288.8,194.5 303.6,194.7 318.4,194.3 333.2,194.2 348.0,194.4 362.8,194.5 377.6,195.1 392.4,195.7 407.2,195.7 422.0,196.6 436.8,197.0 451.6,197.2 466.4,196.9 481.2,196.7 496.0,197.2 510.8,197.8 525.6,197.5 540.4,197.2 555.2,197.6 570.0,197.7 584.8,197.5 599.6,197.6 614.4,197.7 629.2,197.6 644.0,197.4" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".45"/>
+<polyline points="126.0,189.8 200.0,192.9 274.0,193.9 348.0,194.7 422.0,196.4 496.0,197.1 570.0,197.3 644.0,197.4" fill="none" stroke="#12655F" stroke-width="2"/>
+<circle cx="126.0" cy="189.8" r="2.6" fill="#12655F"/>
+<circle cx="200.0" cy="192.9" r="2.6" fill="#12655F"/>
+<circle cx="274.0" cy="193.9" r="2.6" fill="#12655F"/>
+<circle cx="348.0" cy="194.7" r="2.6" fill="#12655F"/>
+<circle cx="422.0" cy="196.4" r="2.6" fill="#12655F"/>
+<circle cx="496.0" cy="197.1" r="2.6" fill="#12655F"/>
+<circle cx="570.0" cy="197.3" r="2.6" fill="#12655F"/>
+<circle cx="644.0" cy="197.4" r="2.6" fill="#12655F"/>
+<circle cx="644.0" cy="197.4" r="4.6" fill="none" stroke="#12655F" stroke-width="1.4"/>
+<text x="636.0" y="187.4" text-anchor="end" fill="#12655F" font-size="11">0.390 &#183; ppl 1.48</text>
+<text x="52" y="18" font-size="11" font-weight="600">nano · 5.0M params · toy corpus · 95 s on a laptop CPU</text>
+<line x1="494" y1="14" x2="512" y2="14" stroke="currentColor" stroke-width="1.2" opacity=".45"/>
+<text x="517" y="17" opacity=".7">train</text>
+<line x1="556" y1="14" x2="574" y2="14" stroke="#12655F" stroke-width="2"/>
+<text x="579" y="17" opacity=".7">validation</text>
+</g></svg>
+    </div>
+    <figcaption>
+      <b>The <code>nano</code> tier: 4,952,064 parameters, 819,200 tokens, 95 seconds on a laptop
+      CPU.</b> This is the tier the whole test suite and every ablation runs on, which is what makes
+      a 563-test suite and six controlled A/B studies affordable. It trains on a synthetic story
+      grammar, so it demonstrates that the pipeline learns structure &mdash; agreement, coreference,
+      narrative shape &mdash; not that it models open-domain text.
+    </figcaption>
+  </figure>
+
+  <h3>The quantization frontier</h3>
+  <figure>
+    <div class="fig-frame">
+<svg viewBox="0 0 660 260" role="img" aria-label="Perplexity against effective bit-width for round-to-nearest, GPTQ and AWQ: all three tie from 3.5 bits upward, and GPTQ separates clearly at 2.5 bits." style="width:100%;height:auto">
+<g font-family="ui-monospace, monospace" font-size="10" fill="currentColor">
+<line x1="60" y1="216.0" x2="560" y2="216.0" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="52" y="219.5" text-anchor="end" opacity=".6">1.470</text>
+<line x1="60" y1="169.5" x2="560" y2="169.5" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="52" y="173.0" text-anchor="end" opacity=".6">1.491</text>
+<line x1="60" y1="123.0" x2="560" y2="123.0" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="52" y="126.5" text-anchor="end" opacity=".6">1.512</text>
+<line x1="60" y1="76.5" x2="560" y2="76.5" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="52" y="80.0" text-anchor="end" opacity=".6">1.534</text>
+<line x1="60" y1="30.0" x2="560" y2="30.0" stroke="currentColor" stroke-width=".7" opacity=".14"/>
+<text x="52" y="33.5" text-anchor="end" opacity=".6">1.555</text>
+<text x="95.7" y="232" text-anchor="middle" opacity=".6">2.5</text>
+<text x="167.1" y="232" text-anchor="middle" opacity=".6">3.5</text>
+<text x="238.6" y="232" text-anchor="middle" opacity=".6">4.5</text>
+<text x="524.3" y="232" text-anchor="middle" opacity=".6">8.5</text>
+<text x="310" y="254" text-anchor="middle" opacity=".55">effective bits per weight (incl. stored scales)</text>
+<text x="16" y="123" text-anchor="middle" opacity=".55" transform="rotate(-90 16 123)">validation perplexity</text>
+<line x1="60" y1="202.0" x2="560" y2="202.0" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity=".4"/>
+<text x="566" y="205.5" opacity=".6">fp32 = 1.4764</text>
+<polyline points="95.7,61.7 167.1,197.8 238.6,201.3 524.3,202.0" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="0" opacity="0.55"/>
+<circle cx="95.7" cy="61.7" r="2.4" fill="currentColor" opacity="0.55"/>
+<circle cx="167.1" cy="197.8" r="2.4" fill="currentColor" opacity="0.55"/>
+<circle cx="238.6" cy="201.3" r="2.4" fill="currentColor" opacity="0.55"/>
+<circle cx="524.3" cy="202.0" r="2.4" fill="currentColor" opacity="0.55"/>
+<text x="532.3" y="196.0" fill="currentColor" opacity="0.55" font-size="10.5">RTN</text>
+<polyline points="95.7,151.0 167.1,202.0 238.6,201.6 524.3,202.0" fill="none" stroke="#12655F" stroke-width="2" stroke-dasharray="0" opacity="1.0"/>
+<circle cx="95.7" cy="151.0" r="3" fill="#12655F" opacity="1.0"/>
+<circle cx="167.1" cy="202.0" r="3" fill="#12655F" opacity="1.0"/>
+<circle cx="238.6" cy="201.6" r="3" fill="#12655F" opacity="1.0"/>
+<circle cx="524.3" cy="202.0" r="3" fill="#12655F" opacity="1.0"/>
+<text x="532.3" y="196.0" fill="#12655F" opacity="1.0" font-size="10.5">GPTQ</text>
+<polyline points="95.7,47.9 167.1,198.1 238.6,201.8 524.3,202.0" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="4 3" opacity="0.45"/>
+<circle cx="95.7" cy="47.9" r="2.4" fill="currentColor" opacity="0.45"/>
+<circle cx="167.1" cy="198.1" r="2.4" fill="currentColor" opacity="0.45"/>
+<circle cx="238.6" cy="201.8" r="2.4" fill="currentColor" opacity="0.45"/>
+<circle cx="524.3" cy="202.0" r="2.4" fill="currentColor" opacity="0.45"/>
+<text x="532.3" y="196.0" fill="currentColor" opacity="0.45" font-size="10.5">AWQ</text>
+<text x="105.7" y="57.7" opacity=".7" font-size="10">RTN 1.5405</text>
+<text x="105.7" y="165.0" fill="#12655F" font-size="10">GPTQ 1.4997</text>
+</g></svg>
+    </div>
+    <figcaption>
+      <b>Plotted against <em>effective</em> bits, so the stored group scales are counted.</b> All
+      three methods are indistinguishable from fp32 from 3.5 bits upward &mdash; the predicted 4-bit
+      GPTQ win does not happen at this scale. The separation appears at 2.5 bits, where GPTQ reaches
+      1.4997 against RTN's 1.5405 and AWQ's 1.5468, while having the largest weight error of the
+      three.
+    </figcaption>
+  </figure>
+
+  <h3>Everything, in one table</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Claim</th><th>Measurement</th><th>Produced by</th></tr></thead>
+      <tbody>
+        <tr><td>Muon converges faster than AdamW</td>
+            <td><b>50 vs 105</b> steps to target loss; 0.3896 vs 0.4039 final</td>
+            <td><code>scripts/ablate.py</code></td></tr>
+        <tr><td>QK-norm / zero-init / SwiGLU improve final loss</td>
+            <td class="worse"><b>Not confirmed</b> &mdash; all within 1.4%, below the stated 2% noise threshold</td>
+            <td><code>scripts/ablate.py</code></td></tr>
+        <tr><td>QK-norm speeds convergence</td>
+            <td>1.5&times; fewer steps to target (50 vs 75)</td>
+            <td><code>scripts/ablate.py</code></td></tr>
+        <tr><td>DPO alone beats its SFT starting point</td>
+            <td class="worse"><b>Refuted</b> &mdash; loses 0&ndash;7&ndash;33; likelihood collapse</td>
+            <td><code>scripts/align_pipeline.py</code></td></tr>
+        <tr><td>DPO + NLL anchor beats SFT</td>
+            <td><b>3&ndash;0&ndash;37</b>, with &Delta;&thinsp;log&thinsp;p(chosen) restored to positive</td>
+            <td><code>scripts/align_pipeline.py</code></td></tr>
+        <tr><td>Reverse-KL distillation degenerates less</td>
+            <td>repetition <b>0.0000</b> vs 0.0064 (fwd-KL), 0.0372 (SeqKD), 0.0383 (the teacher)</td>
+            <td><code>scripts/distill_compare.py</code></td></tr>
+        <tr><td>Distillation shrinks the model</td>
+            <td><b>17.7&times;</b> overall, 29.9&times; on non-embedding parameters</td>
+            <td><code>scripts/distill_compare.py</code></td></tr>
+        <tr><td>GPTQ beats RTN at 4 bits "by a clear margin"</td>
+            <td class="worse"><b>Refuted</b> &mdash; a tie (1.4766 vs 1.4767)</td>
+            <td><code>scripts/quantize_frontier.py</code></td></tr>
+        <tr><td>GPTQ beats RTN where bits are scarce</td>
+            <td><b>1.4997 vs 1.5405</b> at 2 bits, with higher weight error</td>
+            <td><code>scripts/quantize_frontier.py</code></td></tr>
+        <tr><td>Speculation cuts target forward passes</td>
+            <td><b>2.94</b> tokens per target pass at &gamma;=6, vs 0.98 autoregressive</td>
+            <td><code>scripts/specdec_bench.py</code></td></tr>
+        <tr><td>Speculation is faster in wall clock</td>
+            <td class="worse"><b>Refuted at this scale</b> &mdash; 0.79&times;; see the cost model</td>
+            <td><code>scripts/specdec_bench.py</code></td></tr>
+        <tr><td>Speculation is distribution-preserving</td>
+            <td>Greedy identical token-for-token; 120,000-sample distributional test passes</td>
+            <td><code>tests/unit/test_specdec.py</code></td></tr>
+        <tr><td>Speculation composes with quantization</td>
+            <td>acceptance 0.367 &rarr; 0.362 with a 4-bit target &mdash; unchanged</td>
+            <td><code>scripts/bench_all.py</code></td></tr>
+        <tr><td>The whole pipeline runs on a CPU</td>
+            <td>tokenizer&rarr;pretrain&rarr;SFT&rarr;DPO&rarr;quantize&rarr;speculate in <b>45 s</b></td>
+            <td><code>tests/e2e/test_smoke.py</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="negative">
+  <div class="sec-head">
+    <span class="sec-n">&#9888;</span>
+    <div>
+      <h2>What went wrong</h2>
+      <p class="deck">Six real bugs and four wrong hypotheses. The distinction between the two
+      categories is the one that matters.</p>
+    </div>
+  </div>
+
+  <p>
+    Debugging a machine-learning pipeline is unusual in that most failures do not raise. The model
+    trains, the loss goes down, and the number at the end is simply worse than it should be &mdash;
+    which is indistinguishable from "this is how well the method works" unless you have something to
+    check against. Every entry below was found by having something to check against.
+  </p>
+
+  <h3>Bugs in the code</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>What broke</th><th>Symptom</th><th>Cause and fix</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Checkpoint resume</b></td>
+          <td>Resumed run ended at val loss 5.28 vs 5.09 uninterrupted. No error.</td>
+          <td>Model, optimizer and RNG were restored; the <em>data iterator</em> restarted at
+              batch 0. Now <code>TokenBatcher.stream()</code> takes an offset, and the test asserts
+              bit-identical continuation rather than "resume runs".</td>
+        </tr>
+        <tr>
+          <td><b>GPTQ activation ordering</b></td>
+          <td>2-bit GPTQ <em>lost</em> to plain round-to-nearest.</td>
+          <td>Un-permuting the dequantized matrix re-quantized it, adding a second uncompensated
+              rounding pass. The permutation now travels with the integer codes.</td>
+        </tr>
+        <tr>
+          <td><b>Medusa tree positions</b></td>
+          <td>Packed-tree evaluation disagreed with per-path evaluation.</td>
+          <td>Position IDs came from packing order, not tree depth, so RoPE placed sibling branches
+              at wrong distances. Added <code>tree_position_ids()</code>.</td>
+        </tr>
+        <tr>
+          <td><b>Streaming text decoder</b></td>
+          <td>Stop sequences silently stopped working after certain bytes.</td>
+          <td><code>try/except</code> around <code>bytes.decode()</code> buffered invalid bytes
+              forever. Replaced with an incremental UTF-8 decoder in <code>replace</code> mode.</td>
+        </tr>
+        <tr>
+          <td><b>Accumulation dtype</b></td>
+          <td>fp64 reference tests could not agree past 1e&minus;5.</td>
+          <td><code>x.float()</code> promotes bf16 and silently demotes float64. Added
+              <code>accumulation_dtype()</code>; tolerances tightened to 1e&minus;10.</td>
+        </tr>
+        <tr>
+          <td><b>Missing MLE warm-start</b></td>
+          <td>Reverse-KL students reached perplexity 1028.</td>
+          <td>Not a bug in the gradient &mdash; a policy gradient on a randomly-initialized student
+              optimizes the distribution of noise. Added the warm-start MiniLLM specifies, applied
+              identically to all arms so the comparison stays controlled.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Hypotheses that were wrong &mdash; the tests, not the code</h3>
+  <div class="grid2">
+    <div class="card">
+      <h4>"BPE is subadditive"</h4>
+      <p>
+        Hypothesis found <code>"eps"</code> (1 token) + <code>"ep"</code> (1 token) &rarr;
+        <code>"epsep"</code> (3 tokens). Greedy merging is not monotone. The counterexample is now
+        the regression test.
+      </p>
+    </div>
+    <div class="card">
+      <h4>"Muon always beats AdamW"</h4>
+      <p>
+        It loses on convex single-matrix least squares &mdash; the regime where Adam's
+        per-coordinate scaling is near-optimal. Both results are now tests.
+      </p>
+    </div>
+    <div class="card">
+      <h4>"GPTQ's edge needs the Hessian's off-diagonals"</h4>
+      <p>
+        Error compensation helps with white activations too. Split into two narrower true claims
+        &mdash; and while fixing it I found the test was measuring <code>act_order</code> as exactly
+        zero, because I had built the synthetic data with <code>logspace</code>, which is already
+        sorted.
+      </p>
+    </div>
+    <div class="card">
+      <h4>"The model can't do agreement"</h4>
+      <p>
+        A probe scoring <em>exactly</em> chance is more likely broken than informative. The probe was
+        a single sentence; the model was trained on multi-sentence stories. Same model, proper
+        prefix: 6/12 &rarr; 12/12.
+      </p>
+    </div>
+  </div>
+
+  <div class="win">
+    <span class="win-t">The pattern</span>
+    <p>
+      Four of the six code bugs were found by a test comparing an <em>optimized path against a slow
+      obvious one</em> &mdash; fast attention against a naive loop, packed tree against per-path,
+      resumed run against uninterrupted, fast rotation against an fp64 reference. That is the single
+      highest-yield testing technique in this project, and it is available for almost any performance
+      optimization: keep the stupid version, and assert they agree.
+    </p>
+  </div>
+</section>
+<section id="decisions">
+  <div class="sec-head">
+    <span class="sec-n">&#9670;</span>
+    <div>
+      <h2>Design decisions</h2>
+      <p class="deck">The choices that shaped the repository, and what each one cost.</p>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>D1 &nbsp;Configuration is frozen, hashed, documented</h4>
+      <p>
+        16 immutable pydantic models. Every field carries a description &mdash; enforced by a test
+        that fails if one is missing. Configs hash to a stable digest recorded in every run manifest,
+        and save&rarr;load&rarr;validate is an exact identity.
+      </p>
+      <p class="footnote">Cost: computed fields had to be stripped on round-trip, which needed a
+      dedicated <code>dump_inputs()</code> helper.</p>
+    </div>
+    <div class="card">
+      <h4>D2 &nbsp;Parameter counts are reported honestly</h4>
+      <p>
+        The plan's headline figures were approximate. This repo pins the <em>shapes</em> and reports
+        what they actually produce, in both total and non-embedding form, asserted as exact constants
+        against the analytic formula <em>and</em> the built module.
+      </p>
+      <p class="footnote">Comparing "parameter counts" across projects is meaningless unless you say
+      whether embeddings and an untied head are included.</p>
+    </div>
+    <div class="card">
+      <h4>D3 &nbsp;<code>nano</code> is deliberately not compute-optimal</h4>
+      <p>
+        20:1 on 5M parameters is ~99M tokens, which is hours of CPU. <code>nano</code> exists to be a
+        sub-10-minute CI and teaching tier. Its manifests record what fraction of compute-optimal it
+        covered, so the shortfall is data rather than an omission.
+      </p>
+    </div>
+    <div class="card">
+      <h4>D4 &nbsp;Everything has a CPU path</h4>
+      <p>
+        An unavailable accelerator degrades to CPU rather than raising; bf16 autocast degrades to
+        fp32. CI runs the entire pipeline on CPU runners. GPU runs are reported experiments, never
+        gates.
+      </p>
+      <p class="footnote">Cost: absolute throughput numbers are hardware-dependent, so every one is
+      stamped with the hardware string that produced it.</p>
+    </div>
+    <div class="card">
+      <h4>D5 &nbsp;Negative results are committed, not tuned away</h4>
+      <p>
+        When a measurement contradicted the plan, the measurement was recorded &mdash; as a results
+        table, a written explanation, and where possible a test pinning the surprising behaviour so
+        it cannot silently change.
+      </p>
+      <p class="footnote">Cost: the README is longer and less triumphant than it could be.</p>
+    </div>
+    <div class="card">
+      <h4>D6 &nbsp;Every number lives in exactly one place</h4>
+      <p>
+        Scripts write JSON + a figure + a Markdown fragment into <code>results/</code>. The docs
+        results page is <em>generated</em> from those fragments, and CI fails if the committed page
+        has drifted. There is no number in the docs that a human typed.
+      </p>
+      <p class="footnote">Cost: prose about a measurement has to be written inside the measurement
+      script.</p>
+    </div>
+    <div class="card">
+      <h4>D7 &nbsp;Report the terms, not just the metric</h4>
+      <p>
+        Every preference run logs absolute log-probabilities, not only their difference; every run
+        logs generated length before and after; the head-to-head judge is length-insensitive by
+        construction. This is what caught DPO's likelihood collapse.
+      </p>
+    </div>
+    <div class="card">
+      <h4>D8 &nbsp;Measure what transfers; disclaim what doesn't</h4>
+      <p>
+        Report target passes saved, weight footprint at effective bit-width, distributional
+        exactness, and objective rank ordering as results. Report wall-clock throughput with an
+        explicit statement that it does not generalize.
+      </p>
+      <p class="footnote">Cost: the "3&times; faster" chart this project could have shown does not
+      exist, because it would not have been true.</p>
+    </div>
+  </div>
+</section>
+
+<section id="limits">
+  <div class="sec-head">
+    <span class="sec-n">&#8734;</span>
+    <div>
+      <h2>Limits, and what more compute would change</h2>
+      <p class="deck">Read this before quoting any number above.</p>
+    </div>
+  </div>
+
+  <h3>What this project does not show</h3>
+  <ul>
+    <li>
+      <b>These are single-seed results at 5&ndash;40M parameters.</b> They are directional
+      confirmations, or non-confirmations, of findings obtained at 100&ndash;1000&times; this scale.
+      Differences below 2% in final loss are reported as no measurable difference, because at one
+      seed that is what they are.
+    </li>
+    <li>
+      <b>A lever that matters at scale can be invisible here.</b> QK-norm exists because attention
+      logits blow up over long runs at large width. 400 steps at <code>d=256</code> never gets there.
+      "This experiment cannot see the effect" and "the effect is not real" are different statements.
+    </li>
+    <li>
+      <b>The wall-clock inference numbers do not generalize at all.</b> Every Arc 2 technique targets
+      memory bandwidth, and there is no memory-bandwidth bottleneck at this scale on a CPU. This is
+      stated everywhere the numbers appear.
+    </li>
+    <li>
+      <b>The evaluation suite is tiny and saturated.</b> 28 hand-written questions with a stated 50%
+      chance line. It is a degradation detector for compression, not a quality measurement. There is
+      no MMLU number here, and there should not be one &mdash; a 40M model would score at chance.
+    </li>
+    <li>
+      <b>The alignment data is synthetic.</b> Preference pairs are generated programmatically, and
+      the head-to-head judge is a program that checks the properties those pairs encode. It measures
+      <em>did the model learn the labels</em>, not <em>is the model good</em>.
+    </li>
+  </ul>
+
+  <h3>What the same code does with more compute</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Change</th><th>What it needs</th><th>What it would settle</th></tr></thead>
+      <tbody>
+        <tr><td>Train <code>micro</code> to the full 20:1 budget</td>
+            <td>808M tokens &mdash; a few hours on one free T4, days on this laptop</td>
+            <td>Whether entity tracking appears with data alone at 40M parameters.</td></tr>
+        <tr><td>Train <code>small</code> (126M) on FineWeb-Edu</td>
+            <td>2.5B tokens; a multi-session Kaggle P100 run</td>
+            <td>Open-domain competence, and whether the ablations that showed nothing here start to
+                separate.</td></tr>
+        <tr><td>Multi-seed ablations</td>
+            <td>5&times; the ablation compute &mdash; cheap, this is the best next spend</td>
+            <td>Turns "below the noise threshold" into a real confidence interval.</td></tr>
+        <tr><td>Real GPU inference benchmarks</td>
+            <td>Any CUDA device plus an int4 kernel</td>
+            <td>Whether the wall-clock wins appear once memory bandwidth is the binding constraint.
+                The pass-count reductions predict they should.</td></tr>
+        <tr><td>Multi-GPU</td>
+            <td>FSDP sharding; the training loop is written so this is additive</td>
+            <td>Nothing scientific &mdash; it is a throughput change, and the recipe is documented
+                rather than built.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    Nothing above requires a redesign. The size ladder is one architecture with different
+    hyperparameters; the streaming data path already handles corpora far larger than disk; the
+    checkpoint format is resumable across sessions. Scaling this is a matter of compute, which is
+    exactly the claim the project set out to demonstrate.
+  </p>
+</section>
+
+<section id="repo">
+  <div class="sec-head">
+    <span class="sec-n">&#9654;</span>
+    <div>
+      <h2>Run it yourself</h2>
+      <p class="deck">Ten minutes, no GPU, no API key, no downloads.</p>
+    </div>
+  </div>
+
+  <pre><code>git clone https://github.com/&lt;user&gt;/nanoscale-lm &amp;&amp; cd nanoscale-lm
+make install
+make smoke     # tokenizer → pretrain → SFT → DPO → quantize → speculate</code></pre>
+  <p>
+    <code>make smoke</code> runs the entire pipeline on CPU and asserts a sanity metric at every
+    stage &mdash; loss starts at <code>ln(V)</code>, SFT reduces the masked loss, DPO raises the
+    reward margin, 4-bit stays coherent, GPTQ does not lose to RTN, greedy speculation is
+    token-identical to greedy autoregressive decoding. Measured end to end: <b>45 seconds</b>.
+  </p>
+
+  <h3>Repository map</h3>
+  <pre><code>src/nanoscale/
+├── config/       16 frozen pydantic models + the size-ladder presets
+├── tokenizer/    byte-level BPE: train, encode, decode, chat template
+├── model/        attention (GQA · RoPE · QK-norm · KV cache), norms, MLPs, MTP, numerics
+├── optim/        Muon (Newton–Schulz), AdamW, cautious decay, parameter router
+├── train/        data pipeline, schedules, checkpointing, the loop
+├── align/        SFT, DPO / SimPO, GRPO-RLVR
+├── distill/      forward-KL, SeqKD, on-policy reverse KL
+├── quantize/     RTN, GPTQ, AWQ, KV-cache quantization
+├── specdec/      accept rule, draft–target sampling, Medusa + tree attention
+├── serve/        streaming generation, stop sequences, timing breakdown
+├── eval/         perplexity with error bars, tiny benchmark, preference judge
+└── bench/        ablation harness, throughput / latency / memory harness
+
+tests/{unit,property,dynamics,e2e}/   563 tests
+results/                              committed figures, tables, JSON — the source of truth
+notebooks/                            two Colab notebooks, CPU and GPU paths
+demo/                                 Gradio app: generate, compare, inspect, race</code></pre>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>Quality gates</h4>
+      <p>
+        <code>ruff</code> with docstring, annotation and complexity rules; <code>mypy --strict</code>
+        over <code>src</code>, <code>tests</code> <em>and</em> <code>scripts</code> with no ignores;
+        563 tests including property-based tests via Hypothesis. CI additionally runs the end-to-end
+        pipeline, builds the docs with warnings as errors, and fails if the generated results page
+        has drifted from the committed artifacts.
+      </p>
+    </div>
+    <div class="card">
+      <h4>Reproducing the measurements</h4>
+      <p>
+        <code>make ablate</code>, <code>make align</code>, <code>make distill</code>,
+        <code>make quantize</code>, <code>make specdec</code>, <code>make bench</code>. Every one
+        also accepts <code>--replay</code>, which re-renders its figure and write-up from committed
+        JSON without retraining anything.
+      </p>
+    </div>
+  </div>
+
+  <hr class="soft">
+  <p class="footnote">
+    Apache-2.0. Every algorithm implemented from scratch in PyTorch; no high-level trainer library in
+    <code>src/nanoscale/</code>. Primary references: Vaswani et&nbsp;al. 2017 (Transformer);
+    Su et&nbsp;al. 2021 (RoPE); Zhang &amp; Sennrich 2019 (RMSNorm); Shazeer 2020 (SwiGLU);
+    Ainslie et&nbsp;al. 2023 (GQA); Jordan et&nbsp;al. 2024 (Muon); Rafailov et&nbsp;al. 2023 (DPO);
+    Meng et&nbsp;al. 2024 (SimPO); Shao et&nbsp;al. 2024 (GRPO); Hinton et&nbsp;al. 2015 (KD);
+    Kim &amp; Rush 2016 (SeqKD); Gu et&nbsp;al. 2024 (MiniLLM); Frantar et&nbsp;al. 2023 (GPTQ);
+    Lin et&nbsp;al. 2023 (AWQ); Leviathan et&nbsp;al. 2023 (speculative sampling);
+    Cai et&nbsp;al. 2024 (Medusa); Hoffmann et&nbsp;al. 2022 (Chinchilla);
+    Eldan &amp; Li 2023 (TinyStories); Miller 2024 (evaluation error bars).
+  </p>
+</section>
+
+</div>
+</main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var links = Array.prototype.slice.call(document.querySelectorAll("#toc a"));
+  var targets = links.map(function (a) {
+    return document.getElementById(a.getAttribute("href").slice(1));
+  });
+  function sync() {
+    var best = 0, bestTop = -Infinity;
+    for (var i = 0; i < targets.length; i++) {
+      if (!targets[i]) continue;
+      var top = targets[i].getBoundingClientRect().top - 120;
+      if (top <= 0 && top > bestTop) { bestTop = top; best = i; }
+    }
+    for (var j = 0; j < links.length; j++) links[j].classList.toggle("on", j === best);
+  }
+  var tick = false;
+  window.addEventListener("scroll", function () {
+    if (tick) return;
+    tick = true;
+    window.requestAnimationFrame(function () { sync(); tick = false; });
+  }, { passive: true });
+  sync();
+})();
+</script>

@@ -1,0 +1,38 @@
+{
+  "nano-base": {
+    "description": "nano tier, pretrained on the toy corpus",
+    "source": "runs/nano/pretrain/final.pt",
+    "params": 4952064,
+    "bytes": 19845034,
+    "source_bytes": 41796699,
+    "step": 400,
+    "sha256_16": "7ee8c67606037e4e"
+  },
+  "nano-sft": {
+    "description": "nano tier after completion-masked SFT",
+    "source": "runs/nano/sft/final.pt",
+    "params": 4952064,
+    "bytes": 19838367,
+    "source_bytes": 19846649,
+    "step": 250,
+    "sha256_16": "ba909726173f29b9"
+  },
+  "nano-aligned": {
+    "description": "nano tier after SFT then DPO with the RPO-style NLL anchor",
+    "source": "runs/nano/dpo_nll/final.pt",
+    "params": 4952064,
+    "bytes": 19838667,
+    "source_bytes": 19846649,
+    "step": 150,
+    "sha256_16": "ff3f4dc1b8172d2d"
+  },
+  "nano-draft": {
+    "description": "279k-parameter student from on-policy reverse-KL distillation; the speculative draft",
+    "source": "runs/nano/distill/reverse_kl/final.pt",
+    "params": 279168,
+    "bytes": 1134709,
+    "source_bytes": 1145310,
+    "step": 600,
+    "sha256_16": "67cc41976c558a77"
+  }
+}
