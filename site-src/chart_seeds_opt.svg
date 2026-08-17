@@ -1,0 +1,35 @@
+<svg viewBox="0 0 680 300" role="img" aria-label="Optimizer — 5 seeds per arm: per-seed final validation losses with mean and standard deviation." style="width:100%;height:auto">
+<g font-family="ui-monospace, monospace" font-size="10" fill="currentColor">
+<line x1="62" y1="220.0" x2="660" y2="220.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="54" y="223.5" text-anchor="end" opacity=".6">0.382</text>
+<line x1="62" y1="175.0" x2="660" y2="175.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="54" y="178.5" text-anchor="end" opacity=".6">0.413</text>
+<line x1="62" y1="130.0" x2="660" y2="130.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="54" y="133.5" text-anchor="end" opacity=".6">0.443</text>
+<line x1="62" y1="85.0" x2="660" y2="85.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="54" y="88.5" text-anchor="end" opacity=".6">0.474</text>
+<line x1="62" y1="40.0" x2="660" y2="40.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="54" y="43.5" text-anchor="end" opacity=".6">0.505</text>
+<rect x="185.5" y="91.7" width="52" height="126.8" fill="#12655F" fill-opacity=".13" rx="3"/>
+<line x1="181.5" y1="155.1" x2="241.5" y2="155.1" stroke="#12655F" stroke-width="2.2" opacity="1"/>
+<circle cx="193.5" cy="187.8" r="3" fill="#12655F" opacity=".85"/>
+<circle cx="202.5" cy="188.6" r="3" fill="#12655F" opacity=".85"/>
+<circle cx="211.5" cy="162.8" r="3" fill="#12655F" opacity=".85"/>
+<circle cx="220.5" cy="43.7" r="3" fill="#12655F" opacity=".85"/>
+<circle cx="229.5" cy="192.6" r="3" fill="#12655F" opacity=".85"/>
+<text x="211.5" y="238" text-anchor="middle" font-size="10">AdamW only</text>
+<text x="211.5" y="254" text-anchor="middle" font-size="9.5" opacity=".65">sd 0.0434</text>
+<text x="211.5" y="270" text-anchor="middle" font-size="9.5" fill="#12655F" opacity="1">106 steps → target</text>
+<rect x="484.5" y="206.0" width="52" height="9.6" fill="currentColor" fill-opacity=".13" rx="3"/>
+<line x1="480.5" y1="210.8" x2="540.5" y2="210.8" stroke="currentColor" stroke-width="2.2" opacity=".75"/>
+<circle cx="492.5" cy="208.6" r="3" fill="currentColor" opacity=".85"/>
+<circle cx="501.5" cy="204.6" r="3" fill="currentColor" opacity=".85"/>
+<circle cx="510.5" cy="213.3" r="3" fill="currentColor" opacity=".85"/>
+<circle cx="519.5" cy="210.1" r="3" fill="currentColor" opacity=".85"/>
+<circle cx="528.5" cy="217.2" r="3" fill="currentColor" opacity=".85"/>
+<text x="510.5" y="238" text-anchor="middle" font-size="10">Muon + AdamW</text>
+<text x="510.5" y="254" text-anchor="middle" font-size="9.5" opacity=".65">sd 0.0033</text>
+<text x="510.5" y="270" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".75">53 steps → target</text>
+<text x="62" y="22" font-size="11" font-weight="600">Optimizer — 5 seeds per arm</text>
+<text x="62" y="36" font-size="9.5" opacity=".65">bar: mean &#183; band: ±1 sd &#183; dots: individual seeds (n=5)</text>
+</g></svg>

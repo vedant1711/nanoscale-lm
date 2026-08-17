@@ -110,6 +110,10 @@ ignore = [
 # not an oversight.
 "scripts/**" = ["D103", "E402"]
 "demo/**" = ["D103"]
+# E501: these hand-author SVG, where a single element is legitimately one long line of
+# attributes. Wrapping them would hurt readability rather than help it. Everything else,
+# including the annotation rules, still applies.
+"site-src/**" = ["E501"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

@@ -1,0 +1,65 @@
+<svg viewBox="0 0 680 314" role="img" aria-label="Minimal-pair accuracy per phenomenon with 95% Wilson intervals against a 50% chance line." style="width:100%;height:auto">
+<g font-family="ui-monospace, monospace" font-size="10" fill="currentColor">
+<line x1="405.0" y1="28" x2="405.0" y2="270" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" opacity=".5"/>
+<text x="405.0" y="20" text-anchor="middle" opacity=".7">chance 50%</text>
+<text x="180" y="44" text-anchor="end" font-size="10.5">agreement_simple</text>
+<line x1="566.3" y1="40.0" x2="608.0" y2="40.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<line x1="566.3" y1="36.0" x2="566.3" y2="44.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<line x1="608.0" y1="36.0" x2="608.0" y2="44.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<circle cx="594.2" cy="40.0" r="4.5" fill="#12655F"/>
+<text x="628" y="44.0" font-size="10.5" fill="#12655F">94%</text>
+<text x="180" y="70" text-anchor="end" font-size="10.5">determiner_noun</text>
+<line x1="524.8" y1="66.0" x2="583.3" y2="66.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<line x1="524.8" y1="62.0" x2="524.8" y2="70.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<line x1="583.3" y1="62.0" x2="583.3" y2="70.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<circle cx="559.8" cy="66.0" r="4.5" fill="#12655F"/>
+<text x="628" y="70.0" font-size="10.5" fill="#12655F">86%</text>
+<text x="180" y="96" text-anchor="end" font-size="10.5">reflexive</text>
+<line x1="594.1" y1="92.0" x2="620.0" y2="92.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<line x1="594.1" y1="88.0" x2="594.1" y2="96.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<line x1="620.0" y1="88.0" x2="620.0" y2="96.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<circle cx="620.0" cy="92.0" r="4.5" fill="#12655F"/>
+<text x="628" y="96.0" font-size="10.5" fill="#12655F">100%</text>
+<text x="180" y="122" text-anchor="end" font-size="10.5">argument_structure</text>
+<line x1="423.2" y1="118.0" x2="502.7" y2="118.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<line x1="423.2" y1="114.0" x2="423.2" y2="122.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<line x1="502.7" y1="114.0" x2="502.7" y2="122.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<circle cx="465.2" cy="118.0" r="4.5" fill="#12655F"/>
+<text x="628" y="122.0" font-size="10.5" fill="#12655F">64%</text>
+<text x="180" y="148" text-anchor="end" font-size="10.5">tense_consistency</text>
+<line x1="589.9" y1="144.0" x2="617.6" y2="144.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<line x1="589.9" y1="140.0" x2="589.9" y2="148.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<line x1="617.6" y1="140.0" x2="617.6" y2="148.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<circle cx="611.4" cy="144.0" r="4.5" fill="#12655F"/>
+<text x="628" y="148.0" font-size="10.5" fill="#12655F">98%</text>
+<text x="180" y="174" text-anchor="end" font-size="10.5">pronoun_gender</text>
+<line x1="604.1" y1="170.0" x2="620.0" y2="170.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<line x1="604.1" y1="166.0" x2="604.1" y2="174.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<line x1="620.0" y1="166.0" x2="620.0" y2="174.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<circle cx="620.0" cy="170.0" r="4.5" fill="#12655F"/>
+<text x="628" y="174.0" font-size="10.5" fill="#12655F">100%</text>
+<text x="180" y="200" text-anchor="end" font-size="10.5">negation</text>
+<line x1="362.8" y1="196.0" x2="447.2" y2="196.0" stroke="#8F4715" stroke-width="1.4" opacity=".45"/>
+<line x1="362.8" y1="192.0" x2="362.8" y2="200.0" stroke="#8F4715" stroke-width="1.4" opacity=".45"/>
+<line x1="447.2" y1="192.0" x2="447.2" y2="200.0" stroke="#8F4715" stroke-width="1.4" opacity=".45"/>
+<circle cx="405.0" cy="196.0" r="4.5" fill="#8F4715"/>
+<text x="628" y="200.0" font-size="10.5" fill="#8F4715">50%</text>
+<text x="180" y="226" text-anchor="end" font-size="10.5">agreement_attractor</text>
+<line x1="339.1" y1="222.0" x2="421.2" y2="222.0" stroke="#8F4715" stroke-width="1.4" opacity=".45"/>
+<line x1="339.1" y1="218.0" x2="339.1" y2="226.0" stroke="#8F4715" stroke-width="1.4" opacity=".45"/>
+<line x1="421.2" y1="218.0" x2="421.2" y2="226.0" stroke="#8F4715" stroke-width="1.4" opacity=".45"/>
+<circle cx="379.2" cy="222.0" r="4.5" fill="#8F4715"/>
+<text x="628" y="226.0" font-size="10.5" fill="#8F4715">44%</text>
+<text x="180" y="252" text-anchor="end" font-size="10.5">entity_tracking</text>
+<line x1="477.1" y1="248.0" x2="548.2" y2="248.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<line x1="477.1" y1="244.0" x2="477.1" y2="252.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<line x1="548.2" y1="244.0" x2="548.2" y2="252.0" stroke="#12655F" stroke-width="1.4" opacity=".45"/>
+<circle cx="516.8" cy="248.0" r="4.5" fill="#12655F"/>
+<text x="628" y="252.0" font-size="10.5" fill="#12655F">76%</text>
+<text x="190.0" y="288" text-anchor="middle" opacity=".55">0%</text>
+<text x="297.5" y="288" text-anchor="middle" opacity=".55">25%</text>
+<text x="405.0" y="288" text-anchor="middle" opacity=".55">50%</text>
+<text x="512.5" y="288" text-anchor="middle" opacity=".55">75%</text>
+<text x="620.0" y="288" text-anchor="middle" opacity=".55">100%</text>
+<text x="405" y="306" text-anchor="middle" opacity=".6">forced-choice accuracy, 95% Wilson interval &#183; 856 items</text>
+</g></svg>

@@ -9,14 +9,18 @@
 [![python](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)](pyproject.toml)
 [![mypy](https://img.shields.io/badge/mypy-strict-2a6db2)](pyproject.toml)
 [![ruff](https://img.shields.io/badge/lint-ruff-d7ff64)](pyproject.toml)
-[![tests](https://img.shields.io/badge/tests-563-brightgreen)](tests/)
+[![tests](https://img.shields.io/badge/tests-580-brightgreen)](tests/)
 [![license](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
 
-📖 **[Read the full explainer](https://claude.ai/code/artifact/edb6018c-1c9b-42da-a750-7e4330f7c0ed)** — every algorithm, diagram, decision and measurement in one page ·
-📊 [Docs site](https://vedant1711.github.io/nanoscale-lm/) ·
-▶ [Notebooks](notebooks/) ·
-🎛 [Demo](demo/) ·
-💾 [Weights](artifacts/models/)
+### 📖 &nbsp;[**Read the documentation — one page, everything**](https://claude.ai/code/artifact/edb6018c-1c9b-42da-a750-7e4330f7c0ed)
+
+Architecture, methodology, every design decision, every measurement and every limitation,
+written for anyone who knows Transformers and nothing past them.
+
+[Generated results](https://vedant1711.github.io/nanoscale-lm/) ·
+[Notebooks](notebooks/) ·
+[Demo](demo/) ·
+[Weights](artifacts/models/)
 
 </div>
 
@@ -124,7 +128,10 @@ hardware that produced it, and regenerable in replay mode. Full tables and cavea
 
 | Claim | Measurement | Script |
 |---|---|---|
-| Muon converges faster than AdamW | **50 vs 105** steps to target loss; 0.3896 vs 0.4039 final | `scripts/ablate.py` |
+| Beats GPT-2 on in-domain bits/byte | **0.5485 vs 0.9385** with 3.1× fewer params — reverses out of domain | `scripts/external_baseline.py` |
+| Muon converges faster than AdamW | **53 vs 106** steps to target, p < 0.0001 over 5 seeds | `scripts/ablate_multiseed.py` |
+| Muon is far more stable across seeds | **176× lower variance** (F = 176.4, p = 0.0002) | `scripts/ablate_multiseed.py` |
+| The model has *not* learned agreement | 94% simple vs **44%** with an attractor — linear recency | `scripts/evaluate.py` |
 | Distillation shrinks the model 17.7× | 4,952,064 → 279,168 params; reverse-KL student ppl 2.497 with repetition **0.0000** (teacher: 0.0383) | `scripts/distill_compare.py` |
 | GPTQ beats RTN where it matters | 2-bit ppl **1.4997 vs 1.5405**; a tie at 4 bits, reported as a tie | `scripts/quantize_frontier.py` |
 | Speculation cuts target forward passes 3× | **2.94** tokens per target pass at γ=6, output distribution provably unchanged | `scripts/specdec_bench.py` |
@@ -214,7 +221,7 @@ number, and every checkpoint is regenerable — `make train-nano` reproduces the
 
 ```bash
 make check    # ruff + mypy --strict + pytest  (exactly what CI runs)
-make test     # 563 tests, including property-based tests via hypothesis
+make test     # 580 tests, including property-based tests via hypothesis
 make smoke    # the end-to-end pipeline on CPU
 make results  # regenerate docs/results.md from the committed artifacts
 make docs     # serve the documentation locally
