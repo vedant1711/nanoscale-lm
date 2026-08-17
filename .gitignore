@@ -15,7 +15,6 @@ venv/
 .hypothesis/
 .coverage
 htmlcov/
-uv.lock
 
 # Runs, checkpoints and scratch output.
 # `results/` is deliberately NOT ignored: committed figures/tables are the
