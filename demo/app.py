@@ -31,6 +31,7 @@ from typing import Any
 
 import torch
 
+from nanoscale.compress import compress, decompress, score_lines
 from nanoscale.config import GenerateConfig
 from nanoscale.model import NanoScaleLM, build_model
 from nanoscale.serve import generate_text
@@ -43,12 +44,24 @@ log = get_logger("nanoscale.demo")
 
 ROOT = Path(__file__).resolve().parent.parent
 RESULTS = ROOT / "results"
-TOKENIZER_PATH = ROOT / "artifacts" / "tokenizer" / "nano.json"
+#: The 40M TinyStories model is far better than `nano` at everything this demo shows, but
+#: it is 154 MB and therefore gitignored — a fresh clone only has the committed `nano`
+#: exports. So prefer it when present and fall back cleanly, rather than shipping a demo
+#: that either breaks without it or silently shows the weaker model as if it were the
+#: headline one. `make train-micro-tinystories` reproduces it.
+MICRO_CKPT = ROOT / "runs" / "micro" / "tinystories" / "final.pt"
+MICRO_TOKENIZER = ROOT / "artifacts" / "tokenizer" / "micro_tinystories.json"
+HAVE_MICRO = MICRO_CKPT.exists() and MICRO_TOKENIZER.exists()
 
-CHECKPOINTS = {
-    "base (pretrained)": ROOT / "runs" / "nano" / "pretrain" / "final.pt",
-    "aligned (SFT + DPO+NLL)": ROOT / "runs" / "nano" / "dpo_nll" / "final.pt",
-}
+TOKENIZER_PATH = MICRO_TOKENIZER if HAVE_MICRO else ROOT / "artifacts" / "tokenizer" / "nano.json"
+
+if HAVE_MICRO:
+    CHECKPOINTS = {"micro · 40M · TinyStories": MICRO_CKPT}
+else:
+    CHECKPOINTS = {
+        "base (pretrained)": ROOT / "runs" / "nano" / "pretrain" / "final.pt",
+        "aligned (SFT + DPO+NLL)": ROOT / "runs" / "nano" / "dpo_nll" / "final.pt",
+    }
 DRAFT_PATH = ROOT / "runs" / "nano" / "distill" / "reverse_kl" / "final.pt"
 
 EXAMPLES = [
@@ -173,6 +186,93 @@ def do_speed_lab(prompt: str, max_new_tokens: int, gamma: int, seed: int) -> tup
     return base_text, spec_text, report
 
 
+def do_compress(text: str, checkpoint: str) -> tuple[str, str]:
+    """Compress `text` with the model and compare against the standard tools.
+
+    This is the capability the project argues is its actual use: a language model is a
+    compressor, and driving an arithmetic coder with its predictions turns cross-entropy
+    into a real file size. The round trip is verified here rather than asserted, because a
+    compressor that is not lossless is not a compressor.
+    """
+    import bz2
+    import gzip
+    import lzma
+
+    text = (text or "").strip()
+    if len(text) < 40:
+        return (
+            "Enter at least 40 characters — below that the coder's 4-byte flush "
+            "dominates the measurement and the comparison is meaningless.",
+            "",
+        )
+
+    model = MODELS.get(checkpoint)
+    tok = MODELS.tokenizer
+    raw = text.encode("utf-8")
+
+    t0 = time.perf_counter()
+    result = compress(model, tok, text)
+    encode_s = time.perf_counter() - t0
+    restored = decompress(model, tok, result.payload, result.n_tokens)
+    lossless = restored == text
+
+    rows = [
+        ("NanoScale-LM", result.n_bytes_out, result.ratio),
+        ("xz -9", len(lzma.compress(raw, preset=9)), len(raw) / len(lzma.compress(raw, preset=9))),
+        ("bzip2 -9", len(bz2.compress(raw, 9)), len(raw) / len(bz2.compress(raw, 9))),
+        ("gzip -9", len(gzip.compress(raw, 9)), len(raw) / len(gzip.compress(raw, 9))),
+    ]
+    table = ["| coder | bytes | ratio | bits/byte |", "|---|---|---|---|"]
+    for name, nbytes, ratio in rows:
+        mark = " **&larr;**" if name.startswith("NanoScale") else ""
+        table.append(f"| {name}{mark} | {nbytes:,} | {ratio:.2f}x | {nbytes * 8 / len(raw):.3f} |")
+
+    verdict = (
+        "**Beating every classical coder** — this text is inside the model's distribution."
+        if result.bits_per_byte < min(r[1] * 8 / len(raw) for r in rows[1:])
+        else "**Losing to the classical coders** — this text is outside the model's "
+        "distribution, which is exactly what specialisation costs."
+    )
+    report = "\n".join(table) + (
+        f"\n\n{verdict}\n\n"
+        f"- lossless round trip: **{'verified' if lossless else 'FAILED'}**\n"
+        f"- {len(raw):,} bytes in, {result.n_tokens:,} tokens, {encode_s:.1f}s to encode\n"
+        f"- coder overhead above the model's own cross-entropy: "
+        f"{result.coder_overhead * 100:.2f}%"
+    )
+    return (report, f"{result.bits_per_byte:.4f} bits/byte  ·  {result.ratio:.2f}x smaller")
+
+
+def do_anomaly(lines_text: str, checkpoint: str) -> str:
+    """Score each line by surprisal — the same quantity the compressor sums."""
+    lines = [ln.strip() for ln in (lines_text or "").splitlines() if ln.strip()]
+    if len(lines) < 2:
+        return "Enter at least two lines, one per row."
+
+    report = score_lines(MODELS.get(checkpoint), MODELS.tokenizer, lines)
+    ranked = report.ranked()
+    if not ranked:
+        return "Nothing scoreable."
+
+    # Baseline against the *least* surprising line rather than the median: in a short,
+    # deliberately mixed list the median is frequently an anomaly itself, which would
+    # normalise the scale by the thing being detected. In production the baseline comes
+    # from a window of known-good traffic, which is a stronger version of the same idea.
+    floor = min(s for s, _ in ranked)
+    out = ["| bits/token | vs cleanest line | line |", "|---|---|---|"]
+    for score, line in ranked:
+        ratio = score / max(floor, 1e-9)
+        flag = " **&larr; anomalous**" if ratio > 1.5 else ""
+        out.append(f"| {score:.2f} | {ratio:.1f}x | `{line[:70]}`{flag} |")
+    out.append(
+        f"\n\nThe cleanest line costs {floor:.2f} bits/token; anything above 1.5x that is "
+        f"flagged. No labels and no rules are involved. In a real deployment the baseline is "
+        f"a percentile of known-good traffic rather than the best line in the batch — same "
+        f"idea, more data behind it."
+    )
+    return "\n".join(out)
+
+
 def compression_view() -> str:
     """Tab 3: the committed frontier and variants table."""
     parts = [_read(RESULTS / "quantization" / "quantization.md")]
@@ -289,6 +389,55 @@ def build_demo() -> Any:  # noqa: ANN401 - gradio is an optional extra, so Block
                 [speed_prompt, speed_tokens, speed_gamma, speed_seed],
                 [base_out, spec_out, speed_report],
             )
+
+        with gr.Tab("Compress"):
+            gr.Markdown(
+                "### The model as a lossless compressor\n"
+                "Shannon: a token of probability `p` costs `-log2(p)` bits. Feeding those "
+                "probabilities to an arithmetic coder turns the model's cross-entropy into "
+                "an actual file size. **Try in-domain text (a children's story) against "
+                "out-of-domain text (news, code, an email)** — the model wins enormously on "
+                "the first and loses badly on the second, and that trade is the point."
+            )
+            with gr.Row():
+                with gr.Column(scale=3):
+                    comp_in = gr.Textbox(
+                        label="Text to compress",
+                        lines=7,
+                        value=(
+                            "Once upon a time, there was a little girl named Lily. She loved "
+                            "to play in the garden with her dog. One sunny day, she found a "
+                            "big red ball under the tree and played with it all afternoon."
+                        ),
+                    )
+                    comp_go = gr.Button("Compress and verify", variant="primary")
+                    comp_head = gr.Markdown()
+                with gr.Column(scale=2):
+                    comp_out = gr.Markdown()
+            comp_go.click(do_compress, inputs=[comp_in, checkpoint], outputs=[comp_out, comp_head])
+
+        with gr.Tab("Anomaly detection"):
+            gr.Markdown(
+                "### Surprisal as an unsupervised anomaly score\n"
+                "The same per-token cost, un-summed. A line the model finds expensive to "
+                "encode is a line unlike its training data. One line per row — mix ordinary "
+                "sentences with something that does not belong and watch the ordering."
+            )
+            anom_in = gr.Textbox(
+                label="Lines to score",
+                lines=9,
+                value=(
+                    "Lily went to the park with her little dog.\n"
+                    "Tom was very happy and played with the ball all day.\n"
+                    "The bird looked sad because it had lost its nest.\n"
+                    "Tom picked up the quantum entanglement and put it in his pocket.\n"
+                    "2026-08-17T14:22:01Z ERROR db.pool timeout after 30000ms retry=3\n"
+                    "xqzk vburt plimf woggle zzzt krrn."
+                ),
+            )
+            anom_go = gr.Button("Score lines", variant="primary")
+            anom_out = gr.Markdown()
+            anom_go.click(do_anomaly, inputs=[anom_in, checkpoint], outputs=anom_out)
 
         with gr.Tab("Compression explorer"):
             gr.Markdown(compression_view())
