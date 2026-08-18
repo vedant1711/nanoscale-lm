@@ -35,7 +35,6 @@ def seeds_chart(suite: str, title: str) -> str:
     y0, y1 = min(allv) * 0.995, max(allv) * 1.005
 
     def py(v: float) -> float:
-        """Value to y pixel."""
         return h - B - (v - y0) / (y1 - y0) * (h - T - B)
 
     n = len(arms)

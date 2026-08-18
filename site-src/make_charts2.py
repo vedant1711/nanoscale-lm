@@ -99,7 +99,6 @@ def bpb_chart() -> str:
     ymax = 3.6
 
     def py(v: float) -> float:
-        """Value to y pixel."""
         return h - B - min(v, ymax) / ymax * (h - T - B)
 
     s: list[str] = []
@@ -173,7 +172,6 @@ def calibration_chart() -> str:
         return L + v * (w - L - R)
 
     def py(v: float) -> float:
-        """Value to y pixel."""
         return h - B - v * (h - T - B)
 
     s: list[str] = []
@@ -248,7 +246,6 @@ def loss_chart() -> str:
         return L + v / x1 * (w - L - R)
 
     def py(v: float) -> float:
-        """Value to y pixel."""
         return h - B - v / y1 * (h - T - B)
 
     s: list[str] = []

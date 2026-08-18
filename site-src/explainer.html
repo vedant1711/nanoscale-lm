@@ -355,6 +355,10 @@ hr.soft { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
       <li><a href="#spec"><span class="n">09</span><span>Speculative decoding</span></a></li>
       <li><a href="#serve"><span class="n">10</span><span>Serving &amp; bench</span></a></li>
     </ol>
+    <p class="grp">Application</p>
+    <ol>
+      <li><a href="#usecase"><span class="n">&#9670;</span><span>What it is for</span></a></li>
+    </ol>
     <p class="grp">Evidence</p>
     <ol>
       <li><a href="#evaluation"><span class="n">—</span><span>How it is measured</span></a></li>
@@ -385,11 +389,13 @@ hr.soft { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
     <b>No high-level trainer library appears anywhere in <code>src/nanoscale/</code>.</b>
     This page explains all of it &mdash; the mathematics, the engineering, and the measurements,
     including the ones that contradicted the plan. It is the complete documentation for the
-    project: architecture, methodology, decisions, results and limitations in one place.
+    project: architecture, methodology, decisions, results and limitations in one place
+    &mdash; ending with <a href="#usecase">what the finished artifact is actually good for</a>,
+    which turns out to be a compressor and an anomaly detector rather than a chatbot.
   </p>
 
   <div class="kpis">
-    <div class="kpi"><span class="v">0.549</span><span class="k">bits/byte &#8212; beats GPT-2 in domain</span></div>
+    <div class="kpi"><span class="v">11.3&times;</span><span class="k">lossless compression &#8212; 3.5&times; past xz</span></div>
     <div class="kpi"><span class="v">40.4M</span><span class="k">params, trained in 3.2 h</span></div>
     <div class="kpi"><span class="v">580</span><span class="k">tests, mypy strict</span></div>
     <div class="kpi"><span class="v">7 / 9</span><span class="k">phenomena above chance</span></div>
@@ -3532,6 +3538,260 @@ bad:   The boy near the cats run quickly.
       variance without it</b>. That is precisely the signature of a stability aid, and the
       single-seed experiment &mdash; which could only compare final losses &mdash; called it
       "no measurable difference".
+    </p>
+  </div>
+</section>
+<section id="usecase">
+  <div class="sec-head">
+    <span class="sec-n">&#9670;</span>
+    <div>
+      <h2>What it is actually for</h2>
+      <p class="deck">A language model is a compressor. Making that literal turns the
+      "beats GPT-2 in domain, loses out of domain" result from a curiosity into a
+      product thesis.</p>
+    </div>
+  </div>
+
+  <p>
+    Everything above is a demonstration that the pipeline is correct. This section is the
+    argument that the artifact it produces is <em>useful</em> &mdash; and the argument rests
+    on an identity that is usually left as theory.
+  </p>
+  <div class="math">
+Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
+<span class="note">so a model's cross-entropy in bits/byte <em>is</em> the size of the file it can produce</span>
+  </div>
+  <p>
+    Feed a model's next-token distribution to an arithmetic coder and its cross-entropy
+    stops being a benchmark number and becomes a byte count you can check on disk. The
+    repository does exactly this, and every figure below survived a byte-identical round
+    trip.
+  </p>
+
+  <figure>
+    <div class="fig-frame">
+<svg viewBox="0 0 680 280" role="img" aria-label="NanoScale-LM reaches about 0.7 bits per byte at every input size, roughly 3.5 times smaller than the best classical compressor." style="width:100%;height:auto"><g font-family="ui-monospace, monospace" font-size="10" fill="currentColor"><line x1="58" y1="216.0" x2="660" y2="216.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="50" y="219.5" text-anchor="end" opacity=".6">0.0</text>
+<line x1="58" y1="172.0" x2="660" y2="172.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="50" y="175.5" text-anchor="end" opacity=".6">1.1</text>
+<line x1="58" y1="128.0" x2="660" y2="128.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="50" y="131.5" text-anchor="end" opacity=".6">2.3</text>
+<line x1="58" y1="84.0" x2="660" y2="84.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="50" y="87.5" text-anchor="end" opacity=".6">3.4</text>
+<line x1="58" y1="40.0" x2="660" y2="40.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="50" y="43.5" text-anchor="end" opacity=".6">4.6</text>
+<rect x="82.1" y="186.3" width="32.9" height="29.7" fill="#12655F" fill-opacity="1" rx="2"/>
+<text x="98.5" y="181.3" text-anchor="middle" font-size="9.5" fill="#12655F" opacity="1">0.78</text>
+<rect x="119.9" y="68.2" width="32.9" height="147.8" fill="currentColor" fill-opacity=".5" rx="2"/>
+<text x="136.4" y="63.2" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".5">3.86</text>
+<rect x="157.8" y="50.7" width="32.9" height="165.3" fill="currentColor" fill-opacity=".33" rx="2"/>
+<text x="174.2" y="45.7" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".33">4.32</text>
+<rect x="195.7" y="66.6" width="32.9" height="149.4" fill="currentColor" fill-opacity=".2" rx="2"/>
+<text x="212.1" y="61.6" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".2">3.90</text>
+<text x="158.3" y="232" text-anchor="middle" font-size="10.5">2 KB input</text>
+<text x="158.3" y="248" text-anchor="middle" font-size="10" fill="#12655F">10.3x compression</text>
+<rect x="282.7" y="188.0" width="32.9" height="28.0" fill="#12655F" fill-opacity="1" rx="2"/>
+<text x="299.2" y="183.0" text-anchor="middle" font-size="9.5" fill="#12655F" opacity="1">0.73</text>
+<rect x="320.6" y="103.5" width="32.9" height="112.5" fill="currentColor" fill-opacity=".5" rx="2"/>
+<text x="337.0" y="98.5" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".5">2.94</text>
+<rect x="358.5" y="92.2" width="32.9" height="123.8" fill="currentColor" fill-opacity=".33" rx="2"/>
+<text x="374.9" y="87.2" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".33">3.24</text>
+<rect x="396.3" y="92.0" width="32.9" height="124.0" fill="currentColor" fill-opacity=".2" rx="2"/>
+<text x="412.8" y="87.0" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".2">3.24</text>
+<text x="359.0" y="232" text-anchor="middle" font-size="10.5">8 KB input</text>
+<text x="359.0" y="248" text-anchor="middle" font-size="10" fill="#12655F">10.9x compression</text>
+<rect x="483.4" y="188.9" width="32.9" height="27.1" fill="#12655F" fill-opacity="1" rx="2"/>
+<text x="499.8" y="183.9" text-anchor="middle" font-size="9.5" fill="#12655F" opacity="1">0.71</text>
+<rect x="521.3" y="122.0" width="32.9" height="94.0" fill="currentColor" fill-opacity=".5" rx="2"/>
+<text x="537.7" y="117.0" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".5">2.46</text>
+<rect x="559.1" y="112.1" width="32.9" height="103.9" fill="currentColor" fill-opacity=".33" rx="2"/>
+<text x="575.6" y="107.1" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".33">2.72</text>
+<rect x="597.0" y="106.9" width="32.9" height="109.1" fill="currentColor" fill-opacity=".2" rx="2"/>
+<text x="613.4" y="101.9" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".2">2.85</text>
+<text x="559.7" y="232" text-anchor="middle" font-size="10.5">24 KB input</text>
+<text x="559.7" y="248" text-anchor="middle" font-size="10" fill="#12655F">11.3x compression</text>
+<text x="58" y="22" font-size="11" font-weight="600">bits per byte after a verified lossless round trip &#8212; lower is better</text>
+<rect x="58" y="28" width="10" height="10" fill="#12655F" fill-opacity="1" rx="2"/>
+<text x="72" y="37" font-size="9.5" opacity=".75">NanoScale-LM</text>
+<rect x="186" y="28" width="10" height="10" fill="currentColor" fill-opacity=".5" rx="2"/>
+<text x="200" y="37" font-size="9.5" opacity=".75">bzip2 -9</text>
+<rect x="314" y="28" width="10" height="10" fill="currentColor" fill-opacity=".33" rx="2"/>
+<text x="328" y="37" font-size="9.5" opacity=".75">xz -9</text>
+<rect x="442" y="28" width="10" height="10" fill="currentColor" fill-opacity=".2" rx="2"/>
+<text x="456" y="37" font-size="9.5" opacity=".75">gzip -9</text></g></svg>
+    </div>
+    <figcaption>
+      <b>0.71 bits/byte against 2.46 for the best classical compressor</b> &mdash; a 3.5&times;
+      smaller file. Coder overhead against the model's own cross-entropy is 1.1%, so nearly
+      all of the theoretical rate is realised rather than merely quoted. The gap holds at
+      every input size tested.
+    </figcaption>
+  </figure>
+
+  <h3>The same forward pass is an anomaly detector</h3>
+  <p>
+    Per-token surprisal is the compressor's cost function, un-summed. A line the model finds
+    expensive to encode is a line unlike its training distribution &mdash; an unsupervised
+    anomaly score needing no labels, no rules, and one threshold expressed as a percentile
+    of normal traffic.
+  </p>
+
+  <figure>
+    <div class="fig-frame">
+<svg viewBox="0 0 680 230" role="img" aria-label="All five injected anomalies score above the 95th-percentile threshold of normal in-domain lines." style="width:100%;height:auto"><g font-family="ui-monospace, monospace" font-size="10" fill="currentColor"><line x1="260.7" y1="36" x2="260.7" y2="184" stroke="#8F4715" stroke-width="1.4" stroke-dasharray="4 3"/>
+<text x="266.7" y="30" font-size="9.5" fill="#8F4715">alarm threshold = 95th pct of normal</text>
+<text x="138" y="56" text-anchor="end" font-size="10" fill="#8F4715" opacity="1">log line</text>
+<line x1="150.0" y1="52.0" x2="616.5" y2="52.0" stroke="#8F4715" stroke-width="7" opacity="0.8" stroke-linecap="round"/>
+<text x="625.5" y="56.0" font-size="9.5" fill="#8F4715" opacity="1">14.1</text>
+<text x="138" y="75" text-anchor="end" font-size="10" fill="#8F4715" opacity="1">code</text>
+<line x1="150.0" y1="71.0" x2="607.6" y2="71.0" stroke="#8F4715" stroke-width="7" opacity="0.8" stroke-linecap="round"/>
+<text x="616.6" y="75.0" font-size="9.5" fill="#8F4715" opacity="1">13.9</text>
+<text x="138" y="94" text-anchor="end" font-size="10" fill="#8F4715" opacity="1">wrong domain</text>
+<line x1="150.0" y1="90.0" x2="562.2" y2="90.0" stroke="#8F4715" stroke-width="7" opacity="0.8" stroke-linecap="round"/>
+<text x="571.2" y="94.0" font-size="9.5" fill="#8F4715" opacity="1">13.0</text>
+<text x="138" y="113" text-anchor="end" font-size="10" fill="#8F4715" opacity="1">gibberish</text>
+<line x1="150.0" y1="109.0" x2="549.8" y2="109.0" stroke="#8F4715" stroke-width="7" opacity="0.8" stroke-linecap="round"/>
+<text x="558.8" y="113.0" font-size="9.5" fill="#8F4715" opacity="1">12.7</text>
+<text x="138" y="132" text-anchor="end" font-size="10" fill="#8F4715" opacity="1">subtle</text>
+<line x1="150.0" y1="128.0" x2="357.1" y2="128.0" stroke="#8F4715" stroke-width="7" opacity="0.8" stroke-linecap="round"/>
+<text x="366.1" y="132.0" font-size="9.5" fill="#8F4715" opacity="1">8.5</text>
+<text x="138" y="151" text-anchor="end" font-size="10" fill="currentColor" opacity=".45">normal</text>
+<line x1="150.0" y1="147.0" x2="281.6" y2="147.0" stroke="currentColor" stroke-width="7" opacity="0.22" stroke-linecap="round"/>
+<text x="290.6" y="151.0" font-size="9.5" fill="currentColor" opacity=".45">6.9</text>
+<text x="138" y="170" text-anchor="end" font-size="10" fill="currentColor" opacity=".45">normal</text>
+<line x1="150.0" y1="166.0" x2="264.2" y2="166.0" stroke="currentColor" stroke-width="7" opacity="0.22" stroke-linecap="round"/>
+<text x="273.2" y="170.0" font-size="9.5" fill="currentColor" opacity=".45">6.5</text>
+<text x="138" y="189" text-anchor="end" font-size="10" fill="currentColor" opacity=".45">normal</text>
+<line x1="150.0" y1="185.0" x2="260.7" y2="185.0" stroke="currentColor" stroke-width="7" opacity="0.22" stroke-linecap="round"/>
+<text x="269.7" y="189.0" font-size="9.5" fill="currentColor" opacity=".45">6.4</text>
+<text x="138" y="208" text-anchor="end" font-size="10" fill="currentColor" opacity=".45">normal</text>
+<line x1="150.0" y1="204.0" x2="252.9" y2="204.0" stroke="currentColor" stroke-width="7" opacity="0.22" stroke-linecap="round"/>
+<text x="261.9" y="208.0" font-size="9.5" fill="currentColor" opacity=".45">6.2</text>
+<text x="403" y="222" text-anchor="middle" opacity=".6">surprisal, bits per token</text></g></svg>
+    </div>
+    <figcaption>
+      <b>All five injected anomalies clear the 95th-percentile threshold of normal lines.</b>
+      The bottom row is the one worth looking at: <em>"Tom picked up the quantum entanglement
+      and put it in his pocket"</em> is grammatical, in the right register, and differs only
+      in that one noun phrase is impossible in this world. It scores 8.50 against a normal
+      maximum of 6.86 &mdash; semantic detection, not lexical.
+    </figcaption>
+  </figure>
+
+  <h3>The economics, which decide whether any of this is worth doing</h3>
+  <p>
+    The model must be stored alongside the archive, so a neural codec only pays back above a
+    break-even volume. This is the calculation that is usually skipped, and it is the one
+    that determines whether the idea is real.
+  </p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Model precision</th><th class="num">Model size</th>
+                 <th class="num">Break-even input</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td>fp32</td><td class="num">154 MB</td><td class="num">704 MB</td>
+            <td>Worth it for an archive, not a file</td></tr>
+        <tr><td>int8</td><td class="num">41 MB</td><td class="num best">187 MB</td>
+            <td class="best">One day of logs for a mid-sized service</td></tr>
+        <tr><td>int4 (GPTQ)</td><td class="num">22 MB</td><td class="num best">99 MB</td>
+            <td class="best">Trivially exceeded by any log pipeline</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    Each input byte costs 0.708 bits with the model against 2.458 with the best classical
+    coder, saving 0.219 bytes per byte. Below break-even, use <code>xz</code>. Above it, the
+    neural codec wins and keeps winning &mdash; and this is exactly where
+    <a href="#quant">&sect;08's quantization</a> stops being an exercise and starts paying
+    rent, because shrinking the model shrinks the break-even point by 7&times;.
+  </p>
+
+  <div class="win">
+    <span class="win-t">Why this job needs a <em>small</em> model, not a good one</span>
+    <p>
+      A 7B model predicts text better and cannot do this. Compression requires running the
+      model over every byte, in lockstep, at both ends. At ~30 tokens/second per stream and
+      14&nbsp;GB of weights, break-even lands in the tens of terabytes and the archive takes
+      longer to write than it took to generate. A 40M model at ~200 tokens/second on one
+      laptop core, shipping as a 22&nbsp;MB int4 blob, is a codec.
+    </p>
+    <p>
+      <b>The out-of-domain weakness becomes the design.</b> You compress your own logs with
+      a model trained on your own logs; that it is useless on Wikipedia is irrelevant and
+      is precisely why it is small enough to deploy.
+    </p>
+  </div>
+
+  <h3>Where this fits</h3>
+  <div class="grid2">
+    <div class="card">
+      <h4>High-volume narrow-domain text</h4>
+      <p>
+        Application logs, telemetry, sensor records, EDI and claims traffic, chat
+        transcripts, one team's code in one internal dialect. All are enormous, repetitive,
+        and distributionally narrow &mdash; the regime where a specialised 40M model beats a
+        general 124M one, which <a href="#evaluation">&sect;the measurement section</a> shows
+        it does by 1.71&times;.
+      </p>
+    </div>
+    <div class="card">
+      <h4>Edge and air-gapped deployment</h4>
+      <p>
+        Runs on a CPU with no accelerator, no network and no API key. The entire pipeline
+        &mdash; train, compress, detect &mdash; fits on a laptop, which matters for
+        environments where sending logs to a hosted model is not an option.
+      </p>
+    </div>
+    <div class="card">
+      <h4>Two capabilities, one model</h4>
+      <p>
+        Compression and anomaly detection come from the same forward pass, so the marginal
+        cost of the second is zero. Archive a stream and get monitoring for free, with the
+        anomaly threshold calibrated against the same traffic being archived.
+      </p>
+    </div>
+    <div class="card">
+      <h4>Honest limits</h4>
+      <p>
+        Encoding at ~200 tokens/second is orders of magnitude slower than <code>xz</code>.
+        This suits <em>write-once, store-long</em> workloads, not interactive ones. And
+        decompression requires the exact model bytes &mdash; lose the checkpoint and the
+        archive is unreadable, which is a real operational liability that
+        <code>xz</code> does not have.
+      </p>
+    </div>
+  </div>
+
+  <div class="caveat">
+    <span class="caveat-t">The engineering hazard this exposed, and the general lesson</span>
+    <p>
+      The decoder has no side information: it rebuilds each probability distribution by
+      re-running the model on what it has already decoded. If the two ends disagree about a
+      single integer frequency anywhere in a 16,384-entry vocabulary, the arithmetic
+      desynchronises and everything after it is corrupt. So the question is how much
+      floating-point drift the quantisation absorbs &mdash; and that is measurable, not a
+      matter of hope.
+    </p>
+    <div class="tbl" style="margin:.9rem 0 .6rem">
+      <table>
+        <thead><tr><th>Path</th><th class="num">Drift</th><th class="num">Margin vs 2.0e&minus;5 bucket</th><th>Decision</th></tr></thead>
+        <tbody>
+          <tr><td>One-shot teacher-forced encode</td><td class="num">1.7e&minus;6</td>
+              <td class="num worse">12&times;</td>
+              <td class="worse">Rejected &mdash; a coin flip at 16k symbols per position</td></tr>
+          <tr><td>Incremental decode with a KV cache</td><td class="num">1e&minus;9</td>
+              <td class="num best">20,000&times;</td>
+              <td class="best">Used, and 9&times; faster</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-bottom:0">
+      The tempting optimisation is the unsafe one: the encoder knows all the tokens, so it
+      could score them in a single batched pass. That path drifts from the stepwise one by
+      more than a tenth of a quantisation bucket, and would corrupt archives occasionally
+      and silently. <b>Integer quantisation of the probability table is what makes a neural
+      codec robust to floating-point non-determinism, and the size of that robustness is a
+      number you should measure before shipping.</b>
     </p>
   </div>
 </section>

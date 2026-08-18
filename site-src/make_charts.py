@@ -18,7 +18,9 @@ OUT = pathlib.Path(__file__).parent
 ACC = "#12655F"
 
 
-def load_metrics(path: pathlib.Path) -> tuple[list[tuple[int, float]], list[tuple[int, float]]]:
+def load_metrics(
+    path: pathlib.Path,
+) -> tuple[list[tuple[int, float]], list[tuple[int, float]]]:
     """Read a metrics.jsonl into (train, val) step/loss pairs."""
     rows = [json.loads(x) for x in path.read_text().splitlines() if x.strip()]
     train = [(r["step"], r["loss"]) for r in rows if "loss" in r]
@@ -27,7 +29,14 @@ def load_metrics(path: pathlib.Path) -> tuple[list[tuple[int, float]], list[tupl
 
 
 def loss_chart(
-    train: list, val: list, *, chance: float, title: str, sub: str, w: int = 660, h: int = 250
+    train: list[tuple[int, float]],
+    val: list[tuple[int, float]],
+    *,
+    chance: float,
+    title: str,
+    sub: str,
+    w: int = 660,
+    h: int = 250,
 ) -> str:
     """Line chart of train/validation loss against the uniform-guess floor."""
     L, R, T, B = 52, 16, 30, 44
@@ -37,11 +46,9 @@ def loss_chart(
     y1 = math.ceil(max(chance, max(v for _, v in train)) * 1.06)
 
     def px(s: float) -> float:
-        """Step to x pixel."""
         return L + (s - x0) / (x1 - x0) * (w - L - R)
 
     def py(v: float) -> float:
-        """Value to y pixel."""
         return h - B - (v - y0) / (y1 - y0) * (h - T - B)
 
     s = [
