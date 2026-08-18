@@ -1,0 +1,1521 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NanoScale-LM Demo</title>
+<meta name="description" content="A small language model built from scratch in PyTorch, then compressed for cheap inference: every algorithm, diagram, decision and measurement.">
+<meta property="og:title" content="NanoScale-LM Demo">
+<meta property="og:type" content="article">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%AC%3C/text%3E%3C/svg%3E">
+<style>*{box-sizing:border-box}html,body{margin:0;padding:0}</style>
+</head>
+<body>
+<style>
+:root {
+  --paper:#F3F5F8; --surface:#FFFFFF; --surface-2:#E8EDF2; --ink:#0E141C; --ink-2:#465768;
+  --ink-3:#7D8B9B; --rule:#D0D8E0; --rule-strong:#A9B5C1; --accent:#12655F;
+  --accent-soft:#DBEDEB; --warn:#8F4715; --warn-soft:#F7E9DB; --good:#2C6A33; --good-soft:#E1EFE2;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper:#0B0F14; --surface:#11171E; --surface-2:#161E27; --ink:#E2E8EF; --ink-2:#97A7B8;
+  --ink-3:#6A7889; --rule:#222C37; --rule-strong:#384654; --accent:#5AC9BF;
+  --accent-soft:#0E2E2C; --warn:#E2984F; --warn-soft:#2C2013; --good:#77C182; --good-soft:#16281A;
+} }
+:root[data-theme="dark"] {
+  --paper:#0B0F14; --surface:#11171E; --surface-2:#161E27; --ink:#E2E8EF; --ink-2:#97A7B8;
+  --ink-3:#6A7889; --rule:#222C37; --rule-strong:#384654; --accent:#5AC9BF;
+  --accent-soft:#0E2E2C; --warn:#E2984F; --warn-soft:#2C2013; --good:#77C182; --good-soft:#16281A;
+}
+:root {
+  --serif: Charter,"Iowan Old Style","Source Serif 4",Palatino,Georgia,serif;
+  --mono: ui-monospace,SFMono-Regular,"SF Mono",Menlo,"JetBrains Mono",Consolas,monospace;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--paper); color:var(--ink); font-family:var(--serif);
+  font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased;
+}
+.page { max-width:1180px; margin:0 auto; padding:0 clamp(1rem,3vw,2.5rem) 6rem; }
+
+header.top { padding:2.6rem 0 1.6rem; border-bottom:1px solid var(--rule); }
+.eyebrow { font-family:var(--mono); font-size:.68rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ink-3); margin:0 0 .6rem; }
+h1 { margin:0; font-size:clamp(1.9rem,4.5vw,2.9rem); line-height:1.06; letter-spacing:-.015em; }
+.sub { color:var(--ink-2); max-width:64ch; margin:1rem 0 0; font-size:1.03rem; }
+.toplinks { display:flex; flex-wrap:wrap; gap:.55rem; margin-top:1.4rem; }
+.toplinks a, .theme button {
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.05em; text-decoration:none;
+  padding:.42rem .75rem; border:1px solid var(--rule-strong); border-radius:4px;
+  color:var(--ink-2); background:var(--surface); cursor:pointer;
+}
+.toplinks a:hover, .theme button:hover { color:var(--accent); border-color:var(--accent); }
+.theme { display:inline-flex; gap:0; margin-left:auto; }
+.theme button { border-radius:0; border-right:0; }
+.theme button:first-child { border-radius:4px 0 0 4px; }
+.theme button:last-child { border-radius:0 4px 4px 0; border-right:1px solid var(--rule-strong); }
+.theme button[aria-pressed="true"] { background:var(--accent-soft); color:var(--accent); font-weight:600; }
+
+/* ---------------------------------------------------------------- tabs */
+.tabs { display:flex; flex-wrap:wrap; gap:.4rem; margin:1.8rem 0 0; border-bottom:1px solid var(--rule); }
+.tabs button {
+  font-family:var(--mono); font-size:.78rem; letter-spacing:.04em; cursor:pointer;
+  background:transparent; border:0; border-bottom:2px solid transparent;
+  padding:.7rem .85rem; color:var(--ink-2);
+}
+.tabs button:hover { color:var(--ink); }
+.tabs button[aria-selected="true"] { color:var(--accent); border-bottom-color:var(--accent); font-weight:600; }
+.panel { display:none; padding-top:1.8rem; }
+.panel.on { display:block; }
+
+/* ---------------------------------------------------------------- split */
+.split { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); gap:1.6rem; align-items:start; }
+@media (max-width:900px) { .split { grid-template-columns:1fr; } }
+
+.card { border:1px solid var(--rule); border-radius:6px; background:var(--surface); padding:1.15rem 1.25rem; }
+.card h3 { margin:0 0 .7rem; font-size:1.05rem; }
+.card > :last-child { margin-bottom:0; }
+.explain { background:var(--accent-soft); border:1px solid var(--accent); border-left-width:3px; }
+.explain h3 { color:var(--accent); font-family:var(--mono); font-size:.74rem; letter-spacing:.1em;
+  text-transform:uppercase; }
+.explain p { font-size:.92rem; line-height:1.58; }
+
+label.ctl { display:block; font-family:var(--mono); font-size:.72rem; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink-3); margin:0 0 .35rem; }
+select, input[type=range] { width:100%; font-family:var(--mono); font-size:.85rem; }
+select { padding:.45rem .5rem; border:1px solid var(--rule-strong); border-radius:4px;
+  background:var(--surface); color:var(--ink); }
+input[type=range] { accent-color:var(--accent); }
+.row { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:.9rem; margin-bottom:1rem; }
+button.go { font-family:var(--mono); font-size:.78rem; padding:.5rem .9rem; border-radius:4px;
+  border:1px solid var(--accent); background:var(--accent); color:var(--surface); cursor:pointer; }
+:root[data-theme="dark"] button.go, :root:not([data-theme="light"]) button.go { color:#08211F; }
+@media (prefers-color-scheme:light) { :root:not([data-theme="dark"]) button.go { color:#fff; } }
+button.go:hover { filter:brightness(1.08); }
+button:focus-visible, a:focus-visible, select:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+
+.out { font-family:var(--serif); font-size:1rem; line-height:1.62; background:var(--surface-2);
+  border-radius:5px; padding:1rem 1.1rem; min-height:9rem; }
+.out .prompt { color:var(--ink-3); font-style:italic; }
+code, .mono { font-family:var(--mono); font-size:.85em; }
+.tbl { overflow-x:auto; border:1px solid var(--rule); border-radius:5px; background:var(--surface); }
+table { border-collapse:collapse; width:100%; font-size:.84rem; }
+th,td { text-align:left; padding:.5rem .7rem; border-bottom:1px solid var(--rule); }
+thead th { font-family:var(--mono); font-size:.66rem; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--ink-2); background:var(--surface-2); white-space:nowrap; }
+tbody tr:last-child td { border-bottom:0; }
+td.num,th.num { text-align:right; font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.best { color:var(--good); font-weight:700; }
+.worse { color:var(--warn); }
+.note { border:1px solid var(--rule); border-left:3px solid var(--rule-strong); border-radius:0 4px 4px 0;
+  padding:.85rem 1rem; margin:1.2rem 0; font-size:.9rem; background:var(--surface); }
+.note b { color:var(--ink); }
+.bar { height:22px; border-radius:3px; background:var(--accent); }
+.bar.grey { background:var(--ink-3); opacity:.45; }
+.tok { display:inline-block; padding:.05em .12em; border-radius:2px; white-space:pre; }
+.legend { font-family:var(--mono); font-size:.7rem; color:var(--ink-3); margin-top:.6rem; }
+.pill { display:inline-block; font-family:var(--mono); font-size:.64rem; letter-spacing:.06em;
+  text-transform:uppercase; padding:.14em .45em; border-radius:3px; border:1px solid var(--rule-strong);
+  color:var(--ink-2); }
+.pill.bad { border-color:var(--warn); color:var(--warn); background:var(--warn-soft); }
+.pill.ok { border-color:var(--good); color:var(--good); background:var(--good-soft); }
+footer { margin-top:3.5rem; padding-top:1.5rem; border-top:1px solid var(--rule);
+  font-size:.85rem; color:var(--ink-2); }
+</style>
+
+<div class="page">
+<header class="top">
+  <p class="eyebrow">Live demo &middot; NanoScale-LM</p>
+  <h1>A 40M-parameter language model, built from scratch.</h1>
+  <p class="sub">
+    Everything on this page is genuine output from the trained checkpoint &mdash; every token,
+    probability, byte count and surprisal score. Each panel shows what the model produced
+    <em>and</em> explains what it is doing to produce it.
+  </p>
+  <div class="toplinks">
+    <a href="explainer.html">&#128214; Full documentation</a>
+    <a href="https://github.com/vedant1711/nanoscale-lm">Source</a>
+    <a href="results.html">Results</a>
+    <span class="theme" role="group" aria-label="Theme">
+      <button type="button" data-theme-set="light" aria-pressed="false">Light</button>
+      <button type="button" data-theme-set="dark" aria-pressed="false">Dark</button>
+      <button type="button" data-theme-set="system" aria-pressed="true">Auto</button>
+    </span>
+  </div>
+</header>
+
+<div class="tabs" role="tablist">
+  <button role="tab" aria-selected="true"  data-tab="gen">1 &middot; Generate</button>
+  <button role="tab" aria-selected="false" data-tab="next">2 &middot; Next token</button>
+  <button role="tab" aria-selected="false" data-tab="comp">3 &middot; Compression</button>
+  <button role="tab" aria-selected="false" data-tab="anom">4 &middot; Anomaly detection</button>
+</div>
+<!-- ============================================================== 1. GENERATE -->
+<section class="panel on" id="p-gen" role="tabpanel">
+  <div class="split">
+    <div class="card">
+      <h3>Generate text</h3>
+      <div class="row">
+        <div>
+          <label class="ctl" for="g-prompt">Prompt</label>
+          <select id="g-prompt"></select>
+        </div>
+        <div>
+          <label class="ctl" for="g-temp">Temperature <span id="g-temp-v" class="mono"></span></label>
+          <input type="range" id="g-temp" min="0" max="3" step="1" value="2">
+        </div>
+        <div>
+          <label class="ctl" for="g-seed">Seed</label>
+          <select id="g-seed"></select>
+        </div>
+      </div>
+      <div class="out" id="g-out"></div>
+      <p class="legend" id="g-meta"></p>
+    </div>
+
+    <div class="card explain">
+      <h3>What is happening</h3>
+      <p>
+        The model predicts a probability for every one of its 16,384 tokens, given everything
+        before. To write the next word it <em>samples</em> from that distribution, appends the
+        result, and repeats &mdash; one token at a time, each one conditioned on all of the
+        previous ones.
+      </p>
+      <p>
+        <b>Temperature</b> reshapes the distribution before sampling. Divide every logit by
+        <code>T</code>: below 1 the peaks get sharper and the model plays safe; above 1 it
+        flattens and the model takes risks. At <code>T = 0.2</code> you will see repetitive,
+        confident, slightly dull text; at <code>T = 1.0</code> you will see invention and
+        occasional nonsense.
+      </p>
+      <p>
+        <b>Seed</b> fixes the random draws. Same prompt, same temperature, same seed &rarr;
+        byte-identical output, every time. That is what makes any of the measurements on this
+        project reproducible.
+      </p>
+      <p style="margin-bottom:0">
+        This model has 40.4M parameters and was trained for 3.2 hours on a laptop GPU, on
+        children's stories. It writes children's stories. Ask it about anything else and it
+        will politely continue writing children's stories.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== 2. NEXT TOKEN -->
+<section class="panel" id="p-next" role="tabpanel">
+  <div class="split">
+    <div class="card">
+      <h3>What the model is actually choosing between</h3>
+      <p style="font-size:.94rem;color:var(--ink-2)">
+        Step through a greedy continuation. At each step you see the six most likely next
+        tokens and their probabilities &mdash; the real distribution, not a summary.
+      </p>
+      <div class="out" id="n-ctx" style="min-height:4.5rem"></div>
+      <div class="row" style="margin-top:1rem">
+        <button class="go" id="n-prev">&larr; Back</button>
+        <button class="go" id="n-next">Next token &rarr;</button>
+        <button class="go" id="n-reset" style="background:transparent;color:var(--ink-2);border-color:var(--rule-strong)">Reset</button>
+      </div>
+      <div id="n-bars"></div>
+    </div>
+
+    <div class="card explain">
+      <h3>What is happening</h3>
+      <p>
+        This is the entire computation a language model performs. Everything else &mdash;
+        attention, the feed-forward blocks, sixty-four million multiply-accumulates per token
+        &mdash; exists to produce this one list of numbers.
+      </p>
+      <p>
+        Watch how the confidence changes. After <code>"Once upon a"</code> the model is nearly
+        certain the next token is <code>" time"</code>: the phrase is fixed. A step later, when
+        it has to choose <em>what</em> the story is about, probability spreads across many
+        plausible options and no single one dominates.
+      </p>
+      <p style="margin-bottom:0">
+        That spread is the model's uncertainty, and it is measurable. Averaged over a corpus it
+        is <b>cross-entropy</b> &mdash; the number every training curve plots, and the number
+        that decides how well the model can compress text in panel 3.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== 3. COMPRESSION -->
+<section class="panel" id="p-comp" role="tabpanel">
+  <div class="split">
+    <div class="card">
+      <h3>The model as a lossless compressor</h3>
+      <div class="row">
+        <div style="grid-column:1/-1">
+          <label class="ctl" for="c-sample">Text to compress</label>
+          <select id="c-sample"></select>
+        </div>
+      </div>
+      <div class="out mono" id="c-text" style="min-height:6rem;font-size:.82rem"></div>
+      <div id="c-bars" style="margin-top:1.1rem"></div>
+      <p class="legend" id="c-note"></p>
+    </div>
+
+    <div class="card explain">
+      <h3>What is happening</h3>
+      <p>
+        Shannon proved that a symbol the model expects with probability <code>p</code> can be
+        written in <code>&minus;log&#8322;(p)</code> bits. So a model that predicts text well
+        <em>is</em> a compressor: feed its probabilities to an arithmetic coder and you get a
+        real, smaller file back.
+      </p>
+      <p>
+        These byte counts are measured, not estimated. Every one survived an encode &rarr;
+        decode round trip that returned the original text byte-for-byte.
+      </p>
+      <p>
+        <b>Now switch between the three samples.</b> On children's stories the model needs
+        about <b>0.6 bits per byte</b> &mdash; roughly four times better than <code>xz</code>.
+        On encyclopedia prose it needs six times more. On source code it does <em>worse than
+        storing the raw bytes</em>.
+      </p>
+      <p style="margin-bottom:0">
+        That collapse is the whole point rather than a flaw. The model is not a general
+        compressor; it is a compressor <em>for one distribution</em>, and it buys its advantage
+        there by being useless everywhere else. Which is exactly the trade you want when the
+        thing you are archiving is a billion log lines that all look alike.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== 4. ANOMALY -->
+<section class="panel" id="p-anom" role="tabpanel">
+  <div class="split">
+    <div class="card">
+      <h3>Surprisal as an anomaly score</h3>
+      <p style="font-size:.94rem;color:var(--ink-2)">
+        Each line scored by how many bits the model needs to encode it. No labels, no rules
+        &mdash; just "how unlike my training data is this?". Sorted most-surprising first.
+      </p>
+      <div id="a-rows"></div>
+      <p class="legend" id="a-note"></p>
+
+      <h3 style="margin-top:1.8rem">Per-token view</h3>
+      <div>
+        <label class="ctl" for="a-sent">Sentence</label>
+        <select id="a-sent"></select>
+      </div>
+      <div class="out" id="a-tokens" style="min-height:5rem;margin-top:.7rem"></div>
+      <p class="legend">Darker = more surprising. Hover a token for its exact cost in bits.</p>
+    </div>
+
+    <div class="card explain">
+      <h3>What is happening</h3>
+      <p>
+        This is the same number as panel 3, not summed. Compression asks "how many bits for the
+        whole passage"; anomaly detection asks "which parts cost the most". One forward pass
+        answers both.
+      </p>
+      <p>
+        The threshold is the 95th percentile of ordinary in-domain traffic, so it is calibrated
+        by the data itself rather than hand-tuned. Anything above it gets flagged.
+      </p>
+      <p>
+        <b>The interesting row is not the gibberish.</b> Look at <em>"Tom picked up the quantum
+        entanglement and put it in his pocket"</em> &mdash; perfectly grammatical, right register,
+        right characters. It scores high because one noun phrase is impossible in this world.
+        That is semantic detection, not spell-checking.
+      </p>
+      <p style="margin-bottom:0">
+        For a model trained on one system's logs, this is a definition of "anomalous log line"
+        that needs no labels, no regex library and no maintenance &mdash; it just needs the
+        model to have read enough normal traffic.
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>
+    <b>How this page works.</b> GitHub Pages serves static files and cannot run PyTorch, so every
+    output here was precomputed by <code>scripts/build_demo_data.py</code> against the committed
+    checkpoint and shipped as JSON. Nothing is faked or interpolated &mdash; but you cannot type a
+    free-form prompt. For that, clone the repo and run <code>python demo/app.py</code>, which
+    serves the same model live.
+  </p>
+  <p id="prov" class="mono" style="font-size:.75rem;color:var(--ink-3)"></p>
+</footer>
+</div>
+<script id="demo-data" type="application/json">{
+ "git_sha": "8585f64",
+ "hardware": "mps:apple-silicon | macOS-15.6-arm64-arm-64bit",
+ "params": 40379904,
+ "vocab_size": 16384,
+ "train_tokens": 31997952,
+ "checkpoint": "runs/micro/tinystories/final.pt",
+ "generations": [
+  {
+   "prompt": "Once upon a time there was a little girl named Mia who",
+   "temperature": 0.2,
+   "seed": 1,
+   "completion": "was very excited. She was going to the park with her mom. Mia loved to play on the swings and slide down the slide. She also liked to look at the pretty flowers and the big blue sky.\nAt the park, Mia saw a boy named Tom. Tom was sad because he had no toys to play with. Mia wanted to help Tom. She said, \"I will lend you my toy. We can play together.\" Tom was"
+  },
+  {
+   "prompt": "Once upon a time there was a little girl named Mia who",
+   "temperature": 0.2,
+   "seed": 2,
+   "completion": "was very excited. She was going to visit her grandma.\nWhen she arrived, she was so excited to see her grandma. Grandma had a big box of crayons and she was very proud of her.\nMia asked her grandma, \"Can I have some of your crayons?\"\nGrandma smiled and said, \"Yes, you can have some of my crayons. But you have to share them with your friends.\"\nMia was so happy. She"
+  },
+  {
+   "prompt": "Once upon a time there was a little girl named Mia who",
+   "temperature": 0.2,
+   "seed": 3,
+   "completion": "was very curious. She wanted to explore the world, so she asked her mom if she could go. Her mom said yes, but she had to be careful and not go too far away.\nMia was so excited! She ran to the park and saw a big tree. She wanted to climb it, but she was too small. She tried and tried, but she couldn't reach the top. Mia was sad, but she did not give"
+  },
+  {
+   "prompt": "Once upon a time there was a little girl named Mia who",
+   "temperature": 0.6,
+   "seed": 1,
+   "completion": "wanted to go to the park. She asked her mom if she could go to the park, but her mom said no. Mia was sad, but she really wanted to play.\nAt the park, Mia saw a big slide. She ran to the slide and started to slide down. But then, she fell and hurt her knee. Mia cried and her mom came to help her. Her mom hugged her and said, \"I'm sorry,"
+  },
+  {
+   "prompt": "Once upon a time there was a little girl named Mia who",
+   "temperature": 0.6,
+   "seed": 2,
+   "completion": "loved to play with her toys. One day, her mom told her that she needed to go to the store and buy a new toy. Mia was very excited.\nOn the way to the store, Mia saw a big, green frog. She wanted to take the frog home, but it was too big for her. She had an idea. She would add some toys to the frog and make it look nice.\nMia took the frog to"
+  },
+  {
+   "prompt": "Once upon a time there was a little girl named Mia who",
+   "temperature": 0.6,
+   "seed": 3,
+   "completion": "was only three years old. She loved to explore the world and explore the world. One day, Mia wanted to explore the world, so she decided to go on a journey.\nShe packed her bag and started walking. She walked and walked until she saw a big, scary monster. The monster was very scary. Mia was so scared and ran away quickly.\nMia was very brave and started to walk away. She was so scared that she"
+  },
+  {
+   "prompt": "Once upon a time there was a little girl named Mia who",
+   "temperature": 0.8,
+   "seed": 1,
+   "completion": "wanted to see the world around her. She thought of her dream. She wanted to go to a place to play and explore.\nMia was very curious about the place. She wanted to see what was there, so she asked her mom if she could go. Her mom said yes, but not too far away. Mia was so excited!\nMia decided to go to a new place. But when she got there, she saw something strange."
+  },
+  {
+   "prompt": "Once upon a time there was a little girl named Mia who",
+   "temperature": 0.8,
+   "seed": 2,
+   "completion": "loved to play with her own toys. One day, she decided to take a bath and wash her hands with a cloth. \n\"Mommy, look!\" said Mia, pointing at the bathroom.\n\"It's so nice and soft,\" Mommy said.\nMia smiled and said, \"Yes, Mommy! I like it. Can I take a bath?\"\nMommy nodded and said, \"Yes, you can take a bath. But be"
+  },
+  {
+   "prompt": "Once upon a time there was a little girl named Mia who",
+   "temperature": 0.8,
+   "seed": 3,
+   "completion": "was only 3 years old and very curious. One day, Mia was playing in the garden when she noticed a pretty flower on the ground. She picked it up and said, \"It is so pretty!\"\nMia decided to pick the flower to take home. She took it home with her. She put it on a table and made sure it was safe. Mia looked at the flower every day, and it was very pretty.\nOne day,"
+  },
+  {
+   "prompt": "Once upon a time there was a little girl named Mia who",
+   "temperature": 1.0,
+   "seed": 1,
+   "completion": "wanted to see the world around her. She thought the world would be peaceful and bright and adventure she could see.\nOne day, Mia was in the woods when she heard a loud roar from down the path. She felt scared and quickly ran home.\nIn the woods, she explored the woods by herself and saw many new things. She saw fish, few birds, and even some bugs! She was so happy and helpful to herself."
+  },
+  {
+   "prompt": "Once upon a time there was a little girl named Mia who",
+   "temperature": 1.0,
+   "seed": 2,
+   "completion": "loved to play with her own ball. One day, she decided to take her ball to the park.\nWhen she arrived, she was very excited and she grabbed her ball. She ran to the swings and started playing on the swings. She ran and jumped and kicked each pebble around, making funny sounds.\nSuddenly, she heard her parents calling out. \"Mia, don't hurry! cleaner noise!\" \nMia looked up to her parent"
+  },
+  {
+   "prompt": "Once upon a time there was a little girl named Mia who",
+   "temperature": 1.0,
+   "seed": 3,
+   "completion": "was only 3 years old and really loved to explore. One day, she found something very important; a rare flower had been set on the field in her house! Mia was very happy with her new flower, but she didn't know how to put it back. \nJust then she saw her mom in the middle of the garden. She ran over to pick it up and said, \"Mom, can you carry me to my garden?\""
+  },
+  {
+   "prompt": "Tom found a shiny red box in the garden. When he opened it,",
+   "temperature": 0.2,
+   "seed": 1,
+   "completion": "he found a little bird inside! The bird was very happy and said, \"Thank you for finding my home!\" Tom was happy too because he made a new friend.\n<|endoftext|>\nOnce upon a time, there was a little boy named Tim. Tim loved to play with his toy cars. One day, Tim saw a big, red car in the store. He wanted to get the car, but it was too high for him."
+  },
+  {
+   "prompt": "Tom found a shiny red box in the garden. When he opened it,",
+   "temperature": 0.2,
+   "seed": 2,
+   "completion": "he found a big, shiny ball. Tom was so happy! He played with the ball all day long.\nBut then, something unexpected happened. The ball started to move! It was not a ball at all. It was a big, friendly turtle! The turtle said, \"Hello, Tom! I am a magic turtle. I can help you find your lost ball.\" Tom was very surprised, but he was happy to have a new friend"
+  },
+  {
+   "prompt": "Tom found a shiny red box in the garden. When he opened it,",
+   "temperature": 0.2,
+   "seed": 3,
+   "completion": "he found a small, shiny key. Tom was very happy and showed the key to his friend, Sam.\n\"Look, Sam! I found a key!\" said Tom. Sam looked at the key and said, \"Wow, that's a nice key! Let's try it!\" They took the key and went to the garden.\nTom and Sam played with the key all day. They had so much fun. When the sun went down"
+  },
+  {
+   "prompt": "Tom found a shiny red box in the garden. When he opened it,",
+   "temperature": 0.6,
+   "seed": 1,
+   "completion": "he found a little bird. The bird was lost and scared. Tom wanted to help the bird, so he took the bird home with him.\nTom and the bird became good friends. They played together every day. The bird would sing songs for Tom, and they would sing songs for each other. Tom was happy to have a new friend. And they lived happily ever after.\n<|endoftext|>\nOnce upon a time, in a small"
+  },
+  {
+   "prompt": "Tom found a shiny red box in the garden. When he opened it,",
+   "temperature": 0.6,
+   "seed": 2,
+   "completion": "he found a magic wand. He waved the wand and suddenly, he could do anything! Tom was so happy and thanked his new magic friend. From that day on, Tom and the magic wand had many adventures together.\n<|endoftext|>\nOne day, a little boy named Tim found a big box. He wanted to see what was inside. Tim opened the box and saw many colorful things. He saw a toy car, a toy car,"
+  },
+  {
+   "prompt": "Tom found a shiny red box in the garden. When he opened it,",
+   "temperature": 0.6,
+   "seed": 3,
+   "completion": "he found lots of toys and treats! He was so happy and surprised. He decided to share the treats with all his friends. They all played together and had a great time.\n<|endoftext|>\nOnce upon a time, there was a little girl named Lily. She had a pretty dress and a big smile. Lily loved to wear her dress and play outside. She wore it every day.\nOne day, Lily saw a pretty bird in"
+  },
+  {
+   "prompt": "Tom found a shiny red box in the garden. When he opened it,",
+   "temperature": 0.8,
+   "seed": 1,
+   "completion": "he found a little bird named Lily.\n\"Hi, I'm Lily! Can I play with you?\" asked the bird. Tom thought for a moment and said, \"Yes, let's play together!\" So, Tom and Lily played with the shiny red ball and had lots of fun.\nBut then, something unexpected happened. A big wind came and blew the shiny red ball away. Tom and Lily were very sad. They looked everywhere for"
+  },
+  {
+   "prompt": "Tom found a shiny red box in the garden. When he opened it,",
+   "temperature": 0.8,
+   "seed": 2,
+   "completion": "he found a magic pepper! He blew and blew, and suddenly, the pepper became smaller and smaller. Tom was very surprised.\nHe put the pepper in a big box and thought, \"Maybe I will grant this to my friends.\" But when he opened the box, something unexpected happened. A big, green frog jumped out of the box and said, \"Hello, I am Fred! I can make your wish come true for everyone!\" Tom"
+  },
+  {
+   "prompt": "Tom found a shiny red box in the garden. When he opened it,",
+   "temperature": 0.8,
+   "seed": 3,
+   "completion": "he found lots of balls and butterflies. He was so happy and excited to play with them.\nTom wanted to show his friends, so he picked up the box. But when he opened it, he saw a new toy car. It was a red car with a pretty red handle. Tom and his friends played with the new car all day long. They were all very happy.\nThe next day, Tom had a plan. He told his"
+  },
+  {
+   "prompt": "Tom found a shiny red box in the garden. When he opened it,",
+   "temperature": 1.0,
+   "seed": 1,
+   "completion": "he found a little bunny named Lily.\n\"Hi, Ben!\" said Lily. \"What are you talking?\"\n\"I am just hiding in the box.\" said the bear. \"That is my game. You win the game!\"\n\"What game do you want?\" asked Lily.\n\" ear, three,Is this your other costumes?\" said the bear. Lily looked at the box and thought for a moment. Then she heard a"
+  },
+  {
+   "prompt": "Tom found a shiny red box in the garden. When he opened it,",
+   "temperature": 1.0,
+   "seed": 2,
+   "completion": "he found a broken toy car. Tom was sad, but Max had an idea. He said, \"Let's replace the broken toy car!\" They found a new, red wheel and threw it at the hole. But instead of feeling strong, the little horse did not move! Tom and Max were happy again. They played with the new toy and had a fun day together.\n<|endoftext|>\nOnce upon a time, there was a lazy"
+  },
+  {
+   "prompt": "Tom found a shiny red box in the garden. When he opened it,",
+   "temperature": 1.0,
+   "seed": 3,
+   "completion": "he found lots of balls and butterflies. He was so happy and excited to play with the butterflies.\nTom and his friends had a race to see who was the fastest. They all lined up to start, ready to run as fast as they could. The sky was clear and everything was strong and sunny. Tom was the winner! His friends cheered and cheered for him. They all played together, having lots of fun. Tom, his incredible rainbow"
+  },
+  {
+   "prompt": "The sun was setting when Ben walked home. On the way he saw",
+   "temperature": 0.2,
+   "seed": 1,
+   "completion": "a big tree. He wanted to climb it. But when he got to the top, he saw a big, scary cat. The cat was angry and wanted to eat Ben.\nBen was scared, but he knew he had to be brave. He climbed down the tree and ran to the cat. The cat was not angry anymore. The cat was happy to be safe. Ben and the cat became friends. They played together every day."
+  },
+  {
+   "prompt": "The sun was setting when Ben walked home. On the way he saw",
+   "temperature": 0.2,
+   "seed": 2,
+   "completion": "a big, red ball. He wanted to play with it, but it was too high for him. So, he asked his friend, a bird named Sue, to help him.\nSue said, \"I can help you get the ball, but first, let's find a way to get it.\" They looked around and found a long stick. They used the stick to get the ball out of the tree.\nBen and Sue were so"
+  },
+  {
+   "prompt": "The sun was setting when Ben walked home. On the way he saw",
+   "temperature": 0.2,
+   "seed": 3,
+   "completion": "a big tree. He wanted to climb it. But when he got to the top, he saw a big bird. The bird was not nice. It was mean to Ben.\nBen was scared. He wanted to go back home. But the bird did not want to go. It wanted to be alone. Ben thought of a plan. He found a big stick. He used the stick to poke the bird. The bird got scared and flew"
+  },
+  {
+   "prompt": "The sun was setting when Ben walked home. On the way he saw",
+   "temperature": 0.6,
+   "seed": 1,
+   "completion": "his friends, the ants, and the sun. They all were very happy to see Ben.\nBen told his friends about the big tree and the ants. They all wanted to see Ben. So, they all played together under the big tree. They had a lot of fun. And Ben was happy to see them play.\n<|endoftext|>\nOne day, a little girl named Mia went to the park with her mom. Mia saw a"
+  },
+  {
+   "prompt": "The sun was setting when Ben walked home. On the way he saw",
+   "temperature": 0.6,
+   "seed": 2,
+   "completion": "a big, red ball. He wanted to play with it, but it was too far away. So, he called his friend, a little bird named Lily.\n\"Lily, can you help me get the ball?\" asked Ben. Lily flew down and said, \"Yes, Ben! I will help you.\" They went to the ball and tried to reach it. But the ball was too high. Ben and Lily were sad.\nThen"
+  },
+  {
+   "prompt": "The sun was setting when Ben walked home. On the way he saw",
+   "temperature": 0.6,
+   "seed": 3,
+   "completion": "a big tree. He thought it would be fun to climb the tree.\nAs Ben climbed the tree, he met a new friend named Lily. Lily said, \"Hi, Ben! Can I climb with you?\" Ben said, \"Yes, Lily! Let's go up the tree together.\" They both climbed the tree and had a great time.\nAs they climbed, Ben and Lily talked about their fun day. They laughed and played all"
+  },
+  {
+   "prompt": "The sun was setting when Ben walked home. On the way he saw",
+   "temperature": 0.8,
+   "seed": 1,
+   "completion": "his friends all playing together. They were having so much fun.\n\"Mom, we are so cold!\" said Ben.\n\"We are cold, Mom,\" said his friends.\n\"Me too,\" said Ben. \"But we can find another place for our houses. We can play together.\"\nBen and his friends looked at each other. They decided to play a new game. They would jump in the snow and get ice-cream"
+  },
+  {
+   "prompt": "The sun was setting when Ben walked home. On the way he saw",
+   "temperature": 0.8,
+   "seed": 2,
+   "completion": "something unusual. It was a big balloon! Ben was very happy to see it. He wanted to play with it.\nBen tried to get the balloon, but it was too high. He asked his friend, Sam, for help. Sam said, \"I can help you, Ben!\" They tried to lift the balloon together. But the balloon was still too heavy for them. They could not break the balloon.\nBen and Sam were sad"
+  },
+  {
+   "prompt": "The sun was setting when Ben walked home. On the way he saw",
+   "temperature": 0.8,
+   "seed": 3,
+   "completion": "a big tree. He thought it would be fun to climb the tree.\nAs Ben climbed the tree, he met a new friend named Lily. Lily said, \"Hi, Ben! Can I climb with you?\" Ben said, \"Yes, Lily! Let's go up the tree together.\" So, Ben and Lily climbed the tree and saw their way to the top.\nWhen they got to the top, Ben and Lily were very happy"
+  },
+  {
+   "prompt": "The sun was setting when Ben walked home. On the way he saw",
+   "temperature": 1.0,
+   "seed": 1,
+   "completion": "his friends all playing together. They were having so much fun.\n\"Mom, we are so cold!\" said Ben.\n\"We might need to drop ice,\" said his mom. \"Maybe we can play more tomorrow. Let's get home.\"\nBen and his friends rolled and played until they were all very tired. Then they all went back to their homes. Ben was happy he gave his friends the fun replied.\n<|endoftext|>"
+  },
+  {
+   "prompt": "The sun was setting when Ben walked home. On the way he saw",
+   "temperature": 1.0,
+   "seed": 2,
+   "completion": "something unusual, a big box with dirt and gas on it. It was a monster!\nBen was scared and called his mom for help. \"Mom, can you fix the monster!\" he asked. His mom said, \"Yes, Ben, I can solve it!\" She took out a way to make the monster go away. She told Ben, \"I know you don't have to be scared. That box is for your family too."
+  },
+  {
+   "prompt": "The sun was setting when Ben walked home. On the way he saw",
+   "temperature": 1.0,
+   "seed": 3,
+   "completion": "a big hill. He thought it would be fun to climb the hill with his marble. So, he started to climb the hill.\nWhen Ben reached the top, he saw that his jewelry was gone! The sun had blown away it. Ben was very sad. Then, he remembered he and asked his mom to help him. His mom said she put the marble back in the car. Ben was happy again. From that day on, Ben"
+  },
+  {
+   "prompt": "Lily and her brother wanted to build something. They decided to",
+   "temperature": 0.2,
+   "seed": 1,
+   "completion": "build a big tower with the blocks. They worked hard and had fun. They were very proud of their tower.\nBut then, they heard a loud noise. It was their mom. She was coming to the living room. She was angry. She saw the mess and the children. She was not happy. She was very angry.\nShe took the blocks and the blocks and the blocks. She said, \"You are very naughty. You"
+  },
+  {
+   "prompt": "Lily and her brother wanted to build something. They decided to",
+   "temperature": 0.2,
+   "seed": 2,
+   "completion": "make a big tower with the blocks. They worked hard and made the tower taller and taller. They were very happy.\nBut then, they heard a loud noise. It was their mom. She was coming home from work. She was angry. She saw the tower and the blocks. She was very angry. She shouted at Lily and Ben. She said they were naughty and naughty. She said they could not build anything. She said they had"
+  },
+  {
+   "prompt": "Lily and her brother wanted to build something. They decided to",
+   "temperature": 0.2,
+   "seed": 3,
+   "completion": "build a big tower with the blocks. They worked hard and had fun. They were very proud of their tower.\nBut then, they heard a loud noise. It was their mom. She was coming home from work. She was angry. She saw the mess and the blocks. She was not happy. She said, \"What are you doing? You are not allowed to play with blocks. You are not allowed to play with blocks. You"
+  },
+  {
+   "prompt": "Lily and her brother wanted to build something. They decided to",
+   "temperature": 0.6,
+   "seed": 1,
+   "completion": "build a castle with sticks and stones. They worked hard to make the castle. They used sticks and stones to make the castle. They were very proud of their work.\nThey wanted to show their castle to their mom and dad. They ran to the living room and knocked on the door. Mom and dad opened the door and saw the castle. They were very happy. They gave them a hug and a kiss.\n\"Thank you, mom"
+  },
+  {
+   "prompt": "Lily and her brother wanted to build something. They decided to",
+   "temperature": 0.6,
+   "seed": 2,
+   "completion": "make a big, green tower with the blocks. They put the blocks on top of the tower and pushed it down. It was very high and very strong.\n\"Look at our tower!\" Lily said.\n\"Yes, it is!\" Ben said.\nThey were proud of their tower. They wanted to make it more. They had an idea. They took some blocks and some blocks and some blocks. They started to build their tower with"
+  },
+  {
+   "prompt": "Lily and her brother wanted to build something. They decided to",
+   "temperature": 0.6,
+   "seed": 3,
+   "completion": "build a tower together. They worked hard and made a big tower. They were very happy with their tower.\nBut then, something unexpected happened. The tower fell down and broke. The blocks were all broken. Lily and her brother were sad. They did not know what to do. The tower was broken, and they could not build it again. The end.\n<|endoftext|>\nOnce upon a time, there was a little girl named"
+  },
+  {
+   "prompt": "Lily and her brother wanted to build something. They decided to",
+   "temperature": 0.8,
+   "seed": 1,
+   "completion": "build a castle with sticks and stones. They put the sticks in the bucket and pushed it to the ground. They used the shovel to make a tower. They used a big brush to make it tall and strong. They felt happy and proud of their work.\nThey looked at their castle and saw it was big and strong. It had a hole in the ground and a door on the middle. It was the door. Lily and Ben ran to"
+  },
+  {
+   "prompt": "Lily and her brother wanted to build something. They decided to",
+   "temperature": 0.8,
+   "seed": 2,
+   "completion": "make a big, green tower with the blocks. They put the blocks on top of the tower and pushed it down. It made a big mess.\n\"Look, Lily, I made a big tower!\" Ben said.\n\"That's nice, Ben. But we need more blocks to build,\" Lily said.\nThey heard their mom calling their names. \"Lily, Ben, it's time to get out of the house. Put the"
+  },
+  {
+   "prompt": "Lily and her brother wanted to build something. They decided to",
+   "temperature": 0.8,
+   "seed": 3,
+   "completion": "build a tower together. They worked hard and made a big tower. They were very happy with their tower.\nBut then, something unexpected happened. The tower fell down and broke. They were sad. They looked at their tower. They wanted to solve the problem. Then, they remembered their mom's words. They decided to work together and make their tower stronger. They worked very hard and made the tower strong again.\n<|endoftext|>"
+  },
+  {
+   "prompt": "Lily and her brother wanted to build something. They decided to",
+   "temperature": 1.0,
+   "seed": 1,
+   "completion": "dig in the garden. They found a big hose. They were very happy.\n\"Look, Sam, a big hose! We need to pull it up.\" Lily said.\nBut the hose was very old and it moved fast. It lost any water. The flowers stopped growing and the flowers were ear. The flowers stayed in the garden.\n\"Sorry, Lily and Sam. You can't build the flowers. The plants are old and"
+  },
+  {
+   "prompt": "Lily and her brother wanted to build something. They decided to",
+   "temperature": 1.0,
+   "seed": 2,
+   "completion": "cut the understood that they found a special port.\nWhen they worked together, Lily and her brother used all the tremble noises, but nothing happened. Then, they noticed their parents always said, \"We should never do this. It could be dangerous and they did not want you to be hurt.\"\nMax and Lily learned that it was important to have a reliable family for help. They also learned that the port was in the right place for everyone"
+  },
+  {
+   "prompt": "Lily and her brother wanted to build something. They decided to",
+   "temperature": 1.0,
+   "seed": 3,
+   "completion": "build a night too, and they worked very hard to make the bed with their blocks. They were almost done, but then they heard a noise coming from the palace.\n\"It is a big storm, children!\" their mom said, notice. \"We are going to see the rain today and the rain!\"\nLily and Ben were scared, but they were also curious. They wanted to see what was inside the queen's, and but their"
+  },
+  {
+   "prompt": "It was raining hard. The cat sat by the window and",
+   "temperature": 0.2,
+   "seed": 1,
+   "completion": "watched the rain. The cat was happy to see the rain.\nThe rain stopped and the sun came out. The cat went outside and saw the rain. The cat jumped in the puddles and played in the puddles. The cat had a lot of fun. The rain made the cat happy.\n<|endoftext|>\nOnce upon a time, there was a little boy named Tim. Tim had a toy car that he loved to play with. One"
+  },
+  {
+   "prompt": "It was raining hard. The cat sat by the window and",
+   "temperature": 0.2,
+   "seed": 2,
+   "completion": "watched the rain fall.\nThe cat saw a big tree and wanted to climb it. The cat climbed up the tree and looked around. It saw a big bird sitting on a branch. The bird was wet and cold. The cat wanted to help the bird.\nThe cat climbed down the tree and went to the bird. The bird was happy to see the cat. The cat was happy too. The cat and the bird became good friends."
+  },
+  {
+   "prompt": "It was raining hard. The cat sat by the window and",
+   "temperature": 0.2,
+   "seed": 3,
+   "completion": "watched the rain fall. The cat felt sad because it could not play outside.\nThen, a little girl came to the window. She saw the cat and wanted to help. She took the cat outside and put it in the rain. The cat was happy and not wet anymore. The cat and the little girl played together all day.\n<|endoftext|>\nOnce upon a time, there was a little girl named Lily. She had a big"
+  },
+  {
+   "prompt": "It was raining hard. The cat sat by the window and",
+   "temperature": 0.6,
+   "seed": 1,
+   "completion": "watched the rain outside. It was a little scared, but it was also a good friend to the cat.\nAs the rain stopped, the cat looked up and saw the rain. It was still wet and cold. The cat thought, \"Maybe I can help the cat, but I need to be careful.\" So, the cat went outside and found a big puddle. The cat splashed in the puddle and felt better. The cat was not scared"
+  },
+  {
+   "prompt": "It was raining hard. The cat sat by the window and",
+   "temperature": 0.6,
+   "seed": 2,
+   "completion": "watched the rain fall.\nThen, something unexpected happened. The rain came down very hard. The cat jumped out of the window and went outside to play. The rain was gone, and the cat was happy. The cat had fun in the rain and forgot about the rain.\n<|endoftext|>\nOnce upon a time, there was a little boy named Tim. Tim loved to play with his toys. One day, he saw a big red"
+  },
+  {
+   "prompt": "It was raining hard. The cat sat by the window and",
+   "temperature": 0.6,
+   "seed": 3,
+   "completion": "watched the rain. It was very wet and cold outside.\nThe cat saw the rain outside. It wanted to play in the rain. The cat jumped out of the window and ran outside. The rain was heavy and wet. The cat played in the rain all day.\nThe rain came and made the cat wet and cold. The cat was sad because it could not play in the rain. The end.\n<|endoftext|>\nOnce upon"
+  },
+  {
+   "prompt": "It was raining hard. The cat sat by the window and",
+   "temperature": 0.8,
+   "seed": 1,
+   "completion": "watched the rain outside. It was a little scared but happy because the sun made it warm and cozy.\nThe rain stopped and the sun came out. The cat looked at the window and saw the rain and the sun on the window. The cat felt brave and kept up. It went outside and played in the sun.\nThe cat's mom saw the wet and happy cat on the window. She was happy that the rain had helped the cat"
+  },
+  {
+   "prompt": "It was raining hard. The cat sat by the window and",
+   "temperature": 0.8,
+   "seed": 2,
+   "completion": "watched the rain fall.\nThen, something unexpected happened. The rain came down very hard. The cat tried to find a way to dry off the window. The cat was happy and said, \"Thank you, rain!\" The cat could now be a little dry and warm in the rain.\n<|endoftext|>\nOne day, a boy named Tim went to the park. He saw a big tree with lots of fruit. Tim wanted to pick"
+  },
+  {
+   "prompt": "It was raining hard. The cat sat by the window and",
+   "temperature": 0.8,
+   "seed": 3,
+   "completion": "watched the rain coming down. The cat saw the rain and wanted to see what was inside.\nThe cat jumped into the window and waited for the rain to stop. After a few minutes, the rain stopped. The cat looked at the house and saw a big box. The cat was very happy. The cat opened the box and found many toys inside. The cat played with the toys all day. The cat had a lot of fun with the"
+  },
+  {
+   "prompt": "It was raining hard. The cat sat by the window and",
+   "temperature": 1.0,
+   "seed": 1,
+   "completion": "watched the sun go up. But then, the cat started to vanish. The cat became sad and did not know what to do.\nThen, a little girl came to the window. She was soft and warm. The cat sniffed the window and then the little girl looked at it again. The cat felt happy and moved along. Now, the cat could play with the whole yard again.\n<|endoftext|>\n\nOnce upon a time there"
+  },
+  {
+   "prompt": "It was raining hard. The cat sat by the window and",
+   "temperature": 1.0,
+   "seed": 2,
+   "completion": "listened to the rain.\n\"What is the window, Max?\" the cat asked. Max barked and began to tremble. They ran to the window and looked inside. Inside the window, they saw a little bird. The bird was wet and cold. Max and the cat decided to help the bird get warm and dry.\nBut when they got inside, the bird was not happy anymore. It started to get out from the window and sorry to"
+  },
+  {
+   "prompt": "It was raining hard. The cat sat by the window and",
+   "temperature": 1.0,
+   "seed": 3,
+   "completion": "watched the night coming out. The cat saw the sun and the rain on the window. The cat was happy and not bored anymore.\n<|endoftext|>\nOne day, a green cat named Tom was looking for new fashion in the park. He saw a big red recommend he wanted to wear and try it on his own. So, he ran to get a new dress and tried it on. This way, he jumped high, and he was"
+  }
+ ],
+ "anomaly": {
+  "lines": [
+   {
+    "kind": "in-domain",
+    "line": "Lily went to the park with her little dog.",
+    "bits_per_token": 4.693
+   },
+   {
+    "kind": "in-domain",
+    "line": "Tom was very happy and played with the ball all day.",
+    "bits_per_token": 3.481
+   },
+   {
+    "kind": "in-domain",
+    "line": "The bird looked sad because it had lost its nest.",
+    "bits_per_token": 4.25
+   },
+   {
+    "kind": "in-domain",
+    "line": "She opened the box and found a shiny red key inside.",
+    "bits_per_token": 4.051
+   },
+   {
+    "kind": "plausible",
+    "line": "The dog sat quietly under the old wooden table.",
+    "bits_per_token": 8.247
+   },
+   {
+    "kind": "odd but grammatical",
+    "line": "Tom picked up the quantum entanglement and put it in his pocket.",
+    "bits_per_token": 8.502
+   },
+   {
+    "kind": "odd but grammatical",
+    "line": "Lily ate the concept of Tuesday for breakfast.",
+    "bits_per_token": 9.61
+   },
+   {
+    "kind": "wrong register",
+    "line": "Pursuant to section 4(b), the party of the first part shall indemnify.",
+    "bits_per_token": 11.178
+   },
+   {
+    "kind": "wrong domain",
+    "line": "The mitochondrion generates ATP via oxidative phosphorylation.",
+    "bits_per_token": 13.072
+   },
+   {
+    "kind": "code",
+    "line": "for (int i = 0; i < n; i++) { buf[i] = malloc(sizeof(node)); }",
+    "bits_per_token": 13.993
+   },
+   {
+    "kind": "log line",
+    "line": "2026-08-17T14:22:01Z ERROR db.pool timeout after 30000ms retry=3",
+    "bits_per_token": 14.267
+   },
+   {
+    "kind": "gibberish",
+    "line": "xqzk vburt plimf woggle zzzt krrn.",
+    "bits_per_token": 12.69
+   }
+  ]
+ },
+ "token_surprisal": [
+  {
+   "sentence": "Lily went to the park with her little dog.",
+   "tokens": [
+    {
+     "t": "Lily",
+     "bits": 16.63
+    },
+    {
+     "t": " went",
+     "bits": 7.583
+    },
+    {
+     "t": " to",
+     "bits": 0.783
+    },
+    {
+     "t": " the",
+     "bits": 1.034
+    },
+    {
+     "t": " park",
+     "bits": 1.961
+    },
+    {
+     "t": " with",
+     "bits": 1.102
+    },
+    {
+     "t": " her",
+     "bits": 0.063
+    },
+    {
+     "t": " little",
+     "bits": 11.834
+    },
+    {
+     "t": " dog",
+     "bits": 4.236
+    },
+    {
+     "t": ".",
+     "bits": 1.7
+    }
+   ]
+  },
+  {
+   "sentence": "Tom picked up the quantum entanglement and put it in his pocket.",
+   "tokens": [
+    {
+     "t": "Tom",
+     "bits": 17.227
+    },
+    {
+     "t": " picked",
+     "bits": 11.486
+    },
+    {
+     "t": " up",
+     "bits": 0.413
+    },
+    {
+     "t": " the",
+     "bits": 2.332
+    },
+    {
+     "t": " qu",
+     "bits": 18.821
+    },
+    {
+     "t": "ant",
+     "bits": 11.955
+    },
+    {
+     "t": "um",
+     "bits": 15.146
+    },
+    {
+     "t": " ent",
+     "bits": 19.141
+    },
+    {
+     "t": "ang",
+     "bits": 16.646
+    },
+    {
+     "t": "lem",
+     "bits": 20.427
+    },
+    {
+     "t": "ent",
+     "bits": 10.339
+    },
+    {
+     "t": " and",
+     "bits": 1.818
+    },
+    {
+     "t": " put",
+     "bits": 4.205
+    },
+    {
+     "t": " it",
+     "bits": 0.357
+    },
+    {
+     "t": " in",
+     "bits": 1.156
+    },
+    {
+     "t": " his",
+     "bits": 0.869
+    },
+    {
+     "t": " pocket",
+     "bits": 0.512
+    },
+    {
+     "t": ".",
+     "bits": 0.18
+    }
+   ]
+  }
+ ],
+ "compression": [
+  {
+   "label": "A TinyStories passage (in domain)",
+   "text": "Once upon a time, there was a little girl named Lily. She loved to play in the garden with her dog. One sunny day, she found a big red ball under the tree. Lily was very happy and played with the ball all afternoon.",
+   "bytes_in": 215,
+   "nanoscale": {
+    "bytes": 17,
+    "bits_per_byte": 0.6326,
+    "ratio": 12.65
+   },
+   "gzip": {
+    "bytes": 162,
+    "ratio": 1.33
+   },
+   "bzip2": {
+    "bytes": 175,
+    "ratio": 1.23
+   },
+   "xz": {
+    "bytes": 236,
+    "ratio": 0.91
+   }
+  },
+  {
+   "label": "English prose the model never saw",
+   "text": "The mitochondrion is a double-membrane-bound organelle found in most eukaryotic organisms. Mitochondria generate most of the cell's supply of adenosine triphosphate, subsequently used throughout the cell as chemical energy.",
+   "bytes_in": 223,
+   "nanoscale": {
+    "bytes": 105,
+    "bits_per_byte": 3.7668,
+    "ratio": 2.12
+   },
+   "gzip": {
+    "bytes": 166,
+    "ratio": 1.34
+   },
+   "bzip2": {
+    "bytes": 194,
+    "ratio": 1.15
+   },
+   "xz": {
+    "bytes": 236,
+    "ratio": 0.94
+   }
+  },
+  {
+   "label": "Source code",
+   "text": "def quicksort(items):\n    if len(items) <= 1:\n        return items\n    pivot = items[len(items) // 2]\n    left = [x for x in items if x < pivot]\n    return quicksort(left) + [pivot]",
+   "bytes_in": 181,
+   "nanoscale": {
+    "bytes": 154,
+    "bits_per_byte": 6.8066,
+    "ratio": 1.18
+   },
+   "gzip": {
+    "bytes": 126,
+    "ratio": 1.44
+   },
+   "bzip2": {
+    "bytes": 143,
+    "ratio": 1.27
+   },
+   "xz": {
+    "bytes": 176,
+    "ratio": 1.03
+   }
+  }
+ ],
+ "next_token": [
+  {
+   "context": "Once upon a time there was a little",
+   "top": [
+    {
+     "token": " girl",
+     "p": 0.5426
+    },
+    {
+     "token": " boy",
+     "p": 0.2588
+    },
+    {
+     "token": " bunny",
+     "p": 0.0168
+    },
+    {
+     "token": " bird",
+     "p": 0.0139
+    },
+    {
+     "token": " dog",
+     "p": 0.0101
+    },
+    {
+     "token": " mouse",
+     "p": 0.0082
+    }
+   ]
+  },
+  {
+   "context": "Once upon a time there was a little girl",
+   "top": [
+    {
+     "token": " named",
+     "p": 0.6696
+    },
+    {
+     "token": " called",
+     "p": 0.1353
+    },
+    {
+     "token": ".",
+     "p": 0.0805
+    },
+    {
+     "token": " who",
+     "p": 0.0779
+    },
+    {
+     "token": ",",
+     "p": 0.0134
+    },
+    {
+     "token": " and",
+     "p": 0.0122
+    }
+   ]
+  },
+  {
+   "context": "Once upon a time there was a little girl named",
+   "top": [
+    {
+     "token": " Lily",
+     "p": 0.137
+    },
+    {
+     "token": " Lucy",
+     "p": 0.1334
+    },
+    {
+     "token": " Mia",
+     "p": 0.1156
+    },
+    {
+     "token": " Sue",
+     "p": 0.0939
+    },
+    {
+     "token": " Amy",
+     "p": 0.0827
+    },
+    {
+     "token": " Sally",
+     "p": 0.0488
+    }
+   ]
+  },
+  {
+   "context": "Once upon a time there was a little girl named Lily",
+   "top": [
+    {
+     "token": ".",
+     "p": 0.9478
+    },
+    {
+     "token": " who",
+     "p": 0.0306
+    },
+    {
+     "token": " and",
+     "p": 0.0168
+    },
+    {
+     "token": ",",
+     "p": 0.0023
+    },
+    {
+     "token": "'s",
+     "p": 0.0003
+    },
+    {
+     "token": "!",
+     "p": 0.0002
+    }
+   ]
+  },
+  {
+   "context": "Once upon a time there was a little girl named Lily.",
+   "top": [
+    {
+     "token": " She",
+     "p": 0.7531
+    },
+    {
+     "token": " Lily",
+     "p": 0.1938
+    },
+    {
+     "token": " One",
+     "p": 0.0276
+    },
+    {
+     "token": " Every",
+     "p": 0.007
+    },
+    {
+     "token": "\n",
+     "p": 0.004
+    },
+    {
+     "token": " Her",
+     "p": 0.0032
+    }
+   ]
+  },
+  {
+   "context": "Once upon a time there was a little girl named Lily. She",
+   "top": [
+    {
+     "token": " was",
+     "p": 0.5382
+    },
+    {
+     "token": " loved",
+     "p": 0.1944
+    },
+    {
+     "token": " had",
+     "p": 0.1372
+    },
+    {
+     "token": " lived",
+     "p": 0.0588
+    },
+    {
+     "token": " liked",
+     "p": 0.0317
+    },
+    {
+     "token": " wanted",
+     "p": 0.0251
+    }
+   ]
+  },
+  {
+   "context": "Once upon a time there was a little girl named Lily. She was",
+   "top": [
+    {
+     "token": " three",
+     "p": 0.3221
+    },
+    {
+     "token": " very",
+     "p": 0.2271
+    },
+    {
+     "token": " only",
+     "p": 0.1749
+    },
+    {
+     "token": " a",
+     "p": 0.065
+    },
+    {
+     "token": " 3",
+     "p": 0.032
+    },
+    {
+     "token": " always",
+     "p": 0.0288
+    }
+   ]
+  },
+  {
+   "context": "Once upon a time there was a little girl named Lily. She was three",
+   "top": [
+    {
+     "token": " years",
+     "p": 0.9888
+    },
+    {
+     "token": "-",
+     "p": 0.0057
+    },
+    {
+     "token": " and",
+     "p": 0.0025
+    },
+    {
+     "token": ",",
+     "p": 0.0005
+    },
+    {
+     "token": " year",
+     "p": 0.0005
+    },
+    {
+     "token": ".",
+     "p": 0.0001
+    }
+   ]
+  },
+  {
+   "context": "Once upon a time there was a little girl named Lily. She was three years",
+   "top": [
+    {
+     "token": " old",
+     "p": 0.9987
+    },
+    {
+     "token": "-",
+     "p": 0.0004
+    },
+    {
+     "token": " ugly",
+     "p": 0.0
+    },
+    {
+     "token": " years",
+     "p": 0.0
+    },
+    {
+     "token": " ancient",
+     "p": 0.0
+    },
+    {
+     "token": " long",
+     "p": 0.0
+    }
+   ]
+  },
+  {
+   "context": "Once upon a time there was a little girl named Lily. She was three years old",
+   "top": [
+    {
+     "token": " and",
+     "p": 0.7737
+    },
+    {
+     "token": ".",
+     "p": 0.1469
+    },
+    {
+     "token": ",",
+     "p": 0.0625
+    },
+    {
+     "token": " with",
+     "p": 0.0047
+    },
+    {
+     "token": " but",
+     "p": 0.0046
+    },
+    {
+     "token": " who",
+     "p": 0.0023
+    }
+   ]
+  },
+  {
+   "context": "Once upon a time there was a little girl named Lily. She was three years old and",
+   "top": [
+    {
+     "token": " loved",
+     "p": 0.3995
+    },
+    {
+     "token": " very",
+     "p": 0.2508
+    },
+    {
+     "token": " she",
+     "p": 0.1762
+    },
+    {
+     "token": " liked",
+     "p": 0.0288
+    },
+    {
+     "token": " was",
+     "p": 0.0261
+    },
+    {
+     "token": " had",
+     "p": 0.0226
+    }
+   ]
+  },
+  {
+   "context": "Once upon a time there was a little girl named Lily. She was three years old and loved",
+   "top": [
+    {
+     "token": " to",
+     "p": 0.7174
+    },
+    {
+     "token": " playing",
+     "p": 0.128
+    },
+    {
+     "token": " exploring",
+     "p": 0.036
+    },
+    {
+     "token": " going",
+     "p": 0.0124
+    },
+    {
+     "token": " her",
+     "p": 0.007
+    },
+    {
+     "token": " the",
+     "p": 0.0055
+    }
+   ]
+  }
+ ]
+}
+</script>
+<script>
+(function () {
+  "use strict";
+  var D = JSON.parse(document.getElementById("demo-data").textContent);
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  };
+
+  // ------------------------------------------------------------------ theme
+  (function () {
+    var KEY = "nanoscale-theme", root = document.documentElement;
+    var btns = [].slice.call(document.querySelectorAll("[data-theme-set]"));
+    function apply(m) {
+      if (m === "system") root.removeAttribute("data-theme");
+      else root.setAttribute("data-theme", m);
+      btns.forEach(function (b) {
+        b.setAttribute("aria-pressed", String(b.getAttribute("data-theme-set") === m));
+      });
+      try { localStorage.setItem(KEY, m); } catch (e) {}
+    }
+    var saved = "system";
+    try { saved = localStorage.getItem(KEY) || "system"; } catch (e) {}
+    apply(saved);
+    btns.forEach(function (b) {
+      b.addEventListener("click", function () { apply(b.getAttribute("data-theme-set")); });
+    });
+  })();
+
+  // ------------------------------------------------------------------ tabs
+  [].slice.call(document.querySelectorAll(".tabs button")).forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll(".tabs button").forEach(function (o) {
+        o.setAttribute("aria-selected", String(o === b));
+      });
+      document.querySelectorAll(".panel").forEach(function (p) {
+        p.classList.toggle("on", p.id === "p-" + b.getAttribute("data-tab"));
+      });
+    });
+  });
+
+  // ------------------------------------------------------------------ 1. generate
+  var TEMPS = [0.2, 0.6, 0.8, 1.0];
+  var prompts = [], seeds = [];
+  D.generations.forEach(function (g) {
+    if (prompts.indexOf(g.prompt) < 0) prompts.push(g.prompt);
+    if (seeds.indexOf(g.seed) < 0) seeds.push(g.seed);
+  });
+  $("g-prompt").innerHTML = prompts.map(function (p, i) {
+    return '<option value="' + i + '">' + esc(p.slice(0, 52)) + "…</option>";
+  }).join("");
+  $("g-seed").innerHTML = seeds.map(function (s) {
+    return '<option value="' + s + '">' + s + "</option>";
+  }).join("");
+
+  function renderGen() {
+    var p = prompts[+$("g-prompt").value];
+    var t = TEMPS[+$("g-temp").value];
+    var s = +$("g-seed").value;
+    $("g-temp-v").textContent = t.toFixed(1);
+    var hit = D.generations.filter(function (g) {
+      return g.prompt === p && g.temperature === t && g.seed === s;
+    })[0];
+    if (!hit) { $("g-out").textContent = "(no precomputed sample for this combination)"; return; }
+    $("g-out").innerHTML = '<span class="prompt">' + esc(p) + "</span>" + esc(hit.completion);
+    var words = hit.completion.split(/\s+/).filter(Boolean).length;
+    $("g-meta").textContent =
+      "temperature " + t.toFixed(1) + " · seed " + s + " · " + words +
+      " words generated · real output from the committed checkpoint";
+  }
+  ["g-prompt", "g-temp", "g-seed"].forEach(function (id) {
+    $(id).addEventListener("input", renderGen);
+  });
+  renderGen();
+
+  // ------------------------------------------------------------------ 2. next token
+  var step = 0;
+  function renderNext() {
+    var s = D.next_token[step];
+    $("n-ctx").innerHTML =
+      '<span class="prompt">Once upon a time there was a little</span>' +
+      esc(s.context.replace(/^Once upon a time there was a little/, ""));
+    var max = s.top[0].p;
+    $("n-bars").innerHTML =
+      '<p class="legend" style="margin:1rem 0 .5rem">Step ' + (step + 1) + " of " +
+      D.next_token.length + " — top 6 of " + D.vocab_size.toLocaleString() + " tokens</p>" +
+      s.top.map(function (t, i) {
+        var w = Math.max(2, (t.p / max) * 100);
+        return '<div style="display:grid;grid-template-columns:8.5rem 1fr 4rem;gap:.6rem;' +
+          'align-items:center;margin-bottom:.35rem">' +
+          '<code style="text-align:right;white-space:pre">' + esc(t.token) + "</code>" +
+          '<div class="bar' + (i ? " grey" : "") + '" style="width:' + w + '%"></div>' +
+          '<span class="mono" style="font-size:.78rem;color:var(--ink-2)">' +
+          (t.p * 100).toFixed(1) + "%</span></div>";
+      }).join("");
+  }
+  $("n-next").addEventListener("click", function () {
+    step = Math.min(D.next_token.length - 1, step + 1); renderNext();
+  });
+  $("n-prev").addEventListener("click", function () {
+    step = Math.max(0, step - 1); renderNext();
+  });
+  $("n-reset").addEventListener("click", function () { step = 0; renderNext(); });
+  renderNext();
+
+  // ------------------------------------------------------------------ 3. compression
+  $("c-sample").innerHTML = D.compression.map(function (c, i) {
+    return '<option value="' + i + '">' + esc(c.label) + "</option>";
+  }).join("");
+
+  function renderComp() {
+    var c = D.compression[+$("c-sample").value];
+    $("c-text").textContent = c.text;
+    var rows = [
+      ["NanoScale-LM", c.nanoscale.bytes, c.nanoscale.ratio, true],
+      ["xz -9", c.xz.bytes, c.xz.ratio, false],
+      ["bzip2 -9", c.bzip2.bytes, c.bzip2.ratio, false],
+      ["gzip -9", c.gzip.bytes, c.gzip.ratio, false],
+      ["raw UTF-8", c.bytes_in, 1.0, false]
+    ];
+    var worst = Math.max.apply(null, rows.map(function (r) { return r[1]; }));
+    $("c-bars").innerHTML = rows.map(function (r) {
+      var w = Math.max(2, (r[1] / worst) * 100);
+      return '<div style="display:grid;grid-template-columns:7.5rem 1fr 8.5rem;gap:.6rem;' +
+        'align-items:center;margin-bottom:.4rem">' +
+        '<span class="mono" style="font-size:.78rem">' + esc(r[0]) + "</span>" +
+        '<div class="bar' + (r[3] ? "" : " grey") + '" style="width:' + w + '%"></div>' +
+        '<span class="mono" style="font-size:.76rem;color:var(--ink-2)">' +
+        r[1].toLocaleString() + " B · " + r[2].toFixed(2) + "×</span></div>";
+    }).join("");
+    var bpb = c.nanoscale.bits_per_byte;
+    var verdict = bpb < 2
+      ? '<span class="pill ok">specialised and winning</span>'
+      : (bpb < 8 ? '<span class="pill">out of its distribution</span>'
+                 : '<span class="pill bad">worse than raw bytes</span>');
+    $("c-note").innerHTML = verdict + " &nbsp; " + bpb.toFixed(3) +
+      " bits/byte · " + c.bytes_in + " B in, " + c.nanoscale.bytes +
+      " B out · verified lossless round trip";
+  }
+  $("c-sample").addEventListener("change", renderComp);
+  renderComp();
+
+  // ------------------------------------------------------------------ 4. anomaly
+  var lines = D.anomaly.lines.slice().sort(function (a, b) {
+    return b.bits_per_token - a.bits_per_token;
+  });
+  var normal = D.anomaly.lines.filter(function (l) { return l.kind === "in-domain"; })
+    .map(function (l) { return l.bits_per_token; }).sort(function (a, b) { return a - b; });
+  var thresh = normal[normal.length - 1] * 1.15;
+  var maxb = lines[0].bits_per_token;
+
+  $("a-rows").innerHTML = lines.map(function (l) {
+    var over = l.bits_per_token > thresh;
+    var w = Math.max(3, (l.bits_per_token / maxb) * 100);
+    return '<div style="margin-bottom:.5rem">' +
+      '<div style="display:grid;grid-template-columns:4.2rem 1fr;gap:.6rem;align-items:center">' +
+      '<span class="mono" style="font-size:.78rem;text-align:right;color:' +
+      (over ? "var(--warn)" : "var(--ink-2)") + '">' + l.bits_per_token.toFixed(1) + "</span>" +
+      '<div class="bar' + (over ? "" : " grey") + '" style="width:' + w + '%;height:8px;' +
+      (over ? "background:var(--warn)" : "") + '"></div></div>' +
+      '<div style="margin-left:4.8rem;font-size:.88rem;color:var(--ink-2)">' +
+      (over ? '<span class="pill bad">flagged</span> ' : "") +
+      '<span class="pill">' + esc(l.kind) + "</span> " +
+      '<code style="font-size:.8rem">' + esc(l.line.slice(0, 68)) + "</code></div></div>";
+  }).join("");
+  $("a-note").innerHTML = "Threshold " + thresh.toFixed(1) +
+    " bits/token, set from ordinary in-domain traffic. " +
+    lines.filter(function (l) { return l.bits_per_token > thresh; }).length +
+    " of " + lines.length + " lines flagged.";
+
+  $("a-sent").innerHTML = D.token_surprisal.map(function (s, i) {
+    return '<option value="' + i + '">' + esc(s.sentence.slice(0, 56)) + "</option>";
+  }).join("");
+  function renderTokens() {
+    var s = D.token_surprisal[+$("a-sent").value];
+    var mx = Math.max.apply(null, s.tokens.map(function (t) { return t.bits; }));
+    $("a-tokens").innerHTML = s.tokens.map(function (t) {
+      var a = Math.min(0.85, t.bits / Math.max(mx, 1)).toFixed(2);
+      return '<span class="tok" title="' + t.bits.toFixed(2) + ' bits" ' +
+        'style="background:color-mix(in srgb, var(--warn) ' + (a * 100).toFixed(0) +
+        '%, transparent)">' + esc(t.t) + "</span>";
+    }).join("");
+  }
+  $("a-sent").addEventListener("change", renderTokens);
+  renderTokens();
+
+  // ------------------------------------------------------------------ provenance
+  $("prov").textContent =
+    D.params.toLocaleString() + " parameters · " + D.train_tokens.toLocaleString() +
+    " training tokens · checkpoint " + D.checkpoint + " · git " + D.git_sha +
+    " · generated on " + D.hardware;
+})();
+</script>
+
+</body>
+</html>

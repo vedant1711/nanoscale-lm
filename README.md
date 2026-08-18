@@ -12,14 +12,15 @@
 [![tests](https://img.shields.io/badge/tests-580-brightgreen)](tests/)
 [![license](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
 
-### 📖 &nbsp;[**Read the documentation — one page, everything**](https://claude.ai/code/artifact/edb6018c-1c9b-42da-a750-7e4330f7c0ed)
+### ▶ &nbsp;[**Try the live demo**](https://vedant1711.github.io/nanoscale-lm/demo.html) &nbsp;·&nbsp; 📖 &nbsp;[**Read the documentation**](https://vedant1711.github.io/nanoscale-lm/explainer.html)
 
-Architecture, methodology, every design decision, every measurement and every limitation,
-written for anyone who knows Transformers and nothing past them.
+The demo runs in any browser with no install: generate text, step through the model's
+next-token distribution, watch it compress text losslessly and flag anomalies. The
+documentation is the whole project on one page — every algorithm, diagram, design decision
+and measurement, written for anyone who knows Transformers and nothing past them.
 
-[Generated results](https://vedant1711.github.io/nanoscale-lm/) ·
+[Results](https://vedant1711.github.io/nanoscale-lm/results/) ·
 [Notebooks](notebooks/) ·
-[Demo](demo/) ·
 [Weights](artifacts/models/)
 
 </div>

@@ -36,6 +36,8 @@ extra_javascript:
 
 nav:
   - Home: index.md
+  - Live demo: demo.html
+  - Full documentation: explainer.html
   - Quickstart: quickstart.md
   - Architecture: architecture.md
   - Methodology: methodology.md

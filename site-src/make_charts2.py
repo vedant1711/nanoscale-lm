@@ -202,9 +202,15 @@ def calibration_chart() -> str:
     # The summary dict does not carry bins; use the headline point instead.
     conf, acc = cal["mean_confidence"], cal["top1_accuracy"]
     s.append(f'<circle cx="{px(conf):.1f}" cy="{py(acc):.1f}" r="6" fill="{ACC}"/>')
+    # Two short lines below-right of the point. One long line ran past the viewBox and
+    # was clipped, which is why this is split.
     s.append(
-        f'<text x="{px(conf) + 12:.1f}" y="{py(acc) - 6:.1f}" fill="{ACC}" font-size="10.5">'
-        f"mean: {conf * 100:.1f}% confident, {acc * 100:.1f}% right</text>"
+        f'<text x="{px(conf) + 12:.1f}" y="{py(acc) + 4:.1f}" fill="{ACC}" font-size="10">'
+        f"{conf * 100:.1f}% confident</text>"
+    )
+    s.append(
+        f'<text x="{px(conf) + 12:.1f}" y="{py(acc) + 17:.1f}" fill="{ACC}" font-size="10">'
+        f"{acc * 100:.1f}% correct</text>"
     )
 
     s.append(f'<text x="{L}" y="{T - 12}" font-size="11" font-weight="600">reliability</text>')

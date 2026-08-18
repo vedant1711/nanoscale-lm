@@ -102,7 +102,7 @@ def seeds_chart(suite: str, title: str) -> str:
 def dpo_collapse() -> str:
     """The measured Δ log p for DPO with and without the NLL anchor."""
     w, h = 660, 250
-    L, R, T, B = 150, 30, 40, 40
+    L, R, T, B = 150, 96, 40, 40
     rows = [
         ("DPO", -0.0454, -4.2385, "0–7–33"),
         ("DPO + NLL anchor", +0.0104, -3.9170, "3–0–37"),

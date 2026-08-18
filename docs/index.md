@@ -36,6 +36,10 @@ speculative decoding (3× fewer target forward passes) — with the levers compo
 
 ## Start here
 
+- **[▶ Live demo](demo.html)** — generate text, step through the model's next-token
+  distribution, watch it compress and flag anomalies. Real outputs, no install.
+- **[📖 Full documentation, one page](explainer.html)** — every algorithm, diagram, design
+  decision and measurement, written for anyone who knows Transformers and nothing past them.
 - **[Quickstart](quickstart.md)** — from a clone to generated text in under ten minutes,
   no GPU.
 - **[Architecture](architecture.md)** — what is built and why each choice was made.

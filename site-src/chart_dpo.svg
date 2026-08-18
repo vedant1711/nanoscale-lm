@@ -1,18 +1,18 @@
 <svg viewBox="0 0 660 250" role="img" aria-label="DPO alone lowers the log-probability of both chosen and rejected responses; adding the NLL anchor raises the chosen one." style="width:100%;height:auto">
 <g font-family="ui-monospace, monospace" font-size="10" fill="currentColor">
-<line x1="574.6" y1="40" x2="574.6" y2="210" stroke="currentColor" stroke-width="1" opacity=".4"/>
-<text x="574.6" y="32" text-anchor="middle" opacity=".65">no change</text>
+<line x1="516.2" y1="40" x2="516.2" y2="210" stroke="currentColor" stroke-width="1" opacity=".4"/>
+<text x="516.2" y="32" text-anchor="middle" opacity=".65">no change</text>
 <text x="138" y="78" text-anchor="end" font-size="11" font-weight="600">DPO</text>
-<line x1="574.6" y1="74.0" x2="570.4" y2="74.0" stroke="#8F4715" stroke-width="9" opacity=".85" stroke-linecap="round"/>
-<text x="560.4" y="78.0" text-anchor="end" font-size="10" fill="#8F4715">chosen -0.0454</text>
-<line x1="574.6" y1="100.0" x2="183.4" y2="100.0" stroke="currentColor" stroke-width="9" opacity=".35" stroke-linecap="round"/>
-<text x="173.4" y="104.0" text-anchor="end" font-size="10" opacity=".7">rejected -4.2385</text>
+<line x1="516.2" y1="74.0" x2="512.6" y2="74.0" stroke="#8F4715" stroke-width="9" opacity=".85" stroke-linecap="round"/>
+<text x="502.6" y="78.0" text-anchor="end" font-size="10" fill="#8F4715">chosen -0.0454</text>
+<line x1="516.2" y1="100.0" x2="178.8" y2="100.0" stroke="currentColor" stroke-width="9" opacity=".35" stroke-linecap="round"/>
+<text x="168.8" y="104.0" text-anchor="end" font-size="10" opacity=".7">rejected -4.2385</text>
 <text x="138" y="104" text-anchor="end" font-size="9.5" opacity=".65">head-to-head 0–7–33</text>
 <text x="138" y="162" text-anchor="end" font-size="11" font-weight="600">DPO + NLL anchor</text>
-<line x1="574.6" y1="158.0" x2="575.6" y2="158.0" stroke="#12655F" stroke-width="9" opacity=".85" stroke-linecap="round"/>
-<text x="585.6" y="162.0" text-anchor="start" font-size="10" fill="#12655F">chosen +0.0104</text>
-<line x1="574.6" y1="184.0" x2="213.0" y2="184.0" stroke="currentColor" stroke-width="9" opacity=".35" stroke-linecap="round"/>
-<text x="203.0" y="188.0" text-anchor="end" font-size="10" opacity=".7">rejected -3.9170</text>
+<line x1="516.2" y1="158.0" x2="517.1" y2="158.0" stroke="#12655F" stroke-width="9" opacity=".85" stroke-linecap="round"/>
+<text x="527.1" y="162.0" text-anchor="start" font-size="10" fill="#12655F">chosen +0.0104</text>
+<line x1="516.2" y1="184.0" x2="204.4" y2="184.0" stroke="currentColor" stroke-width="9" opacity=".35" stroke-linecap="round"/>
+<text x="194.4" y="188.0" text-anchor="end" font-size="10" opacity=".7">rejected -3.9170</text>
 <text x="138" y="188" text-anchor="end" font-size="9.5" opacity=".65">head-to-head 3–0–37</text>
-<text x="390" y="242" text-anchor="middle" opacity=".6">change in mean per-token log-probability over the run</text>
+<text x="357" y="242" text-anchor="middle" opacity=".6">change in mean per-token log-probability over the run</text>
 </g></svg>
