@@ -252,12 +252,25 @@ pre {
 }
 pre code { background: none; padding: 0; font-size: inherit; }
 .math {
-  font-family: var(--mono); font-size: .88rem; line-height: 1.85;
+  font-family: var(--mono); font-size: .86rem; line-height: 1.8;
   background: var(--accent-soft); border-left: 2px solid var(--accent);
-  padding: .95rem 1.15rem; margin: 1.3rem 0; overflow-x: auto;
+  padding: 1rem 1.15rem; margin: 1.4rem 0; overflow-x: auto;
   border-radius: 0 4px 4px 0; color: var(--ink);
+  /* Formulas are written with real newlines and alignment spaces. Without this they
+     collapse onto a single run-on line, which is what made them unreadable. */
+  white-space: pre-wrap;
+  tab-size: 4;
 }
-.math .note { color: var(--ink-2); font-size: .82rem; }
+/* Annotations sit on their own line under the formula. The class is `.ann`, not
+   `.note`, because `.note` is the page's callout box -- sharing the name meant every
+   annotation inherited a border, 1rem of padding and 1.5rem of margin and rendered as
+   a box wedged into the middle of its equation. */
+.math .ann {
+  display: block; margin-top: .55rem; padding-left: 1.1rem;
+  color: var(--ink-2); font-size: .8rem; line-height: 1.5;
+  border-left: 2px solid var(--rule-strong); white-space: pre-wrap;
+}
+.math b { color: var(--accent); font-weight: 700; }
 
 /* ============================================================ callouts */
 .note, .caveat, .win {
