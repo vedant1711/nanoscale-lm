@@ -26,6 +26,30 @@ DOCS = ROOT / "docs"
 SECTIONS = (
     ("Tokenizer", "tokenizer", RESULTS / "tokenizer" / "nano.md", None),
     (
+        "Full evaluation",
+        "full-evaluation",
+        RESULTS / "evaluation" / "micro-tinystories.md",
+        "evaluation",
+    ),
+    (
+        "External baseline (bits per byte)",
+        "external-baseline",
+        RESULTS / "baseline" / "baseline.md",
+        "baseline",
+    ),
+    (
+        "Capability emergence",
+        "capability-emergence",
+        RESULTS / "emergence" / "emergence.md",
+        "emergence",
+    ),
+    (
+        "Compression and anomaly detection",
+        "compression",
+        RESULTS / "compression" / "compression.md",
+        "compression",
+    ),
+    (
         "Optimizer ablation",
         "optimizer-ablation",
         RESULTS / "ablations" / "optimizer.md",
@@ -35,6 +59,18 @@ SECTIONS = (
         "Architecture ablation",
         "architecture-ablation",
         RESULTS / "ablations" / "architecture.md",
+        "ablations",
+    ),
+    (
+        "Optimizer ablation, 5 seeds",
+        "optimizer-multiseed",
+        RESULTS / "ablations" / "optimizer_multiseed.md",
+        "ablations",
+    ),
+    (
+        "Architecture ablation, 5 seeds",
+        "architecture-multiseed",
+        RESULTS / "ablations" / "architecture_multiseed.md",
         "ablations",
     ),
     ("Alignment", "alignment", RESULTS / "alignment" / "alignment.md", "alignment"),
@@ -57,10 +93,16 @@ and hardware that produced it. This page is **generated** by
 `scripts/build_docs_results.py` — editing it by hand will be reverted by CI.
 
 !!! warning "Read the limitations first"
-    All of this comes from a ~5M-parameter model trained for 95 seconds on a laptop CPU
-    on a synthetic corpus. See [Limitations](limitations.md) for what that does and does
-    not support. Several results here are *negative*, and they are reported rather than
-    omitted.
+    Two models produced everything here. The **`micro`** tier is 40.4M parameters trained
+    for 3.2 hours on TinyStories to 4% of a Chinchilla-optimal budget, and is the source of
+    the evaluation, baseline, emergence and compression results. The **`nano`** tier is 5M
+    parameters trained for 95 seconds on a synthetic corpus, and is the source of the
+    ablations and the Arc 2 compression/speculation numbers, because it is cheap enough to
+    run many controlled arms against.
+
+    Neither is a frontier-scale claim. See [Limitations](limitations.md) for what these
+    numbers do and do not support. Several results here are *negative* — a predicted effect
+    that did not appear, or appeared backwards — and they are reported rather than omitted.
 
 ## On this page
 
