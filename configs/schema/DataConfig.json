@@ -53,6 +53,12 @@
       "title": "Paths",
       "type": "array"
     },
+    "doc_separator": {
+      "default": "",
+      "description": "Split .txt files on this literal before tokenizing; '' reads each file as one document. Corpora distributed as flat text often use a marker such as '<|endoftext|>' between documents, which must become the tokenizer's own EOS rather than being learned as literal characters.",
+      "title": "Doc Separator",
+      "type": "string"
+    },
     "seq_len": {
       "default": 256,
       "description": "Packed sequence length (must be <= ctx).",
