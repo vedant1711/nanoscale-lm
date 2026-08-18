@@ -137,10 +137,14 @@ files = ["src", "tests", "scripts"]
 exclude = ["^build/", "^dist/"]
 
 [[tool.mypy.overrides]]
+# Optional extras that CI does not install. `scripts/external_baseline.py` imports
+# `transformers` lazily inside a function precisely so the module stays importable
+# without it, but mypy still resolves the import statically.
 module = [
     "matplotlib.*",
     "datasets.*",
     "tiktoken.*",
+    "transformers.*",
     "bitsandbytes.*",
     "gradio.*",
     "hypothesis.*",
