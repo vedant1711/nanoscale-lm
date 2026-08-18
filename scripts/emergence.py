@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 import time
 from pathlib import Path
@@ -47,7 +48,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from nanoscale.config import ExperimentConfig, load_experiment
-from nanoscale.eval import PHENOMENA, generate_pairs, run_minimal_pairs
+from nanoscale.eval import PHENOMENA, generate_pairs, run_minimal_pairs, wilson_interval
 from nanoscale.tokenizer import BPETokenizer
 from nanoscale.train import Trainer
 from nanoscale.utils import get_logger, git_sha, hardware_string
@@ -124,16 +125,93 @@ def measure(args: argparse.Namespace) -> dict[str, Any]:
             phenomena.get("agreement_simple", float("nan")),
         )
 
+    names = [n for n in PHENOMENA if n in probes[0]["phenomena"]]
+    tokens_axis = [float(p["tokens"]) for p in probes]
+    trends = {}
+    for name in names:
+        ys = [float(p["phenomena"][name]) for p in probes]
+        rho, pv = spearman(tokens_axis, ys)
+        trends[name] = {
+            "spearman_rho": round(rho, 4),
+            "p_value": round(pv, 5),
+            "first": ys[0],
+            "last": ys[-1],
+            "min": min(ys),
+            "max": max(ys),
+            "ci_halfwidth": round(
+                (
+                    wilson_interval(int(ys[-1] * args.pairs), args.pairs)[1]
+                    - wilson_interval(int(ys[-1] * args.pairs), args.pairs)[0]
+                )
+                / 2,
+                4,
+            ),
+        }
+
     return {
         "git_sha": git_sha(),
         "hardware": hardware_string(),
         "params": trainer.model.num_parameters(),
+        "trends": trends,
         "steps": args.steps,
         "probe_every": args.probe_every,
         "items_per_phenomenon": args.pairs,
         "tokens_per_step": tokens_per_step,
         "probes": probes,
     }
+
+
+def spearman(xs: list[float], ys: list[float]) -> tuple[float, float]:
+    """Spearman rank correlation and a two-sided p-value.
+
+    The right statistic for this experiment. Any *single* probe point carries a binomial
+    standard error of about 5 points at 100 items, so a dip of 9 points is barely one
+    standard error of a difference and cannot be claimed on its own. A monotone *trend*
+    across sixteen probes is a much stronger signal than any one of them, and rank
+    correlation tests exactly that without assuming the curve is a straight line.
+
+    So the reportable claim is not "accuracy dipped to 38%" — it is "this phenomenon's
+    accuracy fails to rise with training while every other phenomenon's does", which is a
+    statement about sixteen paired observations rather than one.
+    """
+    n = len(xs)
+    if n < 3:
+        return (float("nan"), float("nan"))
+
+    def rank(v: list[float]) -> list[float]:
+        order = sorted(range(n), key=lambda i: v[i])
+        r = [0.0] * n
+        i = 0
+        while i < n:
+            j = i
+            while j + 1 < n and v[order[j + 1]] == v[order[i]]:
+                j += 1
+            avg = (i + j) / 2 + 1
+            for k in range(i, j + 1):
+                r[order[k]] = avg
+            i = j + 1
+        return r
+
+    rx, ry = rank(xs), rank(ys)
+    mx, my = sum(rx) / n, sum(ry) / n
+    num = sum((a - mx) * (b - my) for a, b in zip(rx, ry, strict=True))
+    den = math.sqrt(sum((a - mx) ** 2 for a in rx) * sum((b - my) ** 2 for b in ry))
+    if den == 0:
+        return (0.0, 1.0)
+    rho = num / den
+    # t approximation, adequate for n >= 10.
+    if abs(rho) >= 1.0:
+        return (rho, 0.0)
+    tstat = rho * math.sqrt((n - 2) / (1 - rho**2))
+    p = 2.0 * _student_sf(abs(tstat), n - 2)
+    return (rho, min(1.0, max(0.0, p)))
+
+
+def _student_sf(t: float, df: int) -> float:
+    """Upper tail of Student's t, reusing the project's incomplete-beta implementation."""
+    from nanoscale.bench.multiseed import _betainc
+
+    return 0.5 * _betainc(df / 2.0, 0.5, df / (df + t * t))
 
 
 def plot(payload: dict[str, Any]) -> Path:
@@ -174,6 +252,34 @@ def plot(payload: dict[str, Any]) -> Path:
     return path
 
 
+def ensure_trends(payload: dict[str, Any], items: int) -> dict[str, Any]:
+    """Compute per-phenomenon trend statistics if the payload predates them.
+
+    Deriving these at render time rather than only at measure time is what lets the
+    statistics improve without paying for the training run again — the same reason the
+    multi-seed ablations store raw per-seed losses.
+    """
+    probes = payload["probes"]
+    names = [n for n in PHENOMENA if n in probes[0]["phenomena"]]
+    tokens_axis = [float(p["tokens"]) for p in probes]
+    trends: dict[str, Any] = {}
+    for name in names:
+        ys = [float(p["phenomena"][name]) for p in probes]
+        rho, pv = spearman(tokens_axis, ys)
+        lo, hi = wilson_interval(round(ys[-1] * items), items)
+        trends[name] = {
+            "spearman_rho": round(rho, 4),
+            "p_value": round(pv, 5),
+            "first": ys[0],
+            "last": ys[-1],
+            "min": min(ys),
+            "max": max(ys),
+            "ci_halfwidth": round((hi - lo) / 2, 4),
+        }
+    payload["trends"] = trends
+    return payload
+
+
 def render(payload: dict[str, Any], figure: Path) -> str:
     """Write the markdown fragment."""
     probes = payload["probes"]
@@ -210,14 +316,20 @@ def render(payload: dict[str, Any], figure: Path) -> str:
         "",
         f"![emergence]({figure.name})",
         "",
-        "| phenomenon | at 1st probe | final | reaches 60% | largest drop from peak |",
-        "|---|---|---|---|---|",
+        "| phenomenon | 1st probe | final | reaches 60% | max drop | Spearman ρ vs tokens | p |",
+        "|---|---|---|---|---|---|---|",
     ]
+    trends = payload.get("trends", {})
     for name in names:
+        tr = trends.get(name, {})
+        rho = tr.get("spearman_rho")
+        pv = tr.get("p_value")
         lines.append(
             f"| {name} | {first['phenomena'][name] * 100:.0f}% | "
             f"**{last['phenomena'][name] * 100:.0f}%** | {crossed(name)} | "
-            f"{peak_drop(name) * 100:.0f} pts |"
+            f"{peak_drop(name) * 100:.0f} pts | "
+            f"{'—' if rho is None else f'{rho:+.2f}'} | "
+            f"{'—' if pv is None else f'{pv:.4f}'} |"
         )
 
     lines += [
@@ -232,6 +344,13 @@ def render(payload: dict[str, Any], figure: Path) -> str:
         "distribution and costs accuracy on the probe — which is a statement about the "
         "data, not about capacity. A capability that never moves is a statement about "
         "capacity or about the probe.",
+        "",
+        "**Read the Spearman column, not the individual dips.** With "
+        f"{payload['items_per_phenomenon']} items per probe the binomial standard error is "
+        "about 5 points, so any single point moving by 9 points is barely one standard "
+        "error of a difference and cannot carry a claim. The rank correlation between "
+        "accuracy and training tokens uses all "
+        f"{len(payload['probes'])} probes at once and is the statistic that can.",
         "",
         "The ordering itself is the other result: phenomena learnable from local "
         "co-occurrence should saturate early and cheaply, while anything requiring "
@@ -264,6 +383,9 @@ def main() -> int:
     else:
         payload = measure(args)
         json_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    payload = ensure_trends(payload, payload.get("items_per_phenomenon", args.pairs))
+    json_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
     figure = plot(payload)
     md = RESULTS / "emergence.md"

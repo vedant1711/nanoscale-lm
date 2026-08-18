@@ -363,7 +363,8 @@ hr.soft { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
     <ol>
       <li><a href="#evaluation"><span class="n">—</span><span>How it is measured</span></a></li>
       <li><a href="#results"><span class="n">—</span><span>All results</span></a></li>
-      <li><a href="#stats"><span class="n">—</span><span>Ablations, with statistics</span></a></li>
+      <li><a href="#stats"><span class="n">&#8721;</span><span>Ablations, with statistics</span></a></li>
+      <li><a href="#emergence"><span class="n">&#8599;</span><span>When capabilities appear</span></a></li>
       <li><a href="#negative"><span class="n">—</span><span>What went wrong</span></a></li>
       <li><a href="#decisions"><span class="n">—</span><span>Design decisions</span></a></li>
       <li><a href="#limits"><span class="n">—</span><span>Limits &amp; scale-up</span></a></li>
@@ -3541,6 +3542,168 @@ bad:   The boy near the cats run quickly.
     </p>
   </div>
 </section>
+<section id="emergence">
+  <div class="sec-head">
+    <span class="sec-n">&#8599;</span>
+    <div>
+      <h2>When each capability appears</h2>
+      <p class="deck">A single end-of-training score cannot tell <em>never learned</em> from
+      <em>learned and then unlearned</em>. Probing sixteen times during one run can.</p>
+    </div>
+  </div>
+
+  <p>
+    The evaluation reports one number per phenomenon at the end of training. That is a
+    photograph of a process, and the process is the more interesting object — especially
+    given the finished model sits at 94% on simple agreement and 44% on agreement across an
+    attractor. Was it ever better? Is 44% a floor, or a trajectory caught mid-climb?
+  </p>
+  <p>
+    So: one training run, the full 856-item suite evaluated every 250 steps, sixteen probes
+    spanning 23M tokens. The cost is one training run plus a few seconds per probe.
+  </p>
+
+  <figure>
+    <div class="fig-frame">
+<svg viewBox="0 0 690 400" role="img" aria-label="Seven of nine grammatical phenomena improve with training while negation stays exactly at chance and agreement-with-attractor trends slightly downward." style="width:100%;height:auto"><g font-family="ui-monospace, monospace" font-size="10" fill="currentColor"><line x1="56" y1="320.0" x2="558" y2="320.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="48" y="323.5" text-anchor="end" opacity=".6">25%</text>
+<line x1="56" y1="228.3" x2="558" y2="228.3" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="48" y="231.8" text-anchor="end" opacity=".6">50%</text>
+<line x1="56" y1="136.7" x2="558" y2="136.7" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="48" y="140.2" text-anchor="end" opacity=".6">75%</text>
+<line x1="56" y1="45.0" x2="558" y2="45.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="48" y="48.5" text-anchor="end" opacity=".6">100%</text>
+<line x1="56" y1="228.3" x2="558" y2="228.3" stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3" opacity=".55"/>
+<text x="62" y="222.3" font-size="9.5" opacity=".7">chance</text>
+<polyline points="87.4,228.3 118.8,136.7 150.1,124.4 181.5,100.0 212.9,75.6 244.2,51.1 275.6,75.6 307.0,75.6 338.4,93.9 369.8,45.0 401.1,75.6 432.5,57.2 463.9,45.0 495.2,45.0 526.6,45.0 558.0,45.0" fill="none" stroke="#12655F" stroke-width="1.6" opacity="0.85"/>
+<text x="566" y="48.5" font-size="9" fill="#12655F">reflexive</text>
+<text x="566" y="58.0" font-size="8" fill="#12655F" opacity=".7">ρ=+0.87 p=0.000</text>
+<polyline points="87.4,191.7 118.8,191.7 150.1,199.0 181.5,199.0 212.9,191.7 244.2,151.3 275.6,166.0 307.0,199.0 338.4,173.3 369.8,155.0 401.1,114.7 432.5,162.3 463.9,111.0 495.2,122.0 526.6,114.7 558.0,111.0" fill="none" stroke="#2C6A33" stroke-width="1.6" opacity="0.85"/>
+<text x="566" y="114.5" font-size="9" fill="#2C6A33">agreement_simple</text>
+<text x="566" y="124.0" font-size="8" fill="#2C6A33" opacity=".7">ρ=+0.82 p=0.000</text>
+<polyline points="87.4,217.3 118.8,107.3 150.1,158.7 181.5,78.0 212.9,78.0 244.2,74.3 275.6,45.0 307.0,59.7 338.4,48.7 369.8,52.3 401.1,48.7 432.5,52.3 463.9,45.0 495.2,70.7 526.6,45.0 558.0,59.7" fill="none" stroke="#3A6EA5" stroke-width="1.6" opacity="0.85"/>
+<text x="566" y="63.2" font-size="9" fill="#3A6EA5">pronoun_gender</text>
+<text x="566" y="72.7" font-size="8" fill="#3A6EA5" opacity=".7">ρ=+0.71 p=0.002</text>
+<polyline points="87.4,188.0 118.8,191.7 150.1,199.0 181.5,199.0 212.9,199.0 244.2,202.7 275.6,202.7 307.0,191.7 338.4,213.7 369.8,184.3 401.1,191.7 432.5,184.3 463.9,155.0 495.2,169.7 526.6,166.0 558.0,169.7" fill="none" stroke="#7A5EA8" stroke-width="1.6" opacity="0.85"/>
+<text x="566" y="173.2" font-size="9" fill="#7A5EA8">argument_structure</text>
+<text x="566" y="182.7" font-size="8" fill="#7A5EA8" opacity=".7">ρ=+0.64 p=0.008</text>
+<polyline points="87.4,246.7 118.8,239.3 150.1,162.3 181.5,195.3 212.9,107.3 244.2,173.3 275.6,114.7 307.0,129.3 338.4,129.3 369.8,96.3 401.1,114.7 432.5,129.3 463.9,136.7 495.2,147.7 526.6,147.7 558.0,118.3" fill="none" stroke="#B08A2E" stroke-width="1.6" opacity="0.85"/>
+<text x="566" y="121.8" font-size="9" fill="#B08A2E">entity_tracking</text>
+<text x="566" y="131.3" font-size="8" fill="#B08A2E" opacity=".7">ρ=+0.45 p=0.080</text>
+<polyline points="87.4,228.3 118.8,246.7 150.1,177.0 181.5,140.3 212.9,92.7 244.2,78.0 275.6,89.0 307.0,100.0 338.4,144.0 369.8,92.7 401.1,133.0 432.5,103.7 463.9,81.7 495.2,129.3 526.6,118.3 558.0,125.7" fill="none" stroke="#5A8F7B" stroke-width="1.6" opacity="0.85"/>
+<text x="566" y="129.2" font-size="9" fill="#5A8F7B">determiner_noun</text>
+<text x="566" y="138.7" font-size="8" fill="#5A8F7B" opacity=".7">ρ=+0.37 p=0.163</text>
+<polyline points="87.4,228.3 118.8,228.3 150.1,228.3 181.5,228.3 212.9,228.3 244.2,228.3 275.6,228.3 307.0,228.3 338.4,228.3 369.8,228.3 401.1,228.3 432.5,228.3 463.9,228.3 495.2,228.3 526.6,228.3 558.0,228.3" fill="none" stroke="#8F4715" stroke-width="2.4" stroke-dasharray="4 3" opacity="1"/>
+<text x="566" y="231.8" font-size="9" fill="#8F4715">negation</text>
+<text x="566" y="241.3" font-size="8" fill="#8F4715" opacity=".7">ρ=+0.00 p=1.000</text>
+<polyline points="87.4,45.0 118.8,56.0 150.1,48.7 181.5,48.7 212.9,45.0 244.2,59.7 275.6,56.0 307.0,45.0 338.4,45.0 369.8,45.0 401.1,45.0 432.5,45.0 463.9,48.7 495.2,48.7 526.6,52.3 558.0,52.3" fill="none" stroke="#8F4715" stroke-width="2.4" stroke-dasharray="4 3" opacity="1"/>
+<text x="566" y="55.8" font-size="9" fill="#8F4715">tense_consistency</text>
+<text x="566" y="65.3" font-size="8" fill="#8F4715" opacity=".7">ρ=-0.02 p=0.955</text>
+<polyline points="87.4,239.3 118.8,243.0 150.1,246.7 181.5,250.3 212.9,272.3 244.2,257.7 275.6,250.3 307.0,239.3 338.4,243.0 369.8,243.0 401.1,246.7 432.5,254.0 463.9,250.3 495.2,243.0 526.6,250.3 558.0,257.7" fill="none" stroke="#8F4715" stroke-width="2.4" stroke-dasharray="4 3" opacity="1"/>
+<text x="566" y="261.2" font-size="9" fill="#8F4715">agreement_attractor</text>
+<text x="566" y="270.7" font-size="8" fill="#8F4715" opacity=".7">ρ=-0.25 p=0.345</text>
+<text x="56.0" y="336" text-anchor="middle" opacity=".6">0M</text>
+<text x="181.5" y="336" text-anchor="middle" opacity=".6">6M</text>
+<text x="307.0" y="336" text-anchor="middle" opacity=".6">12M</text>
+<text x="432.5" y="336" text-anchor="middle" opacity=".6">18M</text>
+<text x="558.0" y="336" text-anchor="middle" opacity=".6">25M</text>
+<text x="307" y="354" text-anchor="middle" opacity=".6">training tokens</text>
+<text x="56" y="20" font-size="11" font-weight="600">Minimal-pair accuracy through one training run &#183; 12.8M params &#183; 16 probes</text>
+<text x="56" y="386" font-size="9.5" opacity=".7">dashed/amber: no positive trend with training. Validation loss over the same run: 3.106 &#8594; 1.774.</text></g></svg>
+    </div>
+    <figcaption>
+      <b>Seven of nine phenomena climb. Two never move.</b> Curves are ordered by their rank
+      correlation with training tokens; the two in amber are the ones with no positive
+      trend. Validation loss over the same run fell 3.106 &rarr; 1.774, so the model was
+      unambiguously learning <em>something</em> throughout.
+    </figcaption>
+  </figure>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Phenomenon</th><th class="num">First probe</th><th class="num">Final</th>
+                 <th class="num">Reaches 60%</th><th class="num">Spearman &rho;</th><th class="num">p</th></tr></thead>
+      <tbody>
+        <tr><td>reflexive</td><td class="num">50%</td><td class="num best">100%</td>
+            <td class="num">3.1M</td><td class="num best">+0.87</td><td class="num best">&lt;0.0001</td></tr>
+        <tr><td>agreement_simple</td><td class="num">60%</td><td class="num best">82%</td>
+            <td class="num">13.8M</td><td class="num best">+0.82</td><td class="num best">0.0001</td></tr>
+        <tr><td>pronoun_gender</td><td class="num">53%</td><td class="num best">96%</td>
+            <td class="num">3.1M</td><td class="num best">+0.71</td><td class="num best">0.0019</td></tr>
+        <tr><td>argument_structure</td><td class="num">61%</td><td class="num">66%</td>
+            <td class="num">15.4M</td><td class="num best">+0.64</td><td class="num best">0.0081</td></tr>
+        <tr><td>entity_tracking</td><td class="num">45%</td><td class="num">80%</td>
+            <td class="num">7.7M</td><td class="num">+0.45</td><td class="num">0.080</td></tr>
+        <tr><td>determiner_noun</td><td class="num">50%</td><td class="num">78%</td>
+            <td class="num">4.6M</td><td class="num">+0.37</td><td class="num">0.163</td></tr>
+        <tr><td>tense_consistency</td><td class="num">100%</td><td class="num">98%</td>
+            <td class="num">1.5M</td><td class="num">&minus;0.02</td><td class="num">0.955</td></tr>
+        <tr><td><b>negation</b></td><td class="num worse">50%</td><td class="num worse">50%</td>
+            <td class="num worse">never</td><td class="num worse">+0.00</td><td class="num worse">1.000</td></tr>
+        <tr><td><b>agreement_attractor</b></td><td class="num worse">47%</td><td class="num worse">42%</td>
+            <td class="num worse">never</td><td class="num worse">&minus;0.25</td><td class="num">0.345</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="win">
+    <span class="win-t">Three results the endpoint could not have shown</span>
+    <p>
+      <b>1. There is an emergence order, and it is not the order of apparent difficulty.</b>
+      Reflexive binding (<em>Tom washed himself</em>) and cross-sentence pronoun gender both
+      clear 60% at 3.1M tokens; simple subject&ndash;verb agreement takes 13.8M. Agreement
+      looks like the more elementary rule and is learned <em>later</em> — plausibly because
+      gendered names carry a strong lexical cue while agreement requires attending to a
+      noun's number.
+    </p>
+    <p>
+      <b>2. <code>negation</code> has a rank correlation of exactly +0.00 with p = 1.000.</b>
+      It starts at 50%, ends at 50%, and its largest excursion from its own peak is
+      <em>zero points</em>. Across sixteen probes and 23M tokens, while validation loss fell
+      by 43%, this capability did not budge by a single item. That is about as clean a
+      "the model has no representation of this" as a benchmark can produce.
+    </p>
+    <p style="margin-bottom:0">
+      <b>3. <code>agreement_attractor</code> is the only phenomenon that trends downward.</b>
+      Every other curve either rises or is already saturated; this one has &rho; = &minus;0.25.
+      Combined with simple agreement rising to 82% over the same run, the picture is of a
+      model getting steadily better at agreement <em>when nothing intervenes</em> and no
+      better — slightly worse — when something does.
+    </p>
+  </div>
+
+  <div class="caveat">
+    <span class="caveat-t">What these numbers will and will not support</span>
+    <p>
+      <b>The downward trend is not statistically significant</b> (p = 0.345), and I am not
+      claiming it is. With 100 items per phenomenon per probe the binomial standard error is
+      about 5 points, so the visible dip to 38% at 7.7M tokens is barely one standard error
+      of a difference and could be noise. Reporting that dip as "the model unlearns
+      agreement" would be exactly the kind of over-claim this project is built to avoid.
+    </p>
+    <p>
+      <b>What is solid</b> is the contrast, and it does not depend on any single probe: seven
+      phenomena show a positive correlation with training (four significantly), while these
+      two show none at all across sixteen paired observations. <code>negation</code>'s
+      &rho; = 0.00 with p = 1.000 is not a marginal call.
+    </p>
+    <p style="margin-bottom:0">
+      <b>The obvious next experiment</b> is cheap and would settle it: rerun at three seeds
+      with 400 items per phenomenon instead of 100. That halves the standard error and turns
+      "the only negative trend" into a testable claim about whether the recency heuristic is
+      actively strengthened. It is roughly two hours of laptop GPU.
+    </p>
+  </div>
+
+  <p>
+    This is the sharpest argument for the project's small scale being a feature rather than
+    an apology. The whole experiment — sixteen full benchmark evaluations interleaved with a
+    complete training run — took under two hours on a laptop. The same study on a model where
+    one training run costs thousands of GPU-hours is a research programme; here it is an
+    afternoon, and it can be re-run with a different architecture, optimizer or data mixture
+    by changing one config field.
+  </p>
+</section>
 <section id="usecase">
   <div class="sec-head">
     <span class="sec-n">&#9670;</span>
@@ -3984,6 +4147,19 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
       p=0.0002), while the mean-loss difference is not significant. Optimizer papers overwhelmingly
       report mean final loss; that this is the weaker signal, and stability the stronger one, is
       worth saying.
+    </li>
+    <li>
+      <b>The emergence trajectories.</b> Sixteen full benchmark evaluations interleaved with one
+      training run, showing an ordering that is not the order of apparent difficulty, and two
+      phenomena that never move at all &mdash; <code>negation</code> at &rho;&nbsp;=&nbsp;+0.00,
+      p&nbsp;=&nbsp;1.000. The methodological point is that this study costs two laptop-hours here
+      and is a research programme at frontier scale, which is the strongest version of the
+      "small scale is a feature" argument.
+    </li>
+    <li>
+      <b>The codec result.</b> 11.3&times; lossless compression against xz's 3.3&times; on
+      in-domain text, with the break-even economics worked out. This is the piece that makes the
+      whole thing an artifact someone could deploy rather than only read about.
     </li>
   </ul>
   <p>

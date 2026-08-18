@@ -136,3 +136,7 @@ clean:  ## Remove caches and build artifacts
 .PHONY: compress
 compress:  ## Neural compression + anomaly detection benchmark vs gzip/bzip2/xz
 	$(PY) scripts/compression_bench.py runs/micro/tinystories/final.pt
+
+.PHONY: emergence
+emergence:  ## Probe the minimal-pair suite through one training run
+	$(PY) scripts/emergence.py --steps 4000 --probe-every 250

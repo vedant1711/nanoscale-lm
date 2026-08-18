@@ -1,0 +1,382 @@
+{
+  "git_sha": "9a9d3cf",
+  "hardware": "mps:apple-silicon | macOS-15.6-arm64-arm-64bit",
+  "params": 12816384,
+  "steps": 4000,
+  "probe_every": 250,
+  "items_per_phenomenon": 100,
+  "tokens_per_step": 6144,
+  "probes": [
+    {
+      "step": 250,
+      "tokens": 1536000,
+      "val_loss": 3.10615,
+      "macro": 0.57333,
+      "phenomena": {
+        "agreement_simple": 0.6,
+        "determiner_noun": 0.5,
+        "reflexive": 0.5,
+        "argument_structure": 0.61,
+        "tense_consistency": 1.0,
+        "pronoun_gender": 0.53,
+        "negation": 0.5,
+        "agreement_attractor": 0.47,
+        "entity_tracking": 0.45
+      },
+      "elapsed_s": 191.5
+    },
+    {
+      "step": 500,
+      "tokens": 3072000,
+      "val_loss": 2.64382,
+      "macro": 0.62556,
+      "phenomena": {
+        "agreement_simple": 0.6,
+        "determiner_noun": 0.45,
+        "reflexive": 0.75,
+        "argument_structure": 0.6,
+        "tense_consistency": 0.97,
+        "pronoun_gender": 0.83,
+        "negation": 0.5,
+        "agreement_attractor": 0.46,
+        "entity_tracking": 0.47
+      },
+      "elapsed_s": 380.2
+    },
+    {
+      "step": 750,
+      "tokens": 4608000,
+      "val_loss": 2.44043,
+      "macro": 0.65481,
+      "phenomena": {
+        "agreement_simple": 0.58,
+        "determiner_noun": 0.64,
+        "reflexive": 0.78333,
+        "argument_structure": 0.58,
+        "tense_consistency": 0.99,
+        "pronoun_gender": 0.69,
+        "negation": 0.5,
+        "agreement_attractor": 0.45,
+        "entity_tracking": 0.68
+      },
+      "elapsed_s": 573.5
+    },
+    {
+      "step": 1000,
+      "tokens": 6144000,
+      "val_loss": 2.31162,
+      "macro": 0.68667,
+      "phenomena": {
+        "agreement_simple": 0.58,
+        "determiner_noun": 0.74,
+        "reflexive": 0.85,
+        "argument_structure": 0.58,
+        "tense_consistency": 0.99,
+        "pronoun_gender": 0.91,
+        "negation": 0.5,
+        "agreement_attractor": 0.44,
+        "entity_tracking": 0.59
+      },
+      "elapsed_s": 768.8
+    },
+    {
+      "step": 1250,
+      "tokens": 7680000,
+      "val_loss": 2.21755,
+      "macro": 0.73185,
+      "phenomena": {
+        "agreement_simple": 0.6,
+        "determiner_noun": 0.87,
+        "reflexive": 0.91667,
+        "argument_structure": 0.58,
+        "tense_consistency": 1.0,
+        "pronoun_gender": 0.91,
+        "negation": 0.5,
+        "agreement_attractor": 0.38,
+        "entity_tracking": 0.83
+      },
+      "elapsed_s": 968.5
+    },
+    {
+      "step": 1500,
+      "tokens": 9216000,
+      "val_loss": 2.14359,
+      "macro": 0.73593,
+      "phenomena": {
+        "agreement_simple": 0.71,
+        "determiner_noun": 0.91,
+        "reflexive": 0.98333,
+        "argument_structure": 0.57,
+        "tense_consistency": 0.96,
+        "pronoun_gender": 0.92,
+        "negation": 0.5,
+        "agreement_attractor": 0.42,
+        "entity_tracking": 0.65
+      },
+      "elapsed_s": 1169.1
+    },
+    {
+      "step": 1750,
+      "tokens": 10752000,
+      "val_loss": 2.0834,
+      "macro": 0.75074,
+      "phenomena": {
+        "agreement_simple": 0.67,
+        "determiner_noun": 0.88,
+        "reflexive": 0.91667,
+        "argument_structure": 0.57,
+        "tense_consistency": 0.97,
+        "pronoun_gender": 1.0,
+        "negation": 0.5,
+        "agreement_attractor": 0.44,
+        "entity_tracking": 0.81
+      },
+      "elapsed_s": 1373.7
+    },
+    {
+      "step": 2000,
+      "tokens": 12288000,
+      "val_loss": 2.03359,
+      "macro": 0.73852,
+      "phenomena": {
+        "agreement_simple": 0.58,
+        "determiner_noun": 0.85,
+        "reflexive": 0.91667,
+        "argument_structure": 0.6,
+        "tense_consistency": 1.0,
+        "pronoun_gender": 0.96,
+        "negation": 0.5,
+        "agreement_attractor": 0.47,
+        "entity_tracking": 0.77
+      },
+      "elapsed_s": 1566.2
+    },
+    {
+      "step": 2250,
+      "tokens": 13824000,
+      "val_loss": 1.98254,
+      "macro": 0.72296,
+      "phenomena": {
+        "agreement_simple": 0.65,
+        "determiner_noun": 0.73,
+        "reflexive": 0.86667,
+        "argument_structure": 0.54,
+        "tense_consistency": 1.0,
+        "pronoun_gender": 0.99,
+        "negation": 0.5,
+        "agreement_attractor": 0.46,
+        "entity_tracking": 0.77
+      },
+      "elapsed_s": 1776.7
+    },
+    {
+      "step": 2500,
+      "tokens": 15360000,
+      "val_loss": 1.938,
+      "macro": 0.77667,
+      "phenomena": {
+        "agreement_simple": 0.7,
+        "determiner_noun": 0.87,
+        "reflexive": 1.0,
+        "argument_structure": 0.62,
+        "tense_consistency": 1.0,
+        "pronoun_gender": 0.98,
+        "negation": 0.5,
+        "agreement_attractor": 0.46,
+        "entity_tracking": 0.86
+      },
+      "elapsed_s": 1995.8
+    },
+    {
+      "step": 2750,
+      "tokens": 16896000,
+      "val_loss": 1.89914,
+      "macro": 0.75963,
+      "phenomena": {
+        "agreement_simple": 0.81,
+        "determiner_noun": 0.76,
+        "reflexive": 0.91667,
+        "argument_structure": 0.6,
+        "tense_consistency": 1.0,
+        "pronoun_gender": 0.99,
+        "negation": 0.5,
+        "agreement_attractor": 0.45,
+        "entity_tracking": 0.81
+      },
+      "elapsed_s": 2185.7
+    },
+    {
+      "step": 3000,
+      "tokens": 18432000,
+      "val_loss": 1.86473,
+      "macro": 0.75407,
+      "phenomena": {
+        "agreement_simple": 0.68,
+        "determiner_noun": 0.84,
+        "reflexive": 0.96667,
+        "argument_structure": 0.62,
+        "tense_consistency": 1.0,
+        "pronoun_gender": 0.98,
+        "negation": 0.5,
+        "agreement_attractor": 0.43,
+        "entity_tracking": 0.77
+      },
+      "elapsed_s": 2372.0
+    },
+    {
+      "step": 3250,
+      "tokens": 19968000,
+      "val_loss": 1.83168,
+      "macro": 0.78889,
+      "phenomena": {
+        "agreement_simple": 0.82,
+        "determiner_noun": 0.9,
+        "reflexive": 1.0,
+        "argument_structure": 0.7,
+        "tense_consistency": 0.99,
+        "pronoun_gender": 1.0,
+        "negation": 0.5,
+        "agreement_attractor": 0.44,
+        "entity_tracking": 0.75
+      },
+      "elapsed_s": 2572.0
+    },
+    {
+      "step": 3500,
+      "tokens": 21504000,
+      "val_loss": 1.80786,
+      "macro": 0.75778,
+      "phenomena": {
+        "agreement_simple": 0.79,
+        "determiner_noun": 0.77,
+        "reflexive": 1.0,
+        "argument_structure": 0.66,
+        "tense_consistency": 0.99,
+        "pronoun_gender": 0.93,
+        "negation": 0.5,
+        "agreement_attractor": 0.46,
+        "entity_tracking": 0.72
+      },
+      "elapsed_s": 2770.4
+    },
+    {
+      "step": 3750,
+      "tokens": 23040000,
+      "val_loss": 1.78614,
+      "macro": 0.76889,
+      "phenomena": {
+        "agreement_simple": 0.81,
+        "determiner_noun": 0.8,
+        "reflexive": 1.0,
+        "argument_structure": 0.67,
+        "tense_consistency": 0.98,
+        "pronoun_gender": 1.0,
+        "negation": 0.5,
+        "agreement_attractor": 0.44,
+        "entity_tracking": 0.72
+      },
+      "elapsed_s": 3021.4
+    },
+    {
+      "step": 4000,
+      "tokens": 24576000,
+      "val_loss": 1.77391,
+      "macro": 0.76889,
+      "phenomena": {
+        "agreement_simple": 0.82,
+        "determiner_noun": 0.78,
+        "reflexive": 1.0,
+        "argument_structure": 0.66,
+        "tense_consistency": 0.98,
+        "pronoun_gender": 0.96,
+        "negation": 0.5,
+        "agreement_attractor": 0.42,
+        "entity_tracking": 0.8
+      },
+      "elapsed_s": 3280.4
+    }
+  ],
+  "trends": {
+    "agreement_simple": {
+      "spearman_rho": 0.8163,
+      "p_value": 0.00011,
+      "first": 0.6,
+      "last": 0.82,
+      "min": 0.58,
+      "max": 0.82,
+      "ci_halfwidth": 0.0748
+    },
+    "determiner_noun": {
+      "spearman_rho": 0.3664,
+      "p_value": 0.16271,
+      "first": 0.5,
+      "last": 0.78,
+      "min": 0.45,
+      "max": 0.91,
+      "ci_halfwidth": 0.0803
+    },
+    "reflexive": {
+      "spearman_rho": 0.8709,
+      "p_value": 1e-05,
+      "first": 0.5,
+      "last": 1.0,
+      "min": 0.5,
+      "max": 1.0,
+      "ci_halfwidth": 0.0185
+    },
+    "argument_structure": {
+      "spearman_rho": 0.636,
+      "p_value": 0.00808,
+      "first": 0.61,
+      "last": 0.66,
+      "min": 0.54,
+      "max": 0.7,
+      "ci_halfwidth": 0.0913
+    },
+    "tense_consistency": {
+      "spearman_rho": -0.0155,
+      "p_value": 0.95456,
+      "first": 1.0,
+      "last": 0.98,
+      "min": 0.96,
+      "max": 1.0,
+      "ci_halfwidth": 0.0323
+    },
+    "pronoun_gender": {
+      "spearman_rho": 0.7145,
+      "p_value": 0.00187,
+      "first": 0.53,
+      "last": 0.96,
+      "min": 0.53,
+      "max": 1.0,
+      "ci_halfwidth": 0.0414
+    },
+    "negation": {
+      "spearman_rho": 0.0,
+      "p_value": 1.0,
+      "first": 0.5,
+      "last": 0.5,
+      "min": 0.5,
+      "max": 0.5,
+      "ci_halfwidth": 0.0962
+    },
+    "agreement_attractor": {
+      "spearman_rho": -0.2528,
+      "p_value": 0.34476,
+      "first": 0.47,
+      "last": 0.42,
+      "min": 0.38,
+      "max": 0.47,
+      "ci_halfwidth": 0.095
+    },
+    "entity_tracking": {
+      "spearman_rho": 0.4505,
+      "p_value": 0.0799,
+      "first": 0.45,
+      "last": 0.8,
+      "min": 0.45,
+      "max": 0.86,
+      "ci_halfwidth": 0.0777
+    }
+  }
+}
