@@ -2,7 +2,7 @@
 
 The load-bearing claims:
 
-* Quantize→dequantize error is **bounded by the quantization step** — the property that
+* Quantize→dequantize error is **bounded by the quantization step**: the property that
   makes every downstream bound meaningful.
 * **GPTQ beats RTN at every bit-width**, and its advantage grows as bits shrink.
 * GPTQ's two mechanisms are separated: error compensation (which helps even with white
@@ -240,15 +240,15 @@ def test_activation_ordering_helps_more_when_channels_are_uneven() -> None:
 
     GPTQ's advantage over RTN has two independent sources, and conflating them is easy:
 
-    1. **Error compensation** — pushing each column's rounding error onto the columns
+    1. **Error compensation**: pushing each column's rounding error onto the columns
        not yet quantized. This is error feedback and helps even when the Hessian is
        featureless, which is why it shows up with white activations too.
-    2. **Activation ordering** — quantizing salient columns first, while the most budget
+    2. **Activation ordering**: quantizing salient columns first, while the most budget
        remains to absorb their error. This is the part that depends on the Hessian
        carrying a ranking.
 
     A note on how the test is built: the channel scales are **shuffled** before use. An
-    earlier version used ``logspace`` directly, which is already sorted by salience — so
+    earlier version used ``logspace`` directly, which is already sorted by salience, so
     ``argsort(diag(H))`` was the identity permutation and ``act_order`` measured as
     having exactly zero effect. The shuffle is what makes this test non-vacuous.
     """

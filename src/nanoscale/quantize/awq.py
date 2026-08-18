@@ -5,8 +5,8 @@ Reference: Lin et al., *AWQ: Activation-aware Weight Quantization* (arXiv:2306.0
 The observation
 ---------------
 Not all weights matter equally, and which ones matter is determined by the
-**activations**, not by the weights. Keeping just ~1% of weight channels — those
-multiplying high-magnitude activation channels — in fp16 recovers most of the quality
+**activations**, not by the weights. Keeping just ~1% of weight channels; those
+multiplying high-magnitude activation channels, in fp16 recovers most of the quality
 lost to 4-bit quantization. But mixed-precision storage is awkward on real hardware.
 
 The trick
@@ -19,7 +19,7 @@ layer, scaling input channel ``j`` by ``s_j`` and the corresponding weight colum
 
 Now quantize ``W ⊙ s``. A salient channel with a large ``s_j`` has its weights scaled
 *up* before quantization, so relative to its group's scale it lands on a coarser part of
-the grid — meaning its rounding error, once divided back by ``s_j``, is smaller. Salient
+the grid, meaning its rounding error, once divided back by ``s_j``, is smaller. Salient
 channels are protected, everything stays uniformly quantized, and inference needs no
 mixed-precision kernel.
 
@@ -28,7 +28,7 @@ Choosing the scales
 AWQ parameterises ``s = mean(|X_j|)^α`` and grid-searches ``α ∈ [0, 1]``, picking the
 value that minimises the actual output error ``‖WX − Ŵ X‖``. ``α = 0`` recovers plain
 RTN; ``α = 1`` scales fully by activation magnitude. The search is over a single scalar
-per layer, so it is cheap — and searching on the true objective rather than a proxy is
+per layer, so it is cheap, and searching on the true objective rather than a proxy is
 what makes it robust.
 """
 

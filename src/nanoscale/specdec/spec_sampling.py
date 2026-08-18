@@ -4,11 +4,11 @@ The loop
 --------
 Per round:
 
-1. The **draft** model autoregressively proposes ``γ`` tokens — ``γ`` sequential forward
+1. The **draft** model autoregressively proposes ``γ`` tokens, ``γ`` sequential forward
    passes, but of a model several times smaller.
 2. The **target** model scores all ``γ`` proposals **in one forward pass**. This is the
    whole trick: verifying ``γ`` tokens costs the target one pass, because attention over
-   an already-known sequence is parallel across positions — the same reason training is
+   an already-known sequence is parallel across positions, the same reason training is
    parallel and decoding is not.
 3. The acceptance rule (:mod:`nanoscale.specdec.accept_rule`) walks the proposals left to
    right, accepting each with probability ``min(1, p/q)`` and stopping at the first
@@ -24,7 +24,7 @@ token except the last. A round then feeds ``[last_token] + proposals`` to the ta
 one pass produces the distribution for proposal 0 (conditioned on the prefix), for each
 subsequent proposal, *and* for the bonus position. Getting this off by one is the classic
 way to build a speculative decoder that runs, produces fluent text, and silently samples
-from the wrong distribution — which is why the distributional-equivalence test in
+from the wrong distribution, which is why the distributional-equivalence test in
 ``tests/unit/test_specdec.py`` is the most important test in the repository.
 
 After the accept/reject walk, both caches are truncated back to ``new_len - 1``,
@@ -37,7 +37,7 @@ one token. Verifying ``γ`` tokens reads the weights once instead of ``γ`` time
 speedup is bounded above by the mean accepted length. The draft model's cost is what you
 pay for it, which is why the draft must be several times smaller.
 
-**Losslessness.** The output distribution is exactly the target's — proven in
+**Losslessness.** The output distribution is exactly the target's: proven in
 :mod:`nanoscale.specdec.accept_rule`, verified statistically over 100k samples in the
 tests. This is not an approximation with a quality knob.
 """
@@ -110,7 +110,7 @@ class SpeculativeResult:
 
     @property
     def mean_accepted_length(self) -> float:
-        """Tokens emitted per target forward pass — the theoretical speedup bound."""
+        """Tokens emitted per target forward pass: the theoretical speedup bound."""
         return self.generated / max(1, self.target_calls)
 
     @property
@@ -172,7 +172,7 @@ class SpeculativeSampler:
         """Generate speculatively; returns the tokens and the acceptance statistics.
 
         Only batch size 1 is supported. Batched speculation needs per-row bookkeeping of
-        divergent accepted lengths and a ragged cache — a serving-engine concern rather
+        divergent accepted lengths and a ragged cache, a serving-engine concern rather
         than an algorithmic one. The correctness argument is unchanged by it.
         """
         if input_ids.shape[0] != 1:

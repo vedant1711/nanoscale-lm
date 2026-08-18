@@ -4,7 +4,7 @@ Measures acceptance length, target-forward-pass count and wall-clock throughput 
 
 * autoregressive (the baseline),
 * draft–target speculation at several ``γ``,
-* speculation over a **GPTQ-quantized** target — the two levers composed.
+* speculation over a **GPTQ-quantized** target: the two levers composed.
 
 Produces ``results/speculative/{bench.json, speculative.png, speculative.md}``.
 
@@ -252,7 +252,7 @@ def write_report(payload: dict[str, object], figure: Path) -> Path:
     for row in rows:
         speedup = float(row["tokens_per_s"]) / max(1e-9, float(base["tokens_per_s"]))
         acceptance = (
-            f"{float(row['acceptance_rate']):.3f}" if row["acceptance_rate"] is not None else "—"
+            f"{float(row['acceptance_rate']):.3f}" if row["acceptance_rate"] is not None else ", "
         )
         lines.append(
             f"| {row['arm']} | {row['target_calls']} | {row['mean_accepted_length']:.2f} | "
@@ -274,7 +274,7 @@ def write_report(payload: dict[str, object], figure: Path) -> Path:
         "dispatch overhead dominate and the draft's `γ` sequential steps can cost more "
         "than the target passes they save. The mechanism is real and the target-pass "
         "reduction is real; the wall-clock win needs a model where weight loading, not "
-        "interpreter overhead, is the bottleneck — which is exactly the regime the method "
+        "interpreter overhead, is the bottleneck, which is exactly the regime the method "
         "was designed for and not the regime a laptop CPU running a 5M-parameter model is "
         "in. Reporting the speedup here without that caveat would be misleading.",
         "",
@@ -303,7 +303,7 @@ def write_report(payload: dict[str, object], figure: Path) -> Path:
         "One arm deserves a footnote: `autoregressive + GPTQ-4bit` is *faster* than "
         "unquantized autoregressive here even though the quantized weights are simulated "
         "in fp32 and no int4 kernel is involved. That is measurement noise on a shared "
-        "laptop, not a quantization speedup — there is no mechanism by which it could be "
+        "laptop, not a quantization speedup; there is no mechanism by which it could be "
         "one, and the honest reading is that differences of this size in the tokens/s "
         "column should not be interpreted at all.",
         "",

@@ -1,7 +1,7 @@
 """Checkpoint save and resume (spec B4).
 
 A checkpoint that only stores weights is not a resume point. To continue a run
-*identically* — which spec Phase 4 requires and a test enforces — you need:
+*identically*, which spec Phase 4 requires and a test enforces; you need:
 
 * model weights,
 * **optimizer state** (Adam's moments, Muon's momentum buffers): dropping these
@@ -10,7 +10,7 @@ A checkpoint that only stores weights is not a resume point. To continue a run
 * the **RNG states**, so dropout and any sampling continue the same stream.
 
 The data order does not need storing because it is a pure function of
-``(seed, epoch)`` — see :class:`~nanoscale.train.data.TokenBatcher`.
+``(seed, epoch)``: see :class:`~nanoscale.train.data.TokenBatcher`.
 """
 
 from __future__ import annotations
@@ -144,7 +144,7 @@ def load_checkpoint(
     """Load a checkpoint, optionally restoring model/optimizer/RNG in place.
 
     Returns:
-        ``(state, payload)`` — the training state and the raw checkpoint dict, so
+        ``(state, payload)``: the training state and the raw checkpoint dict, so
         callers can read ``config`` or ``extra`` without a second load.
 
     Raises:

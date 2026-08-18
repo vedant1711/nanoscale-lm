@@ -26,7 +26,7 @@ Sources
 -------
 ``toy`` (the offline synthetic corpus), ``textfile`` (local ``.txt``/``.jsonl``) and
 ``hf`` (streaming Hugging Face datasets, for the ``micro``/``small`` tiers). The first
-two are materialised in memory as a single token array — at ``nano`` scale that is a
+two are materialised in memory as a single token array, at ``nano`` scale that is a
 few megabytes and makes the whole pipeline trivially reproducible.
 """
 
@@ -117,8 +117,8 @@ def iter_text_documents(paths: Iterable[str | Path], *, separator: str = "") -> 
             boundaries with a string like ``<|endoftext|>``; without splitting, that
             string is tokenized as ordinary characters and the model learns to *write the
             marker* instead of learning the tokenizer's EOS. That is exactly what happened
-            to the first TinyStories run here — generations contained a literal
-            ``<|endoftext|>`` — so the split is a correctness fix, not a convenience.
+            to the first TinyStories run here, generations contained a literal
+            ``<|endoftext|>``: so the split is a correctness fix, not a convenience.
     """
     for raw in paths:
         path = Path(raw)
@@ -265,7 +265,7 @@ class TokenBatcher:
 
     The corpus is cut into non-overlapping windows of ``seq_len + 1``. Each epoch
     permutes the windows with a seed derived from ``(seed, "data", epoch)``, so the
-    ``n``-th batch of the ``k``-th epoch is a pure function of the global seed — which
+    ``n``-th batch of the ``k``-th epoch is a pure function of the global seed, which
     is what makes checkpoint resume bit-reproducible.
 
     Args:
@@ -339,8 +339,8 @@ class TokenBatcher:
         The offset is what makes checkpoint resume exact. Position in the data is a pure
         function of how many batches have been consumed: epoch ``n // len(self)`` selects
         the permutation, and ``n % len(self)`` selects the position within it. Resuming
-        by only restoring the *epoch* — and thus restarting that epoch from its first
-        batch — silently re-trains on data the run already saw, and shows up as a
+        by only restoring the *epoch*, and thus restarting that epoch from its first
+        batch, silently re-trains on data the run already saw, and shows up as a
         resumed run that diverges from an uninterrupted one. That was a real bug here,
         and ``tests/dynamics`` now pins it.
         """
@@ -361,7 +361,7 @@ class TokenBatcher:
         return self.stream(self.epoch * max(1, len(self)))
 
     def take(self, n: int) -> list[Batch]:
-        """Materialise the first ``n`` batches — used by evaluation and by tests."""
+        """Materialise the first ``n`` batches, used by evaluation and by tests."""
         out: list[Batch] = []
         for batch in self.epoch_batches():
             out.append(batch)

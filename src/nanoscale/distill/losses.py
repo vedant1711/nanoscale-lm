@@ -2,7 +2,7 @@ r"""Distillation objectives (spec B6).
 
 Three objectives, and the reason they differ is a single asymmetry in the KL divergence.
 
-Forward KL — mode-covering
+Forward KL: mode-covering
 ---------------------------
 Hinton et al., *Distilling the Knowledge in a Neural Network* (arXiv:1503.02531):
 
@@ -12,7 +12,7 @@ Hinton et al., *Distilling the Knowledge in a Neural Network* (arXiv:1503.02531)
               + (1-\alpha)\,\tau^2\,KL(p_\tau \,\|\, q_{\theta,\tau})
 
 Minimising ``KL(p ‖ q)`` penalises ``q`` for putting *low* probability where ``p`` has
-mass — the integrand is ``p log(p/q)``, which blows up wherever ``p > 0`` and ``q → 0``.
+mass; the integrand is ``p log(p/q)``, which blows up wherever ``p > 0`` and ``q → 0``.
 So the student is forced to **cover every mode** of the teacher, including the long tail
 the teacher itself is unsure about. A student with less capacity than the teacher cannot
 cover that tail without smearing probability across it, and the result is a model that
@@ -21,19 +21,19 @@ generates plausible-looking but incoherent text: it has learned the teacher's
 
 The ``τ²`` factor is not cosmetic. Dividing logits by ``τ`` scales the KD gradients by
 ``1/τ²``, so multiplying by ``τ²`` keeps the two loss terms' gradient magnitudes
-comparable as ``τ`` changes — otherwise tuning ``τ`` silently retunes ``α`` as well.
+comparable as ``τ`` changes: otherwise tuning ``τ`` silently retunes ``α`` as well.
 
-Reverse KL — mode-seeking
+Reverse KL: mode-seeking
 --------------------------
 Gu et al., *MiniLLM* (arXiv:2306.08543) minimise ``KL(q_θ ‖ p)`` instead. The integrand
-is ``q log(q/p)``, which is only large where ``q`` has mass — so the student is penalised
+is ``q log(q/p)``, which is only large where ``q`` has mass, so the student is penalised
 for putting probability where the *teacher* does not, and is free to ignore the
 teacher's tail entirely. It concentrates on the modes it can actually represent. For a
 student strictly smaller than its teacher, that is the right trade.
 
 The catch is that the expectation is under ``q_θ``, which appears in the sampling
 distribution, so it cannot be computed by evaluating a fixed batch. It requires
-**on-policy** rollouts and a policy-gradient estimator — which is what makes this the
+**on-policy** rollouts and a policy-gradient estimator, which is what makes this the
 expensive-but-better option, and what :func:`reverse_kl_policy_gradient` implements.
 
 Sequence KD
@@ -127,7 +127,7 @@ def forward_kl_loss(
 ) -> DistillLossOutput:
     r"""Hinton-style token-level knowledge distillation.
 
-    ``L = α·H(y, q) + (1-α)·τ²·KL(p_τ ‖ q_τ)`` — hard cross-entropy against the true
+    ``L = α·H(y, q) + (1-α)·τ²·KL(p_τ ‖ q_τ)``: hard cross-entropy against the true
     next token, blended with the softened teacher distribution.
     """
     masked_targets = torch.where(mask.bool(), targets, torch.full_like(targets, ignore_index))
@@ -151,7 +151,7 @@ def sequence_kd_loss(
 ) -> DistillLossOutput:
     """SeqKD: plain MLE on sequences sampled from the teacher (Kim & Rush).
 
-    No teacher forward pass is needed here — the teacher's contribution is entirely in
+    No teacher forward pass is needed here; the teacher's contribution is entirely in
     having produced ``teacher_samples``, which is why this is the cheapest objective to
     train once the samples exist.
     """
@@ -199,8 +199,8 @@ def reverse_kl_policy_gradient(
       removes the length shortcut.
 
     Args:
-        student_logits: ``(B, T, V)`` — differentiable.
-        teacher_logits: ``(B, T, V)`` — detached.
+        student_logits: ``(B, T, V)``: differentiable.
+        teacher_logits: ``(B, T, V)``: detached.
         sampled: ``(B, T)`` tokens sampled from the student.
         mask: ``(B, T)`` 1 on generated positions.
         baseline: Scalar baseline subtracted from the reward-to-go.

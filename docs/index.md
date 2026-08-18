@@ -4,8 +4,8 @@
 > can afford.
 
 A fully-typed PyTorch implementation of a modern small decoder-only language model **and**
-the complete efficiency stack needed to serve it — distillation, quantization and
-speculative decoding — in one project that runs end to end on free hardware.
+the complete efficiency stack needed to serve it: distillation, quantization and
+speculative decoding, in one project that runs end to end on free hardware.
 
 Every core algorithm is implemented in this repository: the BPE merges, attention with
 GQA/RoPE/QK-norm, the Muon optimizer's Newton–Schulz orthogonalization, the DPO and SimPO
@@ -26,27 +26,27 @@ predicts.
 
 ## The two arcs
 
-**Arc 1 — build the model.** Byte-level BPE → a decoder-only transformer (RoPE, RMSNorm,
+**Arc 1: build the model.** Byte-level BPE → a decoder-only transformer (RoPE, RMSNorm,
 SwiGLU, GQA, QK-norm, KV cache) → Muon + AdamW → pretraining → SFT, DPO, SimPO, and an
 optional GRPO-RLVR track.
 
-**Arc 2 — serve it cheaply.** That exact checkpoint compressed three ways: knowledge
+**Arc 2: serve it cheaply.** That exact checkpoint compressed three ways: knowledge
 distillation (17.7× smaller), GPTQ 4-bit quantization (4.3× smaller weights), and
-speculative decoding (3× fewer target forward passes) — with the levers composed.
+speculative decoding (3× fewer target forward passes): with the levers composed.
 
 ## Start here
 
-- **[▶ Live demo](demo.html)** — generate text, step through the model's next-token
+- **[▶ Live demo](demo.html)**: generate text, step through the model's next-token
   distribution, watch it compress and flag anomalies. Real outputs, no install.
-- **[📖 Full documentation, one page](explainer.html)** — every algorithm, diagram, design
+- **[📖 Full documentation, one page](explainer.html)**: every algorithm, diagram, design
   decision and measurement, written for anyone who knows Transformers and nothing past them.
-- **[Quickstart](quickstart.md)** — from a clone to generated text in under ten minutes,
+- **[Quickstart](quickstart.md)**: from a clone to generated text in under ten minutes,
   no GPU.
-- **[Architecture](architecture.md)** — what is built and why each choice was made.
-- **[Methodology](methodology.md)** — every algorithm with its formula, its citation, and
+- **[Architecture](architecture.md)**: what is built and why each choice was made.
+- **[Methodology](methodology.md)**: every algorithm with its formula, its citation, and
   the test that verifies it.
-- **[Results](results.md)** — every measurement, generated from committed artifacts.
-- **[Limitations](limitations.md)** — read this before quoting any number from here.
+- **[Results](results.md)**: every measurement, generated from committed artifacts.
+- **[Limitations](limitations.md)**: read this before quoting any number from here.
 
 ## Honesty policy
 
@@ -55,7 +55,7 @@ reading:
 
 1. **Every number is produced by a committed script**, stamped with the git SHA and
    hardware that produced it, and regenerable in replay mode. The docs cannot drift from
-   the artifacts — `docs/results.md` is generated from them and CI fails if it is stale.
+   the artifacts; `docs/results.md` is generated from them and CI fails if it is stale.
 2. **Negative results are reported.** GPTQ does not beat RTN at 4 bits here. QK-norm shows
    no measurable difference in final loss. Speculative decoding is *slower* in wall-clock
    on this CPU. Muon loses to AdamW on a convex problem. All of that is in the docs

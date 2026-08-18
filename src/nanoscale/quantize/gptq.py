@@ -36,7 +36,7 @@ Implementation details that matter
 -----------------------------------
 * **Cholesky, not an explicit inverse.** The update needs rows of ``H⁻¹`` in a fixed
   order, and the Cholesky factor of ``H⁻¹`` supplies exactly those while being
-  numerically stable — a direct inverse of a near-singular Hessian is not.
+  numerically stable; a direct inverse of a near-singular Hessian is not.
 * **Dampening.** Calibration Hessians are routinely rank-deficient (fewer samples than
   channels, dead channels). Adding ``λ·mean(diag(H))`` to the diagonal is what makes the
   factorisation exist at all.
@@ -68,7 +68,7 @@ class HessianAccumulator:
     """Accumulates ``H = 2 XᵀX`` over calibration batches for one linear layer.
 
     ``X`` here is the layer's *input* with shape ``(n_tokens, in_features)``, so ``H`` is
-    ``(in_features, in_features)`` and is shared across all output rows — every row of
+    ``(in_features, in_features)`` and is shared across all output rows: every row of
     the weight matrix multiplies the same inputs.
 
     The running mean form (rather than a plain sum) keeps the magnitude independent of

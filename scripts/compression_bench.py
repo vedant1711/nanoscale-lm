@@ -8,14 +8,14 @@ probabilities and the model's cross-entropy stops being a metric and becomes a f
 The same per-token probabilities, un-summed, are a surprisal signal: text the model finds
 unlikely is text unlike its training distribution.
 
-So one 40M-parameter model that runs on a CPU gives you two things at once — a compressor
+So one 40M-parameter model that runs on a CPU gives you two things at once; a compressor
 that beats `xz` by a wide margin on its own domain, and an unsupervised anomaly detector
 that needs no labels and no rules. That combination is genuinely useful for
 high-volume, narrow-domain text: application logs, telemetry, sensor records, EDI and
 claims traffic, chat transcripts, one team's code in one internal dialect.
 
 **And the general-purpose model cannot do this job.** Not because it is worse at
-prediction — it is better, in general — but because compression requires running the model
+prediction; it is better, in general, but because compression requires running the model
 over every byte, in lockstep, at both ends. A 7B model at ~30 tokens/second per stream and
 14 GB of weights is not a codec. A 40M model at 200 tokens/second on a laptop core, whose
 weights fit in a 40 MB int8 blob you ship next to the archive, is.
@@ -235,7 +235,7 @@ def render(p: dict[str, Any]) -> str:
         "",
         f"At the largest size tested, NanoScale-LM reaches "
         f"**{big['nanoscale']['bits_per_byte']:.4f} bits/byte** against the best classical "
-        f"result of {best:.4f} — a **{best / big['nanoscale']['bits_per_byte']:.1f}x** "
+        f"result of {best:.4f}, a **{best / big['nanoscale']['bits_per_byte']:.1f}x** "
         f"improvement in compressed size. Coder overhead against the model's own "
         f"cross-entropy is {big['nanoscale']['coder_overhead'] * 100:.2f}%, so almost all "
         f"of the theoretical rate is actually realised.",
@@ -263,7 +263,7 @@ def render(p: dict[str, Any]) -> str:
         f"Each byte of input costs {eco['nanoscale_bpb']:.4f} bits with the model against "
         f"{eco['best_classical_bpb']:.4f} with the best classical coder, saving "
         f"{eco['saved_bytes_per_byte']:.4f} bytes per input byte. Below the break-even "
-        f"volume, use `xz`. Above it — which is one day of logs for a mid-sized service — "
+        f"volume, use `xz`. Above it, which is one day of logs for a mid-sized service, "
         f"the neural codec wins and keeps winning.",
         "",
         "This is also why the model has to be *small*. The same arithmetic with a 7B model "
@@ -273,7 +273,7 @@ def render(p: dict[str, Any]) -> str:
         "## Anomaly detection, from the same forward pass",
         "",
         "Per-token surprisal is the compressor's cost function, un-summed. A line the model "
-        "finds expensive to encode is a line unlike its training distribution — an "
+        "finds expensive to encode is a line unlike its training distribution; an "
         "unsupervised anomaly score with no labels, no rules and one threshold.",
         "",
         f"In-domain lines have a median cost of **{an['normal_median']:.2f} bits/token** "
@@ -293,8 +293,8 @@ def render(p: dict[str, Any]) -> str:
         "",
         "The ordering is the useful part: gibberish and out-of-domain technical prose cost "
         "several times what in-domain narrative costs, and they separate cleanly. The "
-        "'subtle' case — a grammatical sentence in the right register with one impossible "
-        "noun phrase — is the hard one, and is where a surprisal detector earns or loses "
+        "'subtle' case: a grammatical sentence in the right register with one impossible "
+        "noun phrase, is the hard one, and is where a surprisal detector earns or loses "
         "its keep.",
         "",
         "Reproduce with: `python scripts/compression_bench.py --replay`",

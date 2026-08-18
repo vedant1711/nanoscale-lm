@@ -96,5 +96,5 @@ def weight_decay_multiplier(step: int, total_steps: int, *, enabled: bool) -> fl
 
 
 def make_schedule(config: ScheduleConfig, total_steps: int) -> list[float]:
-    """Materialise the whole multiplier schedule — handy for plotting and for tests."""
+    """Materialise the whole multiplier schedule: handy for plotting and for tests."""
     return [lr_multiplier(s, total_steps, config) for s in range(total_steps)]

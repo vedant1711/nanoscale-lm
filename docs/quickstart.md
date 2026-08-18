@@ -50,7 +50,7 @@ nanoscale train pretrain --tier micro -o runs/micro/pretrain
 ```
 
 ~40M parameters, 808M tokens (the Chinchilla-optimal 20:1 budget), a few hours on a free
-Colab T4. Nothing in the code changes — only the config.
+Colab T4. Nothing in the code changes, only the config.
 
 ## The CLI
 

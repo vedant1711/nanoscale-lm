@@ -9,7 +9,7 @@ committed script. Where a claim is not measured, this page says so.
 
 ---
 
-## 1. Tokenizer — byte-level BPE
+## 1. Tokenizer: byte-level BPE
 
 **Reference.** Sennrich et al., *Neural Machine Translation of Rare Words with Subword
 Units* (arXiv:1508.07909); Radford et al., GPT-2 (byte-level variant).
@@ -28,12 +28,12 @@ the difference between training a 32k vocabulary in seconds and in an hour.
     BPE token counts are **not subadditive**: with the committed `nano` vocabulary,
     `encode("eps")` is 1 token, `encode("ep")` is 1 token, and `encode("epsep")` is 3.
     Greedy rank-ordered merging is path-dependent and cannot backtrack. Practical
-    consequence: you cannot cache a tokenization by concatenating cached pieces — unless
+    consequence: you cannot cache a tokenization by concatenating cached pieces, unless
     the join lands on a pre-token boundary, where encoding *is* exactly concatenative.
     Both facts are pinned in `tests/property/test_tokenizer_properties.py`.
 
 **Tests.** Exact round-trip over 15 scripts plus hypothesis over arbitrary Unicode;
-vocabulary layout; merges never cross word boundaries; and a three-part `tiktoken`
+vocabulary layout; merges never cross word boundaries, and a three-part `tiktoken`
 comparison (exact pre-tokenization equality, in-domain length parity, bounded
 out-of-domain degradation).
 
@@ -48,7 +48,7 @@ out-of-domain degradation).
 $$\mathrm{Attn}(Q,K,V) = \mathrm{softmax}\!\left(\frac{QK^\top}{\sqrt{d_h}} + M\right)V$$
 
 **Grouped-query attention** gives each group of query heads one shared key/value head.
-With `n_heads=8, n_kv_heads=4` the KV cache halves — and at decode time, where the
+With `n_heads=8, n_kv_heads=4` the KV cache halves, and at decode time, where the
 bottleneck is memory bandwidth rather than FLOPs, that is close to a 2× throughput win.
 
 **QK-norm** RMS-normalizes queries and keys before the dot product, bounding the logits
@@ -58,7 +58,7 @@ not, so the order is a real choice and is pinned by a test that first asserts th
 orderings actually differ.
 
 **Tests.** Our manual attention equals `F.scaled_dot_product_attention` in fp32 and fp64
-across MHA/GQA/MQA, with and without QK-norm and padding masks; and equals a hand-written
+across MHA/GQA/MQA, with and without QK-norm and padding masks, and equals a hand-written
 `softmax(QKᵀ/√d + M)V` independently of SDPA.
 
 ### RoPE
@@ -71,7 +71,7 @@ position $m$ by $m\theta_i$ with $\theta_i = \text{base}^{-2i/d}$:
 $$\begin{pmatrix} \cos m\theta_i & -\sin m\theta_i \\ \sin m\theta_i & \cos m\theta_i \end{pmatrix}
 \begin{pmatrix} x_{2i} \\ x_{2i+1} \end{pmatrix}$$
 
-Rotations are orthogonal, so position never changes a vector's magnitude; and because
+Rotations are orthogonal, so position never changes a vector's magnitude, and because
 rotations compose additively, $\langle \mathrm{RoPE}(q,m), \mathrm{RoPE}(k,n)\rangle$
 depends only on $m-n$. That relative property is the entire point and is tested to
 $10^{-12}$ rather than assumed.
@@ -92,18 +92,18 @@ $4d$ two-matrix MLP and the comparison against ReLU² is fair.
 
 ### Initialisation
 
-Zero-init every projection that writes into the residual stream — attention `o_proj`,
+Zero-init every projection that writes into the residual stream: attention `o_proj`,
 MLP `down_proj`, the LM head. The network then starts as the identity on the residual
 stream and emits uniform logits, so the **initial loss is exactly $\ln V$**. A test
 asserts that, which is a sharp check that nothing is silently non-zero.
 
 This interacts with weight tying: a tied head *is* the embedding matrix, so zeroing it
 would destroy the input embeddings. Tied models keep a random head and do not start at
-$\ln V$ — documented and tested rather than left as a surprise.
+$\ln V$: documented and tested rather than left as a surprise.
 
 ---
 
-## 3. Optimizer — Muon
+## 3. Optimizer, Muon
 
 **Reference.** Jordan et al., Muon; the modded-nanoGPT speedrun lineage.
 
@@ -125,14 +125,14 @@ on a spectrally-normalised $X$. Those coefficients are deliberately *not* the te
 $(1.5, -0.5, 0)$: they overshoot near zero, which converges much faster for the small
 singular values that dominate a real momentum matrix, at the cost of a fixed point near
 $1 \pm 0.3$ rather than exactly 1. Only the direction is used, so that is the right
-trade — and the tests measure the resulting singular values (observed range 0.68–1.13)
+trade, and the tests measure the resulting singular values (observed range 0.68–1.13)
 rather than assuming them.
 
 **Scope.** 2D hidden matmul weights only. Embeddings are a lookup table, norm gains are
 vectors of independent scalars; neither has the geometry the orthogonalisation exploits.
 
 **Result.** Muon reaches the target loss in **50 steps against AdamW's 105** at `nano`
-scale — see [Results](results.md#optimizer-ablation).
+scale: see [Results](results.md#optimizer-ablation).
 
 !!! warning "Where Muon does *not* help"
     On a convex single-matrix least-squares problem, AdamW beats Muon at every learning
@@ -156,7 +156,7 @@ cancelling the update.
 $$\mathcal{L}_{DPO} = -\mathbb{E}\left[\log\sigma\left(\beta\log\frac{\pi_\theta(y_w|x)}{\pi_{ref}(y_w|x)} - \beta\log\frac{\pi_\theta(y_l|x)}{\pi_{ref}(y_l|x)}\right)\right]$$
 
 The bracketed quantities are the **implicit rewards**. Log-probabilities are *summed*
-over response tokens, which is what the derivation gives — and is the origin of DPO's
+over response tokens, which is what the derivation gives, and is the origin of DPO's
 length bias: a longer response has more terms to accumulate advantage over, so the loss
 can be reduced by lengthening rather than improving.
 
@@ -177,7 +177,7 @@ optimises a *difference*, so it can satisfy itself by pushing both sides down. A
 margin and a degrading model are entirely compatible.
 
 Adding an RPO-style auxiliary NLL on the chosen response anchors the absolute likelihood
-and flips that to +0.010 — and `DPO+NLL` is the only arm that **wins** the scripted
+and flips that to +0.010, and `DPO+NLL` is the only arm that **wins** the scripted
 head-to-head against the SFT model (3–0–37, versus plain DPO's 0–7–33). See
 [Results](results.md#alignment).
 
@@ -190,7 +190,7 @@ prompt and using the group as its own baseline:
 
 $$A_i = \frac{r_i - \mathrm{mean}(r_{1..G})}{\mathrm{std}(r_{1..G}) + \epsilon}$$
 
-Rewards here are **programmatic** — arithmetic answers checked by evaluation — so there
+Rewards here are **programmatic**: arithmetic answers checked by evaluation, so there
 is no reward model to hack. A unanimous group has exactly zero advantage and is skipped:
 if all $G$ samples are right, or all wrong, the comparison says nothing.
 
@@ -204,15 +204,15 @@ token+sequence). Neither is implemented here.
 **References.** Hinton et al. (arXiv:1503.02531); Kim & Rush, SeqKD (arXiv:1606.07947);
 Gu et al., MiniLLM (arXiv:2306.08543).
 
-The three objectives differ in one choice — which direction of the KL, and what to sample
-from — and that choice is mechanical:
+The three objectives differ in one choice, which direction of the KL, and what to sample
+from, and that choice is mechanical:
 
 - **Forward KL** minimises $KL(p\|q)$. The integrand $p\log(p/q)$ explodes wherever the
   teacher has mass and the student does not, forcing the student to **cover every mode**
   including the teacher's low-confidence tail.
 - **Reverse KL** minimises $KL(q\|p)$. The integrand $q\log(q/p)$ only penalises mass the
   student *invents*, so it may ignore the tail and concentrate on modes it can represent
-  — the right trade for a strictly smaller student. The expectation is under $q_\theta$,
+, the right trade for a strictly smaller student. The expectation is under $q_\theta$,
   so it requires **on-policy** rollouts and a policy-gradient estimator.
 - **SeqKD** trains by MLE on teacher samples, sidestepping the asymmetry.
 
@@ -228,7 +228,7 @@ scales KD gradients by $1/\tau^2$, so without it, tuning $\tau$ silently retunes
    noisier than a supervised one; without `onpolicy_lr_scale` the policy gradient undoes
    the warm-start (perplexity 41 rather than 2.5).
 
-**Result.** Reverse KL reaches perplexity 2.50 against forward-KL's 2.05 — *worse* — with
+**Result.** Reverse KL reaches perplexity 2.50 against forward-KL's 2.05, *worse*: with
 a repetition rate of 0.0000 against 0.0064 and SeqKD's 0.0372, and below the teacher's own
 0.0383. That is MiniLLM's qualitative finding reproduced: judging distillation by
 perplexity alone ranks these backwards.
@@ -263,11 +263,11 @@ $$\delta_j = \frac{w_j - \mathrm{quant}(w_j)}{[H^{-1}]_{jj}}, \qquad W_{:,j+1:} 
 Implementation details that matter: Cholesky rather than an explicit inverse (a
 near-singular Hessian does not invert stably); dampening (calibration Hessians are
 routinely rank-deficient); lazy block updates (one matmul instead of a chain of rank-1
-updates); and activation ordering.
+updates), and activation ordering.
 
 !!! tip "GPTQ has the worst weight error and the best perplexity"
-    At 2 bits GPTQ's mean relative *weight* error is 0.714 against RTN's 0.459 — nearly
-    double — yet it produces the better model (perplexity 1.500 vs 1.541). That is the
+    At 2 bits GPTQ's mean relative *weight* error is 0.714 against RTN's 0.459, nearly
+    double, yet it produces the better model (perplexity 1.500 vs 1.541). That is the
     method's thesis, not a contradiction: it will happily accept a larger perturbation on
     a weight multiplying a quiet channel to buy a smaller one on a loud channel. Ranking
     these methods by weight error ranks them backwards.
@@ -282,7 +282,7 @@ output error.
 
 ### Effective bits
 
-The frontier plots against **effective** bits — nominal width plus the amortised cost of
+The frontier plots against **effective** bits, nominal width plus the amortised cost of
 the stored scales. A "4-bit" model at group size 64 with fp16 scale and zero-point costs
 4.5 bits per weight. Plotting against the nominal width lets a method buy accuracy with
 smaller groups and appear to win for free.
@@ -306,14 +306,14 @@ Summing:
 
 $$\min(q(x),p(x)) + \max(0, p(x)-q(x)) = p(x)$$
 
-for every $x$. The output distribution is $p$ **exactly** — not approximately — regardless
+for every $x$. The output distribution is $p$ **exactly**: not approximately: regardless
 of draft quality. A bad draft only lowers the acceptance rate, i.e. the speedup. The
 expected acceptance rate is $\sum_v \min(p,q) = 1 - TV(p,q)$.
 
 ### How it is verified
 
 Three independent levels: algebraically (the branches sum to $p$ in fp64); statistically
-(120k samples match direct sampling from $p$ within a total-variation bound — **and a
+(120k samples match direct sampling from $p$ within a total-variation bound, **and a
 deliberately broken rule fails the same test**, so the tolerance demonstrably has teeth);
 and end-to-end (greedy speculative decoding is token-for-token identical to greedy
 autoregressive decoding).
@@ -327,7 +327,7 @@ attention mask**, so one forward pass evaluates every root-to-leaf path.
 Positions matter as much as the mask: a node's index in the packed sequence is not its
 position in the sequence it belongs to, so position IDs are derived from tree **depth**.
 Feeding packing-order positions makes RoPE place sibling branches at the wrong distance
-from the prefix — a bug the path-equivalence test caught.
+from the prefix: a bug the path-equivalence test caught.
 
 Medusa's accept rule is exact-match, which is **not** distribution-preserving. Draft–target
 is lossless by construction; Medusa trades a little fidelity for not needing a draft model.

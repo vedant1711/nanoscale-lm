@@ -1,4 +1,4 @@
-r"""Round-to-nearest weight quantization — the baseline everything else must beat.
+r"""Round-to-nearest weight quantization; the baseline everything else must beat.
 
 The primitive
 -------------
@@ -12,18 +12,18 @@ Uniform affine quantization maps a group of weights to ``2^b`` levels:
 
 **Asymmetric** (with a zero-point ``z``) fits the observed ``[min, max]`` exactly.
 **Symmetric** drops ``z`` and centres the range on zero, which costs a bit of resolution
-for weights that are not zero-centred but makes the dequantization a single multiply —
+for weights that are not zero-centred but makes the dequantization a single multiply,
 worth it on hardware where that matters.
 
 Grouping
 --------
 Sharing one ``(s, z)`` across an entire weight matrix is disastrous: a single outlier
 sets the range and every other weight collapses onto a handful of levels. Real
-implementations use **groups** along the input dimension — 64 or 128 weights per group —
+implementations use **groups** along the input dimension, 64 or 128 weights per group:
 so an outlier only degrades its own group. The cost is the stored scales themselves:
 at 4 bits with group size 128 and fp16 scales, the overhead is
 ``(16 + 16) / 128 = 0.25`` bits per weight, so the *effective* bit-width is 4.25 rather
-than 4. :func:`effective_bits` computes this, and the frontier figure plots against it —
+than 4. :func:`effective_bits` computes this, and the frontier figure plots against it,
 quoting "4-bit" while ignoring the scales is the most common way these comparisons are
 made to look better than they are.
 """

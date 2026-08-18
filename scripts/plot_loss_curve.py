@@ -50,7 +50,7 @@ def main() -> int:
         )
     left.set_xlabel("optimizer step")
     left.set_ylabel("cross-entropy (nats/token)")
-    left.set_title(args.title or f"Loss — {args.run_dir.name}")
+    left.set_title(args.title or f"Loss, {args.run_dir.name}")
     left.legend()
 
     if train_loss:

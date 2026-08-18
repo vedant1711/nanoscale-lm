@@ -14,7 +14,7 @@ What this loop actually does, in order, per optimizer step:
 Mixed precision
 ---------------
 Autocast runs the forward pass in bf16/fp16 while parameters and optimizer state stay
-fp32 — the "fp32 master weights" path the spec asks for. Under fp16 a
+fp32, the "fp32 master weights" path the spec asks for. Under fp16 a
 :class:`torch.amp.GradScaler` is required because fp16's exponent range underflows small
 gradients to zero; bf16 has fp32's exponent range and needs no scaler. On CPU everything
 falls back to fp32 (see :mod:`nanoscale.utils.device`), which is why the ``nano`` tier is
@@ -252,8 +252,8 @@ class Trainer:
 
         Args:
             stop_at_step: Stop after this many optimizer steps *without* changing the
-                planned schedule. This models a real interruption — a pre-empted Colab
-                session, a wall-clock limit — where the LR schedule was planned for the
+                planned schedule. This models a real interruption: a pre-empted Colab
+                session, a wall-clock limit, where the LR schedule was planned for the
                 full run and the run simply did not get there. Resuming from such a
                 checkpoint then continues on the original schedule, which is what makes
                 "resume == uninterrupted" testable at all: shortening ``max_steps``

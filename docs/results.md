@@ -3,7 +3,7 @@
 Every figure and number on this page is copied verbatim from a committed artifact under
 `results/`, which was in turn produced by a committed script and stamped with the git SHA
 and hardware that produced it. This page is **generated** by
-`scripts/build_docs_results.py` — editing it by hand will be reverted by CI.
+`scripts/build_docs_results.py`: editing it by hand will be reverted by CI.
 
 !!! warning "Read the limitations first"
     Two models produced everything here. The **`micro`** tier is 40.4M parameters trained
@@ -14,8 +14,8 @@ and hardware that produced it. This page is **generated** by
     run many controlled arms against.
 
     Neither is a frontier-scale claim. See [Limitations](limitations.md) for what these
-    numbers do and do not support. Several results here are *negative* — a predicted effect
-    that did not appear, or appeared backwards — and they are reported rather than omitted.
+    numbers do and do not support. Several results here are *negative*; a predicted effect
+    that did not appear, or appeared backwards, and they are reported rather than omitted.
 
 ## On this page
 
@@ -186,11 +186,11 @@ Perplexity is per *token* and these models do not share a tokenizer, so it canno
 
 ### What this says
 
-**In-domain, NanoScale-LM at 40,379,904 parameters scores 0.5485 bits/byte against GPT-2's 0.9385 at 124,439,808 parameters** — better with 3.1× fewer parameters.
+**In-domain, NanoScale-LM at 40,379,904 parameters scores 0.5485 bits/byte against GPT-2's 0.9385 at 124,439,808 parameters**: better with 3.1× fewer parameters.
 
 **And the ordering reverses out of domain**: 3.2861 against GPT-2's 0.8318 on text neither model was trained on. That reversal is the point. The in-domain number measures *specialization*, not general capability, and reporting it without its counterpart would misrepresent what was achieved: a small model trained on a narrow distribution beats a larger general model on that distribution and loses badly everywhere else.
 
-This is a fair comparison in the one way that matters — both models scored the same held-out strings, each with its own tokenizer, normalized by bytes — and a limited one in every other way. GPT-2 was trained for general-purpose use on WebText; TinyStories was not in its training distribution.
+This is a fair comparison in the one way that matters: both models scored the same held-out strings, each with its own tokenizer, normalized by bytes, and a limited one in every other way. GPT-2 was trained for general-purpose use on WebText; TinyStories was not in its training distribution.
 
 Reproduce with: `python scripts/external_baseline.py --replay`
 
@@ -220,7 +220,7 @@ Validation loss over the same run: 3.106 → 1.774.
 
 ### Why this is worth plotting
 
-A single end-of-training number cannot distinguish *never learned* from *learned and then unlearned*, and the two have opposite implications. A capability that rises and then falls means the model found a shortcut that pays on the training distribution and costs accuracy on the probe — which is a statement about the data, not about capacity. A capability that never moves is a statement about capacity or about the probe.
+A single end-of-training number cannot distinguish *never learned* from *learned and then unlearned*, and the two have opposite implications. A capability that rises and then falls means the model found a shortcut that pays on the training distribution and costs accuracy on the probe, which is a statement about the data, not about capacity. A capability that never moves is a statement about capacity or about the probe.
 
 **Read the Spearman column, not the individual dips.** With 100 items per probe the binomial standard error is about 5 points, so any single point moving by 9 points is barely one standard error of a difference and cannot carry a claim. The rank correlation between accuracy and training tokens uses all 16 probes at once and is the statistic that can.
 
@@ -244,7 +244,7 @@ A language model is a compressor: Shannon says a symbol of probability `p` costs
 | 8,000 B | **0.7320** bpb (10.93x) | 3.2400 (2.47x) | 2.9410 (2.72x) | 3.2360 (2.47x) |
 | 24,000 B | **0.7078** bpb (11.30x) | 2.8523 (2.80x) | 2.4581 (3.25x) | 2.7167 (2.94x) |
 
-At the largest size tested, NanoScale-LM reaches **0.7078 bits/byte** against the best classical result of 2.4581 — a **3.5x** improvement in compressed size. Coder overhead against the model's own cross-entropy is 0.31%, so almost all of the theoretical rate is actually realised.
+At the largest size tested, NanoScale-LM reaches **0.7078 bits/byte** against the best classical result of 2.4581: a **3.5x** improvement in compressed size. Coder overhead against the model's own cross-entropy is 0.31%, so almost all of the theoretical rate is actually realised.
 
 Throughput is 182 tokens/s encode on this hardware, single-threaded, with a KV cache. That is far slower than `xz` and it is the honest cost of the method.
 
@@ -258,13 +258,13 @@ The model has to be stored alongside the archive, so the saving only pays back a
 | int8 | 41 MB | **187 MB** of in-domain text |
 | int4 | 22 MB | **99 MB** of in-domain text |
 
-Each byte of input costs 0.7078 bits with the model against 2.4581 with the best classical coder, saving 0.2188 bytes per input byte. Below the break-even volume, use `xz`. Above it — which is one day of logs for a mid-sized service — the neural codec wins and keeps winning.
+Each byte of input costs 0.7078 bits with the model against 2.4581 with the best classical coder, saving 0.2188 bytes per input byte. Below the break-even volume, use `xz`. Above it, which is one day of logs for a mid-sized service; the neural codec wins and keeps winning.
 
 This is also why the model has to be *small*. The same arithmetic with a 7B model at 14 GB puts break-even in the tens of terabytes, and its throughput would make the archive take longer to write than to generate.
 
 ### Anomaly detection, from the same forward pass
 
-Per-token surprisal is the compressor's cost function, un-summed. A line the model finds expensive to encode is a line unlike its training distribution — an unsupervised anomaly score with no labels, no rules and one threshold.
+Per-token surprisal is the compressor's cost function, un-summed. A line the model finds expensive to encode is a line unlike its training distribution; an unsupervised anomaly score with no labels, no rules and one threshold.
 
 In-domain lines have a median cost of **4.64 bits/token** (60 lines), and the 95th percentile sits at **6.41**. Using that as the alarm threshold, **5 of 5** injected anomalies are flagged.
 
@@ -283,7 +283,7 @@ In-domain lines have a median cost of **4.64 bits/token** (60 lines), and the 95
 | 6.03 | normal | `They swam faster and faster to reach the light` |
 | 5.97 | normal | `The sign had letters, but they could not read them` |
 
-The ordering is the useful part: gibberish and out-of-domain technical prose cost several times what in-domain narrative costs, and they separate cleanly. The 'subtle' case — a grammatical sentence in the right register with one impossible noun phrase — is the hard one, and is where a surprisal detector earns or loses its keep.
+The ordering is the useful part: gibberish and out-of-domain technical prose cost several times what in-domain narrative costs, and they separate cleanly. The 'subtle' case: a grammatical sentence in the right register with one impossible noun phrase, is the hard one, and is where a surprisal detector earns or loses its keep.
 
 Reproduce with: `python scripts/compression_bench.py --replay`
 
@@ -311,7 +311,7 @@ All arms share one seed, one data order, one schedule and a fixed step budget; t
 
 **Steps-to-target is the trustworthy column; wall-clock is not.** These runs were executed sequentially on a shared laptop, so tokens/s is sensitive to whatever else the machine was doing. A per-step cost difference that is real (Muon adds five Newton-Schulz matmuls per 2D weight) is therefore mixed with measurement noise here. Treat the seconds columns as indicative and the step counts as the result.
 
-**These are single-seed results on a ~5M-parameter model trained on a synthetic corpus.** They are directional confirmations (or non-confirmations) of published findings obtained at 100–1000× this scale, not independent evidence about them. Differences below 2% in final loss are reported as *no measurable difference*, because at one seed that is what they are. A lever that matters at scale can be invisible here — a small model in a narrow domain is exactly the regime where stability aids have little to stabilise.
+**These are single-seed results on a ~5M-parameter model trained on a synthetic corpus.** They are directional confirmations (or non-confirmations) of published findings obtained at 100–1000× this scale, not independent evidence about them. Differences below 2% in final loss are reported as *no measurable difference*, because at one seed that is what they are. A lever that matters at scale can be invisible here; a small model in a narrow domain is exactly the regime where stability aids have little to stabilise.
 
 Reproduce with: `python scripts/ablate.py --suite optimizer`
 
@@ -319,7 +319,7 @@ Reproduce with: `python scripts/ablate.py --suite optimizer`
 
 ## Architecture ablation {#architecture-ablation}
 
-**Question.** Do the modded-nanoGPT speedrun's architecture choices — QK-norm, zero-init output projections, SwiGLU — measurably help at this scale?
+**Question.** Do the modded-nanoGPT speedrun's architecture choices, QK-norm, zero-init output projections, SwiGLU: measurably help at this scale?
 
 ![architecture](architecture.png)
 
@@ -332,11 +332,11 @@ Reproduce with: `python scripts/ablate.py --suite optimizer`
 
 ### Findings
 
-- **No measurable difference in final loss.** − QK-norm reaches 0.3893 vs 0.3896 for default (QK-norm, zero-init, SwiGLU) — a 0.1% gap, below the 2% we are willing to call a result from a single seed at this scale. It needs **1.50x more steps** to reach the target loss (75 vs 50), so the two converge to the same place at different rates.
+- **No measurable difference in final loss.** − QK-norm reaches 0.3893 vs 0.3896 for default (QK-norm, zero-init, SwiGLU); a 0.1% gap, below the 2% we are willing to call a result from a single seed at this scale. It needs **1.50x more steps** to reach the target loss (75 vs 50), so the two converge to the same place at different rates.
   <br/>*Removes the RMS normalization of q and k before the dot product.*
-- **No measurable difference in final loss.** − zero-init output reaches 0.3842 vs 0.3896 for default (QK-norm, zero-init, SwiGLU) — a 1.4% gap, below the 2% we are willing to call a result from a single seed at this scale. Both reach the target loss in about the same number of steps (45 vs 50).
+- **No measurable difference in final loss.** − zero-init output reaches 0.3842 vs 0.3896 for default (QK-norm, zero-init, SwiGLU); a 1.4% gap, below the 2% we are willing to call a result from a single seed at this scale. Both reach the target loss in about the same number of steps (45 vs 50).
   <br/>*Falls back to GPT-2's std/sqrt(2L) residual init.*
-- **No measurable difference in final loss.** ReLU² instead of SwiGLU reaches 0.3862 vs 0.3896 for default (QK-norm, zero-init, SwiGLU) — a 0.9% gap, below the 2% we are willing to call a result from a single seed at this scale. Both reach the target loss in about the same number of steps (55 vs 50).
+- **No measurable difference in final loss.** ReLU² instead of SwiGLU reaches 0.3862 vs 0.3896 for default (QK-norm, zero-init, SwiGLU); a 0.9% gap, below the 2% we are willing to call a result from a single seed at this scale. Both reach the target loss in about the same number of steps (55 vs 50).
   <br/>*Ungated MLP; cheaper per parameter.*
 
 ### How to read this
@@ -345,7 +345,7 @@ All arms share one seed, one data order, one schedule and a fixed step budget; t
 
 **Steps-to-target is the trustworthy column; wall-clock is not.** These runs were executed sequentially on a shared laptop, so tokens/s is sensitive to whatever else the machine was doing. A per-step cost difference that is real (Muon adds five Newton-Schulz matmuls per 2D weight) is therefore mixed with measurement noise here. Treat the seconds columns as indicative and the step counts as the result.
 
-**These are single-seed results on a ~5M-parameter model trained on a synthetic corpus.** They are directional confirmations (or non-confirmations) of published findings obtained at 100–1000× this scale, not independent evidence about them. Differences below 2% in final loss are reported as *no measurable difference*, because at one seed that is what they are. A lever that matters at scale can be invisible here — a small model in a narrow domain is exactly the regime where stability aids have little to stabilise.
+**These are single-seed results on a ~5M-parameter model trained on a synthetic corpus.** They are directional confirmations (or non-confirmations) of published findings obtained at 100–1000× this scale, not independent evidence about them. Differences below 2% in final loss are reported as *no measurable difference*, because at one seed that is what they are. A lever that matters at scale can be invisible here; a small model in a narrow domain is exactly the regime where stability aids have little to stabilise.
 
 Reproduce with: `python scripts/ablate.py --suite architecture`
 
@@ -366,7 +366,7 @@ Every arm trained at 5 seeds (1337, 42, 7, 2024, 31337). Arms differ only in the
 
 ### Significance
 
-Two-sided Welch's t-test against the baseline arm at α=0.05, **Holm-Bonferroni corrected** across the 1 comparison in this suite, with Cohen's d alongside. A difference counts as real only when it survives the correction *and* has |d| ≥ 0.8 — with low enough variance a 0.1% gap becomes significant and stays irrelevant.
+Two-sided Welch's t-test against the baseline arm at α=0.05, **Holm-Bonferroni corrected** across the 1 comparison in this suite, with Cohen's d alongside. A difference counts as real only when it survives the correction *and* has |d| ≥ 0.8, with low enough variance a 0.1% gap becomes significant and stays irrelevant.
 
 Three separate questions are tested, because a single comparison of mean loss cannot answer them all: does the arm reach a *better* loss, does it get there in *fewer steps*, and is it *more consistent* across seeds?
 
@@ -376,9 +376,9 @@ Three separate questions are tested, because a single comparison of mean loss ca
 
 ### How to read this
 
-The single-seed version of this experiment compared arms with a fixed 2% rule, which was an assumption rather than a measurement — with one run per arm there is no way to estimate run-to-run variance, so there is nothing to compare a gap against. With several seeds that variance is measured directly, and the question becomes whether the between-arm gap is large relative to it.
+The single-seed version of this experiment compared arms with a fixed 2% rule, which was an assumption rather than a measurement, with one run per arm there is no way to estimate run-to-run variance, so there is nothing to compare a gap against. With several seeds that variance is measured directly, and the question becomes whether the between-arm gap is large relative to it.
 
-**A `no difference` verdict here is a real result, not a missing one.** It says the experiment had the resolution to detect a difference of this size and did not find one. It does not say the technique does not work — these are 5M-parameter runs over 400 steps, and a stability aid has little to stabilise at that scale.
+**A `no difference` verdict here is a real result, not a missing one.** It says the experiment had the resolution to detect a difference of this size and did not find one. It does not say the technique does not work; these are 5M-parameter runs over 400 steps, and a stability aid has little to stabilise at that scale.
 
 **The `verdict` column refers to mean final loss only.** Read the other two p-values beside it. An arm can reach the same loss while getting there in half the steps, or with a fraction of the run-to-run spread, and both are results the mean comparison is structurally unable to report.
 
@@ -388,7 +388,7 @@ Reproduce with: `python scripts/ablate_multiseed.py --replay`
 
 ## Architecture ablation, 5 seeds {#architecture-multiseed}
 
-**Question.** Do the modded-nanoGPT speedrun's architecture choices — QK-norm, zero-init output projections, SwiGLU — measurably help at this scale?
+**Question.** Do the modded-nanoGPT speedrun's architecture choices, QK-norm, zero-init output projections, SwiGLU: measurably help at this scale?
 
 ![architecture multi-seed](architecture_multiseed.png)
 
@@ -403,7 +403,7 @@ Every arm trained at 5 seeds (1337, 42, 7, 2024, 31337). Arms differ only in the
 
 ### Significance
 
-Two-sided Welch's t-test against the baseline arm at α=0.05, **Holm-Bonferroni corrected** across the 3 comparisons in this suite, with Cohen's d alongside. A difference counts as real only when it survives the correction *and* has |d| ≥ 0.8 — with low enough variance a 0.1% gap becomes significant and stays irrelevant.
+Two-sided Welch's t-test against the baseline arm at α=0.05, **Holm-Bonferroni corrected** across the 3 comparisons in this suite, with Cohen's d alongside. A difference counts as real only when it survives the correction *and* has |d| ≥ 0.8, with low enough variance a 0.1% gap becomes significant and stays irrelevant.
 
 Three separate questions are tested, because a single comparison of mean loss cannot answer them all: does the arm reach a *better* loss, does it get there in *fewer steps*, and is it *more consistent* across seeds?
 
@@ -415,9 +415,9 @@ Three separate questions are tested, because a single comparison of mean loss ca
 
 ### How to read this
 
-The single-seed version of this experiment compared arms with a fixed 2% rule, which was an assumption rather than a measurement — with one run per arm there is no way to estimate run-to-run variance, so there is nothing to compare a gap against. With several seeds that variance is measured directly, and the question becomes whether the between-arm gap is large relative to it.
+The single-seed version of this experiment compared arms with a fixed 2% rule, which was an assumption rather than a measurement, with one run per arm there is no way to estimate run-to-run variance, so there is nothing to compare a gap against. With several seeds that variance is measured directly, and the question becomes whether the between-arm gap is large relative to it.
 
-**A `no difference` verdict here is a real result, not a missing one.** It says the experiment had the resolution to detect a difference of this size and did not find one. It does not say the technique does not work — these are 5M-parameter runs over 400 steps, and a stability aid has little to stabilise at that scale.
+**A `no difference` verdict here is a real result, not a missing one.** It says the experiment had the resolution to detect a difference of this size and did not find one. It does not say the technique does not work; these are 5M-parameter runs over 400 steps, and a stability aid has little to stabilise at that scale.
 
 **The `verdict` column refers to mean final loss only.** Read the other two p-values beside it. An arm can reach the same loss while getting there in half the steps, or with a fraction of the run-to-run spread, and both are results the mean comparison is structurally unable to report.
 
@@ -438,7 +438,7 @@ Generated by `scripts/align_pipeline.py` at git `7ba6387` from `runs/nano/pretra
 
 ### The likelihood-collapse diagnostic
 
-DPO optimises the *difference* of two log-probabilities, so it can reduce its loss by pushing **both** down — the chosen response merely less far than the rejected one. A run showing a healthy rising margin can be quietly destroying the model's absolute likelihood of good responses at the same time. This table reports the change in mean **per-token** log-probability across the run:
+DPO optimises the *difference* of two log-probabilities, so it can reduce its loss by pushing **both** down, the chosen response merely less far than the rejected one. A run showing a healthy rising margin can be quietly destroying the model's absolute likelihood of good responses at the same time. This table reports the change in mean **per-token** log-probability across the run:
 
 | method | Δ log p(chosen) | Δ log p(rejected) | Δ margin |
 |---|---|---|---|
@@ -474,7 +474,7 @@ The preference data here is **length-matched by construction** (mean chosen and 
 
 ### Caveats
 
-Single seed, ~5M parameters, synthetic instruction data, and a programmatic judge. These are mechanism demonstrations — the DPO/SimPO losses are implemented from the papers and unit-tested against hand-computed values — not evidence about how these methods rank on real preference data at real scale.
+Single seed, ~5M parameters, synthetic instruction data, and a programmatic judge. These are mechanism demonstrations; the DPO/SimPO losses are implemented from the papers and unit-tested against hand-computed values: not evidence about how these methods rank on real preference data at real scale.
 
 Reproduce with: `python scripts/align_pipeline.py runs/nano/pretrain/final.pt`
 
@@ -491,39 +491,39 @@ Generated by `scripts/distill_compare.py` at git `7ba6387` from `runs/nano/sft/f
 | forward_kl | 2.0536 | 3.1529 | 0.0064 | 45.5 | 18.2s |
 | seqkd | 4.4499 | 3.1529 | 0.0372 | 39.2 | 33.5s |
 | reverse_kl | 2.4974 | 3.1529 | 0.0000 | 30.2 | 18.1s |
-| *teacher* | — | — | 0.0383 | 46.8 | — |
+| *teacher* |, |, | 0.0383 | 46.8 |, |
 
-Compression: 4,952,064 → 279,168 parameters (17.74x overall, 29.90x on non-embedding parameters). Teacher and student share a tokenizer by necessity, so the embedding table and LM head are the same width in both and their cost is irreducible — the non-embedding figure is what describes the depth and width reduction.
+Compression: 4,952,064 → 279,168 parameters (17.74x overall, 29.90x on non-embedding parameters). Teacher and student share a tokenizer by necessity, so the embedding table and LM head are the same width in both and their cost is irreducible; the non-embedding figure is what describes the depth and width reduction.
 
 ### What the numbers say
 
-**Reverse KL has worse perplexity and better generations, which is the MiniLLM finding.** On-policy reverse KL reaches perplexity 2.497 against forward KL's 2.054 — worse — while producing a repetition rate of 0.0000 against forward KL's 0.0064 and SeqKD's 0.0372. That is not a contradiction. Perplexity rewards a model for spreading probability over everything the evaluation set contains, which is precisely the mode-covering behaviour reverse KL is designed to avoid. A mode-seeking student concentrates on what it can represent well, scores worse on a coverage metric, and degenerates less when it actually generates.
+**Reverse KL has worse perplexity and better generations, which is the MiniLLM finding.** On-policy reverse KL reaches perplexity 2.497 against forward KL's 2.054, worse, while producing a repetition rate of 0.0000 against forward KL's 0.0064 and SeqKD's 0.0372. That is not a contradiction. Perplexity rewards a model for spreading probability over everything the evaluation set contains, which is precisely the mode-covering behaviour reverse KL is designed to avoid. A mode-seeking student concentrates on what it can represent well, scores worse on a coverage metric, and degenerates less when it actually generates.
 
-For reference, the **teacher's own** repetition rate is 0.0383 — higher than the reverse-KL student's. Distilling on-policy against the teacher's *distribution* is not the same as copying its outputs.
+For reference, the **teacher's own** repetition rate is 0.0383, higher than the reverse-KL student's. Distilling on-policy against the teacher's *distribution* is not the same as copying its outputs.
 
 **Judging distillation by perplexity alone would rank these backwards**, which is why the repetition diagnostic is reported beside it.
 
 ### Why the objectives differ
 
-The three differ in a single choice — which direction of the KL divergence to minimise, and what to sample from — and that choice has a mechanical consequence:
+The three differ in a single choice, which direction of the KL divergence to minimise, and what to sample from, and that choice has a mechanical consequence:
 
 - **Forward KL** minimises `KL(teacher ‖ student)`. The integrand `p log(p/q)` explodes wherever the teacher has mass and the student does not, so the student is forced to **cover every mode**, including the teacher's low-confidence tail. A student with less capacity cannot cover that tail without smearing probability across it.
 - **SeqKD** sidesteps the asymmetry by training on teacher *samples*. It is the cheapest to train (no teacher forward pass in the loop) and approximates the teacher's sequence distribution rather than its per-token one.
 - **Reverse KL, on-policy** minimises `KL(student ‖ teacher)` under trajectories the **student itself** generates. The integrand `q log(q/p)` only penalises mass the student puts where the teacher has none, so the student is free to ignore the tail and concentrate on modes it can represent. This is MiniLLM's argument, and it is why the repetition column is the diagnostic to watch: a mode-covering student loops when nothing in the tail it learned is a good continuation.
 
-The training-objective curves in the left panel are **not comparable across methods** — they are different objectives with different scales. Only the student quality columns compare.
+The training-objective curves in the left panel are **not comparable across methods**: they are different objectives with different scales. Only the student quality columns compare.
 
 ### Cost
 
-The objectives are not equally expensive per step, and the wall-clock column shows it. Forward KL runs one teacher forward pass per batch. SeqKD runs the teacher only to generate. On-policy reverse KL runs a **student generation** plus a teacher forward pass every step, and generation is sequential — that is the price of being on-policy.
+The objectives are not equally expensive per step, and the wall-clock column shows it. Forward KL runs one teacher forward pass per batch. SeqKD runs the teacher only to generate. On-policy reverse KL runs a **student generation** plus a teacher forward pass every step, and generation is sequential; that is the price of being on-policy.
 
 ### Caveats
 
-Single seed, a ~5M-parameter teacher, a synthetic corpus, and a short budget. MiniLLM's result was obtained at 100–1000× this scale with far longer training. What this reproduces is the **mechanism** — the losses are implemented from the papers and unit-tested against hand-computed values, and the mode-covering vs mode-seeking behaviour is demonstrated directly on fixtures in `tests/unit/test_distill.py`. Treat the ranking here as directional at best.
+Single seed, a ~5M-parameter teacher, a synthetic corpus, and a short budget. MiniLLM's result was obtained at 100–1000× this scale with far longer training. What this reproduces is the **mechanism**: the losses are implemented from the papers and unit-tested against hand-computed values, and the mode-covering vs mode-seeking behaviour is demonstrated directly on fixtures in `tests/unit/test_distill.py`. Treat the ranking here as directional at best.
 
 ### Two implementation details that were not optional
 
-**A warm-start is required, not a nicety.** On-policy reverse KL estimates its gradient from trajectories the *student* generates. A randomly-initialised student samples noise, the teacher finds all of it equally unlikely, and the reward carries no signal. Measured without a warm-start, the reverse-KL student reached perplexity ~1000 against the teacher's ~3 — it did not train at all. MiniLLM prescribes the warm-start for exactly this reason. It is applied identically to all three arms here so the comparison stays controlled.
+**A warm-start is required, not a nicety.** On-policy reverse KL estimates its gradient from trajectories the *student* generates. A randomly-initialised student samples noise, the teacher finds all of it equally unlikely, and the reward carries no signal. Measured without a warm-start, the reverse-KL student reached perplexity ~1000 against the teacher's ~3; it did not train at all. MiniLLM prescribes the warm-start for exactly this reason. It is applied identically to all three arms here so the comparison stays controlled.
 
 **The on-policy phase needs a smaller step.** A REINFORCE-style estimator is far higher-variance than a supervised one, so `distill.onpolicy_lr_scale` (default 0.1) reduces the learning rate once the on-policy phase begins. Without it the policy-gradient updates undo the warm-start (perplexity 41 rather than 2.5). This is one respect in which the reverse-KL arm is *not* identical to the other two, and it is stated here rather than buried in a config.
 
@@ -557,11 +557,11 @@ Generated by `scripts/quantize_frontier.py` at git `7ba6387` from `runs/nano/pre
 
 ### What the numbers say
 
-**At 4 and 8 bits every method is indistinguishable from fp32** (perplexity 1.4767 / 1.4766 / 1.4765 against a baseline of 1.4764). The spec anticipated GPTQ beating RTN at 4 bits "by a clear margin"; at this scale it does not, because there is no margin left to win — a 5M-parameter model on a narrow synthetic corpus has little redundancy for 4-bit rounding to destroy in the first place. Reporting a tie is the honest outcome.
+**At 4 and 8 bits every method is indistinguishable from fp32** (perplexity 1.4767 / 1.4766 / 1.4765 against a baseline of 1.4764). The spec anticipated GPTQ beating RTN at 4 bits "by a clear margin"; at this scale it does not, because there is no margin left to win; a 5M-parameter model on a narrow synthetic corpus has little redundancy for 4-bit rounding to destroy in the first place. Reporting a tie is the honest outcome.
 
 **The separation appears at 2 and 3 bits, and there GPTQ wins.** At 2 bits GPTQ reaches 1.4997 against RTN's 1.5405 and AWQ's 1.5468; at 3 bits GPTQ recovers the fp32 perplexity exactly (1.4764 vs 1.4764) while the other two do not.
 
-**GPTQ has the *worst* weight error and the *best* perplexity.** At 2 bits its mean relative weight error is 0.714 against RTN's 0.459 — nearly double — yet it produces the better model. That is not a contradiction, it is the entire thesis of the method: GPTQ minimises ‖WX − ŴX‖, the error in the layer's *output*, and will happily accept a larger perturbation to a weight that multiplies a quiet input channel in exchange for a smaller one on a loud channel. Any comparison that ranked these methods by weight error would rank them backwards.
+**GPTQ has the *worst* weight error and the *best* perplexity.** At 2 bits its mean relative weight error is 0.714 against RTN's 0.459, nearly double, yet it produces the better model. That is not a contradiction, it is the entire thesis of the method: GPTQ minimises ‖WX − ŴX‖, the error in the layer's *output*, and will happily accept a larger perturbation to a weight that multiplies a quiet input channel in exchange for a smaller one on a loud channel. Any comparison that ranked these methods by weight error would rank them backwards.
 
 **Effective bits include the scales.** A '4-bit' model with group size 64 and fp16 scale + zero-point actually costs 4.50 bits per weight. Plotting against the nominal width would let a method buy accuracy with smaller groups and appear to win for free.
 
@@ -591,18 +591,18 @@ Generated by `scripts/specdec_bench.py` at git `7ba6387` on `mps:apple-silicon |
 
 | arm | target passes | tokens/pass | acceptance | tokens/s | vs baseline |
 |---|---|---|---|---|---|
-| autoregressive | 520 | 0.98 | — | 677.4 | 1.00x |
+| autoregressive | 520 | 0.98 |, | 677.4 | 1.00x |
 | speculative γ=2 | 245 | 2.09 | 0.590 | 483.2 | 0.71x |
 | speculative γ=4 | 203 | 2.52 | 0.424 | 463.2 | 0.68x |
 | speculative γ=6 | 174 | 2.94 | 0.367 | 535.5 | 0.79x |
-| autoregressive + GPTQ-4bit | 520 | 0.98 | — | 774.8 | 1.14x |
+| autoregressive + GPTQ-4bit | 520 | 0.98 |, | 774.8 | 1.14x |
 | speculative γ=6 + GPTQ-4bit | 176 | 2.91 | 0.362 | 535.8 | 0.79x |
 
 ### Reading the two columns
 
 **Tokens per target forward pass** is the hardware-independent result and the quantity the method actually controls. Autoregressive decoding is 1.0 by definition; speculation raises it toward `γ+1`.
 
-**Tokens per second is a measurement of this machine**, and at `nano` scale on a CPU it can go the *wrong way*. Speculation trades target passes for draft passes, and it only pays when a target pass is expensive relative to a draft pass. On a 5M-parameter model whose forward pass is a handful of small matmuls, Python and dispatch overhead dominate and the draft's `γ` sequential steps can cost more than the target passes they save. The mechanism is real and the target-pass reduction is real; the wall-clock win needs a model where weight loading, not interpreter overhead, is the bottleneck — which is exactly the regime the method was designed for and not the regime a laptop CPU running a 5M-parameter model is in. Reporting the speedup here without that caveat would be misleading.
+**Tokens per second is a measurement of this machine**, and at `nano` scale on a CPU it can go the *wrong way*. Speculation trades target passes for draft passes, and it only pays when a target pass is expensive relative to a draft pass. On a 5M-parameter model whose forward pass is a handful of small matmuls, Python and dispatch overhead dominate and the draft's `γ` sequential steps can cost more than the target passes they save. The mechanism is real and the target-pass reduction is real; the wall-clock win needs a model where weight loading, not interpreter overhead, is the bottleneck, which is exactly the regime the method was designed for and not the regime a laptop CPU running a 5M-parameter model is in. Reporting the speedup here without that caveat would be misleading.
 
 ### Composition with quantization
 
@@ -614,7 +614,7 @@ A precise statement of what stays lossless: speculative decoding is lossless **r
 
 The draft here is `runs/nano/distill/reverse_kl/final.pt`. Draft quality is the single lever that determines the acceptance rate, and therefore the speedup: an untrained draft agrees with the target only by chance and gives a floor. EAGLE-2/EAGLE-3, which draft on the target's own hidden features rather than with a separate model, are the current state of the art and the documented next step.
 
-One arm deserves a footnote: `autoregressive + GPTQ-4bit` is *faster* than unquantized autoregressive here even though the quantized weights are simulated in fp32 and no int4 kernel is involved. That is measurement noise on a shared laptop, not a quantization speedup — there is no mechanism by which it could be one, and the honest reading is that differences of this size in the tokens/s column should not be interpreted at all.
+One arm deserves a footnote: `autoregressive + GPTQ-4bit` is *faster* than unquantized autoregressive here even though the quantized weights are simulated in fp32 and no int4 kernel is involved. That is measurement noise on a shared laptop, not a quantization speedup; there is no mechanism by which it could be one, and the honest reading is that differences of this size in the tokens/s column should not be interpreted at all.
 
 Reproduce with: `python scripts/specdec_bench.py runs/nano/pretrain/final.pt`
 
@@ -628,9 +628,9 @@ Generated by `scripts/bench_all.py` at git `cb47d7e` on `mps:apple-silicon | mac
 
 | variant | params | weights | KV @ ctx | prefill p50 | decode tok/s | latency p50 | latency p95 | val ppl | accept |
 |---|---|---|---|---|---|---|---|---|---|
-| base (fp32) | 4,952,064 | 18.89 MB | 0.47 MB | 3.5 ms | 729.2 | 91.3 ms | 103.4 ms | 1.4764 | — |
-| distilled (reverse-KL) | 279,168 | 1.06 MB | 0.06 MB | 0.8 ms | 1765.8 | 21.6 ms | 37.0 ms | 2.5222 | — |
-| GPTQ 4-bit | 4,952,064 | 4.38 MB | 0.47 MB | 3.0 ms | 756.0 | 87.8 ms | 91.2 ms | 1.4766 | — |
+| base (fp32) | 4,952,064 | 18.89 MB | 0.47 MB | 3.5 ms | 729.2 | 91.3 ms | 103.4 ms | 1.4764 |, |
+| distilled (reverse-KL) | 279,168 | 1.06 MB | 0.06 MB | 0.8 ms | 1765.8 | 21.6 ms | 37.0 ms | 2.5222 |, |
+| GPTQ 4-bit | 4,952,064 | 4.38 MB | 0.47 MB | 3.0 ms | 756.0 | 87.8 ms | 91.2 ms | 1.4766 |, |
 | speculative (γ=6) | 5,231,232 | 19.96 MB | 0.53 MB | 0.0 ms | 597.3 | 107.2 ms | 118.0 ms | 1.4764 | 0.475 |
 | speculative (γ=6) + GPTQ 4-bit | 5,231,232 | 5.44 MB | 0.53 MB | 0.0 ms | 583.5 | 109.7 ms | 116.5 ms | 1.4766 | 0.475 |
 
@@ -648,7 +648,7 @@ Generated by `scripts/bench_all.py` at git `cb47d7e` on `mps:apple-silicon | mac
 
 **Speculative rows include the draft's weights and cache in their footprint.** Speculation is not free in memory: it trades space for target forward passes. Reporting only the target's size would hide the trade.
 
-**Decode throughput here is a CPU measurement at 5M parameters and does not generalise.** Speculation reduces target forward passes — that part is real and hardware-independent, and is measured in `results/speculative/` — but at this scale a forward pass is dominated by Python dispatch rather than by weight loading, so the wall-clock win the method exists for does not appear. Quantization likewise shows no speedup because the arithmetic is still fp32.
+**Decode throughput here is a CPU measurement at 5M parameters and does not generalise.** Speculation reduces target forward passes; that part is real and hardware-independent, and is measured in `results/speculative/`, but at this scale a forward pass is dominated by Python dispatch rather than by weight loading, so the wall-clock win the method exists for does not appear. Quantization likewise shows no speedup because the arithmetic is still fp32.
 
 **The tiny benchmark is saturated** at 100% for the base model. It is a degradation detector for Arc 2, not a quality ladder; an unchanged score means compression did not break the capabilities it probes, and nothing stronger.
 

@@ -1,4 +1,4 @@
-r"""The speculative-sampling acceptance rule (spec B8) — the correctness crown jewel.
+r"""The speculative-sampling acceptance rule (spec B8): the correctness crown jewel.
 
 References: Leviathan et al., *Fast Inference from Transformers via Speculative Decoding*
 (arXiv:2211.17192) and Chen et al., *Accelerating Large Language Model Decoding with
@@ -23,7 +23,7 @@ Fix a token ``x``. It can be emitted by either branch:
 
 *Resampled:* the rejection happens with probability
 ``β = 1 − Σ_v min(q(v), p(v))``, and the residual distribution assigns ``x`` mass
-``max(0, p(x) − q(x)) / β`` — because the normaliser
+``max(0, p(x) − q(x)) / β``: because the normaliser
 ``Σ_v max(0, p(v) − q(v)) = 1 − Σ_v min(p(v), q(v)) = β``. So the resampled branch
 contributes exactly ``max(0, p(x) − q(x))``.
 
@@ -32,7 +32,7 @@ Summing the two branches:
 .. math::  \min(q(x), p(x)) + \max(0, p(x) - q(x)) = p(x)
 
 for every ``x``, since if ``p(x) \ge q(x)`` the terms are ``q(x) + p(x) - q(x)``, and
-otherwise they are ``p(x) + 0``. The output distribution is ``p``, exactly — **not
+otherwise they are ``p(x) + 0``. The output distribution is ``p``, exactly, **not
 approximately**. Speculative decoding is lossless in distribution regardless of how bad
 the draft model is; a bad draft only lowers the acceptance rate, i.e. the speedup.
 
@@ -87,7 +87,7 @@ def residual_distribution(target_probs: Tensor, draft_probs: Tensor) -> Tensor:
 
 
 def expected_acceptance_rate(target_probs: Tensor, draft_probs: Tensor) -> Tensor:
-    r"""``Σ_v min(p(v), q(v))`` — the probability a drafted token is accepted.
+    r"""``Σ_v min(p(v), q(v))``: the probability a drafted token is accepted.
 
     This equals ``1 − TV(p, q)``, the total-variation *agreement* between the two
     distributions, which is the cleanest statement of what determines the speedup: a
@@ -112,7 +112,7 @@ def sample_accept_reject(
         generator: RNG, for reproducibility.
 
     Returns:
-        ``(token, accepted)`` — the emitted token per row and a boolean acceptance mask.
+        ``(token, accepted)``: the emitted token per row and a boolean acceptance mask.
     """
     alpha = acceptance_probability(target_probs, draft_probs, draft_token)
     uniform = torch.rand(alpha.shape, generator=generator, device=alpha.device)

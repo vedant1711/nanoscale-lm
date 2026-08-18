@@ -34,7 +34,7 @@ explicit `merged(...)` call. That is the point, but it is friction.
 `12 × 768 × 12`).
 
 **Decision.** The shapes are pinned exactly. The parameter counts that those shapes
-actually produce — with SwiGLU at an 8/3 expansion, GQA, and an **untied** LM head —
+actually produce: with SwiGLU at an 8/3 expansion, GQA, and an **untied** LM head,
 are computed analytically, reported in both total and non-embedding form, and asserted
 as exact constants in `tests/unit/test_config.py`.
 
@@ -69,7 +69,7 @@ arXiv:2203.15556) is what makes a training run compute-honest rather than arbitr
 is hours of CPU, and `nano` exists to be a sub-10-minute CI and teaching run. Its
 budget is derived from its step count instead, and its manifests record the fraction
 of the compute-optimal budget actually covered. `nano` also trains on a synthetic
-corpus rather than real text — see D4.
+corpus rather than real text: see D4.
 
 **Consequence.** No `nano` result is ever presented as a quality claim. It is a
 correctness and plumbing tier.
@@ -114,7 +114,7 @@ Fixing this tightened the RoPE, RMSNorm and attention oracles by that full margi
 
 **Context.** Every phase of the spec predicted an outcome. Several did not happen.
 
-**Decision.** When a measurement contradicted the plan, the measurement was recorded —
+**Decision.** When a measurement contradicted the plan, the measurement was recorded:
 as a results table, a docs paragraph, and where possible a test that pins the surprising
 behaviour so it cannot silently change.
 
@@ -163,9 +163,9 @@ aligned model then **lost** its head-to-head against the SFT model it started fr
 
 **Decision.** Every preference run logs the *absolute* log-probabilities of the chosen and
 rejected responses, not just their difference; every run reports mean generated length
-before and after; and the head-to-head judge is length-insensitive by construction.
+before and after, and the head-to-head judge is length-insensitive by construction.
 
-**What it caught.** DPO was reducing its loss by pushing **both** log-probabilities down —
+**What it caught.** DPO was reducing its loss by pushing **both** log-probabilities down,
 the chosen one merely less far. `Δ log p(chosen) = -0.0454` with `Δ log p(rejected) =
 -4.2385`. A rising margin was hiding a model getting worse at everything. Implementing the
 declared-but-unimplemented `sft_loss_weight` (the RPO-style NLL anchor) turned 0-7-33 into
@@ -184,14 +184,14 @@ both terms. The fix is not a better margin metric; it is reporting the terms.
 At 5M parameters on a CPU there is no memory-bandwidth bottleneck to relieve; a forward
 pass is dominated by Python dispatch.
 
-**Decision.** Report the hardware-independent quantities as results — target forward
+**Decision.** Report the hardware-independent quantities as results: target forward
 passes saved, weight footprint at a given effective bit-width, exactness of the
-speculative output distribution, rank ordering of the distillation objectives — and
+speculative output distribution, rank ordering of the distillation objectives, and
 report wall-clock throughput with an explicit statement that it does not generalise.
 
 **Concretely.** The weight column in the benchmark table is the *representation* size
 computed from effective bits including stored scales, not `sum(p.numel() * p.element_size())`
-— the 4-bit rows are simulated in fp32 because there is no int4 CPU kernel, so reading the
+: the 4-bit rows are simulated in fp32 because there is no int4 CPU kernel, so reading the
 footprint off the tensors would report a 4-bit model as 32-bit. Speculative rows include
 the draft's weights and KV cache, because speculation is not free in memory.
 
@@ -207,7 +207,7 @@ speculative decoding does not change the output distribution.
 
 **Decision.** It is checked three ways: greedy speculation must equal greedy
 autoregressive decoding token-for-token (exact equality, in the e2e smoke test); the
-accept/reject rule is unit-tested against a closed-form acceptance probability; and the
+accept/reject rule is unit-tested against a closed-form acceptance probability, and the
 sampled first-token distribution is compared to the target's over hundreds of draws, with
 the comparison run at raised temperature because at T=1 this model is peaked enough that
 any sampler would appear to match.
@@ -223,12 +223,12 @@ sampling-noise floor rather than a fixed tolerance.
 
 **Decision.** Three kinds of test, deliberately mixed:
 
-1. **Oracle tests** — a slow, obviously-correct fp64 reference (`rope_reference`, a naive
+1. **Oracle tests**: a slow, obviously-correct fp64 reference (`rope_reference`, a naive
    attention loop, closed-form optimizer solutions) that the fast path must match.
-2. **Property tests** — hypothesis generates the inputs. This is what found that BPE
+2. **Property tests**: hypothesis generates the inputs. This is what found that BPE
    concatenation is not subadditive; the counterexample it produced is now a named
    regression test.
-3. **Documented-surprise tests** — `test_adamw_parity_divergence_is_chaos_not_a_formula_difference`
+3. **Documented-surprise tests**: `test_adamw_parity_divergence_is_chaos_not_a_formula_difference`
    measures how the divergence from `torch.optim.AdamW` grows (1e-17 → 1e-15 → 1e-12 →
    1e-5 over 200 steps) and asserts the *growth pattern*, proving chaos amplification
    rather than a formula error. A plain tolerance test would have either failed or hidden

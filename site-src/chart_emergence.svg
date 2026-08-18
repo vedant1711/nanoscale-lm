@@ -1,0 +1,63 @@
+<svg viewBox="0 0 720 430" role="img" aria-label="Seven of nine grammatical phenomena improve with training while negation stays exactly at chance and agreement with an attractor trends slightly downward." style="width:100%;height:auto"><g font-family="ui-monospace, monospace" font-size="10" fill="currentColor"><line x1="56" y1="346.0" x2="524" y2="346.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="48" y="349.5" text-anchor="end" opacity=".6">25%</text>
+<line x1="56" y1="247.9" x2="524" y2="247.9" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="48" y="251.4" text-anchor="end" opacity=".6">50%</text>
+<line x1="56" y1="149.8" x2="524" y2="149.8" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="48" y="153.3" text-anchor="end" opacity=".6">75%</text>
+<line x1="56" y1="51.8" x2="524" y2="51.8" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="48" y="55.3" text-anchor="end" opacity=".6">100%</text>
+<line x1="56" y1="247.9" x2="524" y2="247.9" stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3" opacity=".55"/>
+<text x="62" y="241.9" font-size="9.5" opacity=".7">chance</text>
+<polyline points="85.2,247.9 114.5,149.8 143.8,136.8 173.0,110.6 202.2,84.5 231.5,58.3 260.8,84.5 290.0,84.5 319.2,104.1 348.5,51.8 377.8,84.5 407.0,64.8 436.2,51.8 465.5,51.8 494.8,51.8 524.0,51.8" fill="none" stroke="#12655F" stroke-width="1.7" opacity="0.9"/>
+<path d="M 524.0 51.8 L 530.0 51.8" fill="none" stroke="#12655F" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="51.8" r="2.6" fill="#12655F"/>
+<text x="535.0" y="53.8" font-size="9.5" fill="#12655F">reflexive</text>
+<text x="535.0" y="64.8" font-size="8" fill="#12655F" opacity=".72">rho=+0.87 p=0.000</text>
+<polyline points="85.2,208.7 114.5,208.7 143.8,216.5 173.0,216.5 202.2,208.7 231.5,165.5 260.8,181.2 290.0,216.5 319.2,189.1 348.5,169.5 377.8,126.3 407.0,177.3 436.2,122.4 465.5,134.2 494.8,126.3 524.0,122.4" fill="none" stroke="#2C6A33" stroke-width="1.7" opacity="0.9"/>
+<path d="M 524.0 122.4 L 530.0 129.8" fill="none" stroke="#2C6A33" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="122.4" r="2.6" fill="#2C6A33"/>
+<text x="535.0" y="131.8" font-size="9.5" fill="#2C6A33">agreement_simple</text>
+<text x="535.0" y="142.8" font-size="8" fill="#2C6A33" opacity=".72">rho=+0.82 p=0.000</text>
+<polyline points="85.2,236.2 114.5,118.5 143.8,173.4 173.0,87.1 202.2,87.1 231.5,83.2 260.8,51.8 290.0,67.5 319.2,55.7 348.5,59.6 377.8,55.7 407.0,59.6 436.2,51.8 465.5,79.2 494.8,51.8 524.0,67.5" fill="none" stroke="#3A6EA5" stroke-width="1.7" opacity="0.9"/>
+<path d="M 524.0 67.5 L 530.0 103.8" fill="none" stroke="#3A6EA5" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="67.5" r="2.6" fill="#3A6EA5"/>
+<text x="535.0" y="105.8" font-size="9.5" fill="#3A6EA5">pronoun_gender</text>
+<text x="535.0" y="116.8" font-size="8" fill="#3A6EA5" opacity=".72">rho=+0.71 p=0.002</text>
+<polyline points="85.2,204.8 114.5,208.7 143.8,216.5 173.0,216.5 202.2,216.5 231.5,220.5 260.8,220.5 290.0,208.7 319.2,232.2 348.5,200.8 377.8,208.7 407.0,200.8 436.2,169.5 465.5,185.2 494.8,181.2 524.0,185.2" fill="none" stroke="#7A5EA8" stroke-width="1.7" opacity="0.9"/>
+<path d="M 524.0 185.2 L 530.0 207.8" fill="none" stroke="#7A5EA8" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="185.2" r="2.6" fill="#7A5EA8"/>
+<text x="535.0" y="209.8" font-size="9.5" fill="#7A5EA8">argument_structure</text>
+<text x="535.0" y="220.8" font-size="8" fill="#7A5EA8" opacity=".72">rho=+0.64 p=0.008</text>
+<polyline points="85.2,267.5 114.5,259.7 143.8,177.3 173.0,212.6 202.2,118.5 231.5,189.1 260.8,126.3 290.0,142.0 319.2,142.0 348.5,106.7 377.8,126.3 407.0,142.0 436.2,149.8 465.5,161.6 494.8,161.6 524.0,130.2" fill="none" stroke="#B08A2E" stroke-width="1.7" opacity="0.9"/>
+<path d="M 524.0 130.2 L 530.0 155.8" fill="none" stroke="#B08A2E" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="130.2" r="2.6" fill="#B08A2E"/>
+<text x="535.0" y="157.8" font-size="9.5" fill="#B08A2E">entity_tracking</text>
+<text x="535.0" y="168.8" font-size="8" fill="#B08A2E" opacity=".72">rho=+0.45 p=0.080</text>
+<polyline points="85.2,247.9 114.5,267.5 143.8,193.0 173.0,153.8 202.2,102.8 231.5,87.1 260.8,98.8 290.0,110.6 319.2,157.7 348.5,102.8 377.8,145.9 407.0,114.5 436.2,91.0 465.5,142.0 494.8,130.2 524.0,138.1" fill="none" stroke="#5A8F7B" stroke-width="1.7" opacity="0.9"/>
+<path d="M 524.0 138.1 L 530.0 181.8" fill="none" stroke="#5A8F7B" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="138.1" r="2.6" fill="#5A8F7B"/>
+<text x="535.0" y="183.8" font-size="9.5" fill="#5A8F7B">determiner_noun</text>
+<text x="535.0" y="194.8" font-size="8" fill="#5A8F7B" opacity=".72">rho=+0.37 p=0.163</text>
+<polyline points="85.2,247.9 114.5,247.9 143.8,247.9 173.0,247.9 202.2,247.9 231.5,247.9 260.8,247.9 290.0,247.9 319.2,247.9 348.5,247.9 377.8,247.9 407.0,247.9 436.2,247.9 465.5,247.9 494.8,247.9 524.0,247.9" fill="none" stroke="#8F4715" stroke-width="2.4" stroke-dasharray="4 3" opacity="1"/>
+<path d="M 524.0 247.9 L 530.0 247.9" fill="none" stroke="#8F4715" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="247.9" r="2.6" fill="#8F4715"/>
+<text x="535.0" y="249.9" font-size="9.5" fill="#8F4715">negation</text>
+<text x="535.0" y="260.9" font-size="8" fill="#8F4715" opacity=".72">rho=+0.00 p=1.000</text>
+<polyline points="85.2,51.8 114.5,63.5 143.8,55.7 173.0,55.7 202.2,51.8 231.5,67.5 260.8,63.5 290.0,51.8 319.2,51.8 348.5,51.8 377.8,51.8 407.0,51.8 436.2,55.7 465.5,55.7 494.8,59.6 524.0,59.6" fill="none" stroke="#8F4715" stroke-width="2.4" stroke-dasharray="4 3" opacity="1"/>
+<path d="M 524.0 59.6 L 530.0 77.8" fill="none" stroke="#8F4715" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="59.6" r="2.6" fill="#8F4715"/>
+<text x="535.0" y="79.8" font-size="9.5" fill="#8F4715">tense_consistency</text>
+<text x="535.0" y="90.8" font-size="8" fill="#8F4715" opacity=".72">rho=-0.02 p=0.955</text>
+<polyline points="85.2,259.7 114.5,263.6 143.8,267.5 173.0,271.5 202.2,295.0 231.5,279.3 260.8,271.5 290.0,259.7 319.2,263.6 348.5,263.6 377.8,267.5 407.0,275.4 436.2,271.5 465.5,263.6 494.8,271.5 524.0,279.3" fill="none" stroke="#8F4715" stroke-width="2.4" stroke-dasharray="4 3" opacity="1"/>
+<path d="M 524.0 279.3 L 530.0 279.3" fill="none" stroke="#8F4715" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="279.3" r="2.6" fill="#8F4715"/>
+<text x="535.0" y="281.3" font-size="9.5" fill="#8F4715">agreement_attractor</text>
+<text x="535.0" y="292.3" font-size="8" fill="#8F4715" opacity=".72">rho=-0.25 p=0.345</text>
+<text x="56.0" y="363" text-anchor="middle" opacity=".6">0M</text>
+<text x="173.0" y="363" text-anchor="middle" opacity=".6">6M</text>
+<text x="290.0" y="363" text-anchor="middle" opacity=".6">12M</text>
+<text x="407.0" y="363" text-anchor="middle" opacity=".6">18M</text>
+<text x="524.0" y="363" text-anchor="middle" opacity=".6">25M</text>
+<text x="290" y="381" text-anchor="middle" opacity=".6">training tokens</text>
+<text x="56" y="24" font-size="11" font-weight="600">Minimal-pair accuracy through one training run, 12.8M params, 16 probes</text>
+<text x="56" y="414" font-size="9.5" opacity=".7">Dashed amber: no positive trend with training. Validation loss over the same run: 3.106 to 1.774.</text></g></svg>

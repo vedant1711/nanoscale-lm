@@ -1,6 +1,6 @@
 """Training-dynamics tests (spec D3).
 
-These are the tests that catch a training loop which *runs* but does not *learn* — the
+These are the tests that catch a training loop which *runs* but does not *learn*: the
 failure mode that unit tests on individual components cannot see:
 
 * **Overfit a batch.** Any correct trainer must drive the loss on one repeated batch to

@@ -9,7 +9,7 @@ yet minutes elapsed with no records). A plain HTTP range request over the publis
 Both paths remain supported; this one is the default for reproducing the reported run.
 
 **Why TinyStories rather than FineWeb-Edu.** FineWeb-Edu is general web text, and a
-40M-parameter model trained on 50M of its tokens produces fluent-looking nonsense — the
+40M-parameter model trained on 50M of its tokens produces fluent-looking nonsense; the
 distribution is far wider than the capacity. TinyStories (Eldan & Li, 2023,
 arXiv:2305.07759) was constructed for exactly this regime: a vocabulary and grammar a
 small child would use, which is what makes coherent generation reachable below 100M

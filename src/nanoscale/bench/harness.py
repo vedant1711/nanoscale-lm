@@ -1,7 +1,7 @@
 """The unified benchmark harness (spec Phase 10).
 
 Produces one results table across every model variant: base, distilled, quantized,
-speculative, and speculative+quantized — on the same prompts, the same seeds and the
+speculative, and speculative+quantized: on the same prompts, the same seeds and the
 same machine.
 
 Measurement discipline
@@ -206,8 +206,8 @@ class BenchHarness:
         )
         lines = [header, "|" + "---|" * 10]
         for row in self.rows:
-            ppl = f"{row.perplexity:.4f}" if row.perplexity is not None else "—"
-            acc = f"{row.acceptance_rate:.3f}" if row.acceptance_rate is not None else "—"
+            ppl = f"{row.perplexity:.4f}" if row.perplexity is not None else ", "
+            acc = f"{row.acceptance_rate:.3f}" if row.acceptance_rate is not None else ", "
             lines.append(
                 f"| {row.variant} | {row.params:,} | {row.weight_mb:.2f} MB | "
                 f"{row.kv_mb:.2f} MB | {row.prefill_ms_p50:.1f} ms | "
@@ -218,7 +218,7 @@ class BenchHarness:
 
 
 def _percentile(values: Sequence[float], pct: float) -> float:
-    """Nearest-rank percentile — well-defined for the small samples used here.
+    """Nearest-rank percentile: well-defined for the small samples used here.
 
     Interpolating between order statistics implies a continuity the sample does not
     have; with five measurements, p95 is simply the largest.

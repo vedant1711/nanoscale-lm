@@ -6,7 +6,7 @@ to do with the data available, and it is not a measurement.
 
 This script trains every arm at N seeds and replaces the threshold with a two-sample
 Welch's t-test plus Cohen's d. A difference is only reported as real when it is
-statistically significant *and* large relative to run-to-run variance — the two criteria
+statistically significant *and* large relative to run-to-run variance: the two criteria
 shown separately, so a reader who disagrees with either threshold can see the underlying
 numbers.
 
@@ -69,7 +69,7 @@ _HEADER = (
 def reanalyse(payload: dict[str, Any]) -> dict[str, Any]:
     """Recompute the comparisons from the stored per-seed losses.
 
-    Lets the statistics be improved — a multiplicity correction, a new test — without
+    Lets the statistics be improved: a multiplicity correction, a new test, without
     retraining anything, which is the whole point of committing the raw per-seed numbers
     rather than only the summary.
     """
@@ -142,7 +142,7 @@ def plot(payload: dict[str, Any], name: str) -> Path:
     ax.set_xticklabels(labels, rotation=12, ha="right", fontsize=8)
     ax.set_ylabel("final validation loss")
     ax.set_title(
-        f"{name} ablation — {len(payload['seeds'])} seeds per arm\n"
+        f"{name} ablation, {len(payload['seeds'])} seeds per arm\n"
         "bars: mean ± standard error · dots: individual seeds",
         fontsize=10,
     )
@@ -162,7 +162,7 @@ def plot(payload: dict[str, Any], name: str) -> Path:
 def write_finding(payload: dict[str, Any], name: str, figure: Path) -> Path:
     """Write the markdown fragment for this suite."""
     lines = [
-        f"# Ablation — {name} (multi-seed)",
+        f"# Ablation, {name} (multi-seed)",
         "",
         f"**Question.** {payload['question']}",
         "",
@@ -179,7 +179,7 @@ def write_finding(payload: dict[str, Any], name: str, figure: Path) -> Path:
         steps = arm["mean_steps_to_target"]
         lines.append(
             f"| {arm['variant']} | **{arm['mean_val_loss']:.4f}** | {arm['stderr']:.4f} | "
-            f"{arm['n_seeds']} | {steps if steps is not None else '—'} |"
+            f"{arm['n_seeds']} | {steps if steps is not None else ', '} |"
         )
 
     lines += [
@@ -191,7 +191,7 @@ def write_finding(payload: dict[str, Any], name: str, figure: Path) -> Path:
         f"{len(payload['comparisons'])} comparison"
         f"{'s' if len(payload['comparisons']) != 1 else ''} in this suite, "
         f"with Cohen's d alongside. A difference counts as real only when it "
-        f"survives the correction *and* has |d| ≥ {payload['min_effect_size']} — with low "
+        f"survives the correction *and* has |d| ≥ {payload['min_effect_size']}, with low "
         f"enough variance a 0.1% gap becomes significant and stays irrelevant.",
         "",
         "Three separate questions are tested, because a single comparison of mean loss "
@@ -203,7 +203,7 @@ def write_finding(payload: dict[str, Any], name: str, figure: Path) -> Path:
     ]
 
     def fmt(v: float | None, spec: str = ".4f") -> str:
-        return "—" if v is None else format(v, spec)
+        return ", " if v is None else format(v, spec)
 
     for c in payload["comparisons"]:
         lines.append(
@@ -218,14 +218,14 @@ def write_finding(payload: dict[str, Any], name: str, figure: Path) -> Path:
         "## How to read this",
         "",
         "The single-seed version of this experiment compared arms with a fixed 2% rule, "
-        "which was an assumption rather than a measurement — with one run per arm there is "
+        "which was an assumption rather than a measurement, with one run per arm there is "
         "no way to estimate run-to-run variance, so there is nothing to compare a gap "
         "against. With several seeds that variance is measured directly, and the question "
         "becomes whether the between-arm gap is large relative to it.",
         "",
         "**A `no difference` verdict here is a real result, not a missing one.** It says "
         "the experiment had the resolution to detect a difference of this size and did not "
-        "find one. It does not say the technique does not work — these are 5M-parameter "
+        "find one. It does not say the technique does not work; these are 5M-parameter "
         "runs over 400 steps, and a stability aid has little to stabilise at that scale.",
         "",
         "**The `verdict` column refers to mean final loss only.** Read the other two "

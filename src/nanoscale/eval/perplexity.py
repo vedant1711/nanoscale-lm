@@ -7,7 +7,7 @@ Perplexity is the exponentiated mean negative log-likelihood **per token**:
 Two things that make published perplexities incomparable, both pinned here:
 
 * **Per token or per word?** This module is always per *token*, and tokens depend on the
-  tokenizer — a model with a 1k vocabulary and one with 50k are not comparable by
+  tokenizer; a model with a 1k vocabulary and one with 50k are not comparable by
   perplexity even on identical text. Every perplexity in this repo is measured with the
   committed tokenizer and is only comparable to other numbers measured the same way.
 * **Token-weighted or batch-weighted?** Averaging per-batch losses gives short trailing
@@ -21,7 +21,7 @@ finite evaluation set is an estimate, and reporting it without a standard error 
 reading noise as signal. :func:`perplexity` returns the standard error of the mean
 negative log-likelihood alongside the point estimate, propagated to a perplexity
 interval. At the sizes used here the interval is often wide enough to make small
-differences uninterpretable — which is exactly what it is for.
+differences uninterpretable, which is exactly what it is for.
 """
 
 from __future__ import annotations
@@ -107,7 +107,7 @@ def perplexity(
 
     The standard error is computed over the per-token negative log-likelihoods, which
     treats tokens as the sampling unit. That understates the true uncertainty slightly
-    because tokens within a sequence are correlated — a caveat worth knowing, and better
+    because tokens within a sequence are correlated: a caveat worth knowing, and better
     than reporting no interval at all.
     """
     was_training = model.training

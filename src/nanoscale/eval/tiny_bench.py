@@ -11,11 +11,11 @@ What this suite does instead is test the things the ``nano`` model *could* plaus
 learned from its training distribution, using the same multiple-choice-by-log-likelihood
 protocol the real benchmarks use:
 
-* **agreement** — does the model prefer the pronoun matching the protagonist's gender?
-* **coreference** — does it prefer the continuation that refers to the entity actually
+* **agreement**: does the model prefer the pronoun matching the protagonist's gender?
+* **coreference**: does it prefer the continuation that refers to the entity actually
   introduced?
-* **schema** — does it prefer a grammatical continuation over a scrambled one?
-* **arithmetic** — the GSM8K-style verifiable-answer task from the GRPO track.
+* **schema**: does it prefer a grammatical continuation over a scrambled one?
+* **arithmetic**: the GSM8K-style verifiable-answer task from the GRPO track.
 
 Scoring protocol
 ----------------
@@ -83,7 +83,7 @@ def _agreement_context(name: str) -> str:
 
     The context length and structure are not incidental. An earlier version of this probe
     used a single sentence of context (``"{name} went to the park with a small dog."``)
-    and the model scored at chance — 3/6 — which read as "the model has not learned
+    and the model scored at chance, 3/6, which read as "the model has not learned
     agreement". It had: the corpus never places a pronoun sentence that early, so the
     probe was off-distribution in *structure* even though every word in it was in
     vocabulary. With the prefix positioned where pronouns actually occur, the same

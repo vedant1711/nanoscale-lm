@@ -1,6 +1,6 @@
-# Ablation — architecture (multi-seed)
+# Ablation, architecture (multi-seed)
 
-**Question.** Do the modded-nanoGPT speedrun's architecture choices — QK-norm, zero-init output projections, SwiGLU — measurably help at this scale?
+**Question.** Do the modded-nanoGPT speedrun's architecture choices, QK-norm, zero-init output projections, SwiGLU: measurably help at this scale?
 
 ![architecture multi-seed](architecture_multiseed.png)
 
@@ -15,7 +15,7 @@ Every arm trained at 5 seeds (1337, 42, 7, 2024, 31337). Arms differ only in the
 
 ## Significance
 
-Two-sided Welch's t-test against the baseline arm at α=0.05, **Holm-Bonferroni corrected** across the 3 comparisons in this suite, with Cohen's d alongside. A difference counts as real only when it survives the correction *and* has |d| ≥ 0.8 — with low enough variance a 0.1% gap becomes significant and stays irrelevant.
+Two-sided Welch's t-test against the baseline arm at α=0.05, **Holm-Bonferroni corrected** across the 3 comparisons in this suite, with Cohen's d alongside. A difference counts as real only when it survives the correction *and* has |d| ≥ 0.8, with low enough variance a 0.1% gap becomes significant and stays irrelevant.
 
 Three separate questions are tested, because a single comparison of mean loss cannot answer them all: does the arm reach a *better* loss, does it get there in *fewer steps*, and is it *more consistent* across seeds?
 
@@ -27,9 +27,9 @@ Three separate questions are tested, because a single comparison of mean loss ca
 
 ## How to read this
 
-The single-seed version of this experiment compared arms with a fixed 2% rule, which was an assumption rather than a measurement — with one run per arm there is no way to estimate run-to-run variance, so there is nothing to compare a gap against. With several seeds that variance is measured directly, and the question becomes whether the between-arm gap is large relative to it.
+The single-seed version of this experiment compared arms with a fixed 2% rule, which was an assumption rather than a measurement, with one run per arm there is no way to estimate run-to-run variance, so there is nothing to compare a gap against. With several seeds that variance is measured directly, and the question becomes whether the between-arm gap is large relative to it.
 
-**A `no difference` verdict here is a real result, not a missing one.** It says the experiment had the resolution to detect a difference of this size and did not find one. It does not say the technique does not work — these are 5M-parameter runs over 400 steps, and a stability aid has little to stabilise at that scale.
+**A `no difference` verdict here is a real result, not a missing one.** It says the experiment had the resolution to detect a difference of this size and did not find one. It does not say the technique does not work; these are 5M-parameter runs over 400 steps, and a stability aid has little to stabilise at that scale.
 
 **The `verdict` column refers to mean final loss only.** Read the other two p-values beside it. An arm can reach the same loss while getting there in half the steps, or with a fraction of the run-to-run spread, and both are results the mean comparison is structurally unable to report.
 

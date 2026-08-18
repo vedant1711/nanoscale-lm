@@ -22,7 +22,7 @@ Validation loss over the same run: 3.106 → 1.774.
 
 ## Why this is worth plotting
 
-A single end-of-training number cannot distinguish *never learned* from *learned and then unlearned*, and the two have opposite implications. A capability that rises and then falls means the model found a shortcut that pays on the training distribution and costs accuracy on the probe — which is a statement about the data, not about capacity. A capability that never moves is a statement about capacity or about the probe.
+A single end-of-training number cannot distinguish *never learned* from *learned and then unlearned*, and the two have opposite implications. A capability that rises and then falls means the model found a shortcut that pays on the training distribution and costs accuracy on the probe, which is a statement about the data, not about capacity. A capability that never moves is a statement about capacity or about the probe.
 
 **Read the Spearman column, not the individual dips.** With 100 items per probe the binomial standard error is about 5 points, so any single point moving by 9 points is barely one standard error of a difference and cannot carry a claim. The rank correlation between accuracy and training tokens uses all 16 probes at once and is the statistic that can.
 

@@ -38,7 +38,7 @@ RMSNorm → untied LM head → [optional tanh soft-cap] → logits
 ```
 
 Pre-norm residuals keep an identity path from embedding to output, so gradients reach
-layer 0 undamped — which is what makes depth trainable without a warmup knife-edge.
+layer 0 undamped, which is what makes depth trainable without a warmup knife-edge.
 
 ## The size ladder
 
@@ -72,7 +72,7 @@ runners. GPU runs are reported experiments, never gates.
 **Reductions promote to at least fp32, and never demote.** The RMS reduction, the
 attention softmax and the RoPE rotation all accumulate at higher precision than the
 surrounding activations. The naive `x.float()` promotes bf16 as intended but silently
-*demotes* float64 — which broke the fp64 reference tests that give the numerical suite its
+*demotes* float64, which broke the fp64 reference tests that give the numerical suite its
 teeth. `model/numerics.py` exists for that one rule.
 
 **Configuration is frozen, hashed and fully documented.** Every field carries a

@@ -24,7 +24,7 @@ implementation has to respect:
 **Length exploitation.** Because the reward is a *sum* of per-token log-ratios, a longer
 response has more terms to accumulate advantage over. DPO can therefore reduce its loss
 by making chosen responses longer rather than better. This is well documented and is
-precisely what Phase 6's diagnostic measures — which is why
+precisely what Phase 6's diagnostic measures, which is why
 :func:`dpo_loss` returns the response lengths alongside the rewards.
 
 SimPO
@@ -38,9 +38,9 @@ changes, each addressing one of the above:
        \frac{\beta}{|y_w|}\log\pi_\theta(y_w|x)
      - \frac{\beta}{|y_l|}\log\pi_\theta(y_l|x) - \gamma\right)\right]
 
-1. **Length normalisation** — dividing by the response length makes the reward an
+1. **Length normalisation**: dividing by the response length makes the reward an
    *average* log-probability, which removes the mechanical incentive to lengthen.
-2. **No reference model** — the reward is the policy's own length-normalised
+2. **No reference model**: the reward is the policy's own length-normalised
    log-likelihood, so there is no frozen second copy in memory. At ``micro`` scale that
    is a ~40M-parameter saving; at production scale it is half the memory of the run.
 3. A **target margin** ``γ``, which asks the model not merely to prefer the chosen

@@ -87,10 +87,10 @@ class BPETokenizer:
 
     Vocabulary layout (IDs are assigned in this order, which the tests pin):
 
-    * ``[0, 256)`` — the raw byte tokens.
-    * ``[256, 256 + n_merges)`` — learned merges, in the order they were learned, so a
+    * ``[0, 256)``: the raw byte tokens.
+    * ``[256, 256 + n_merges)``: learned merges, in the order they were learned, so a
       token's ID is also its merge rank offset.
-    * ``[vocab_size - n_specials, vocab_size)`` — special tokens.
+    * ``[vocab_size - n_specials, vocab_size)``: special tokens.
 
     Special tokens are never produced by merging, so they can only enter a token
     stream when the caller explicitly asks for them. That is a safety property: user
@@ -348,7 +348,7 @@ class BPETokenizer:
         Args:
             text: Input string.
             allowed_special: ``False`` (default) treats special-token strings in the
-                input as ordinary text — untrusted input can never forge a control
+                input as ordinary text, untrusted input can never forge a control
                 token. ``True`` recognises all specials; an iterable recognises only
                 those named.
             add_bos: Prepend ``<bos>``.
@@ -477,7 +477,7 @@ class BPETokenizer:
             yield tid, self.token_repr(tid)
 
     def compression_ratio(self, text: str) -> float:
-        """Bytes per token on ``text`` — the headline quality metric for a tokenizer."""
+        """Bytes per token on ``text``: the headline quality metric for a tokenizer."""
         ids = self.encode(text)
         if not ids:
             return 0.0

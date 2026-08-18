@@ -9,8 +9,8 @@ Initialisation
 Two schemes, both seeded and both documented:
 
 * **Zero-init output projections** (default, muP-like, from the modded-nanoGPT
-  speedrun). Every projection that *writes into the residual stream* — attention
-  ``o_proj``, MLP ``down_proj`` — starts at exactly zero, as does the LM head. The
+  speedrun). Every projection that *writes into the residual stream*, attention
+  ``o_proj``, MLP ``down_proj``: starts at exactly zero, as does the LM head. The
   network therefore starts as the identity function on the residual stream and outputs
   uniform logits, so the initial loss is exactly ``ln(vocab_size)``. Layers switch
   themselves on as their gradients justify it, rather than starting with a random
@@ -284,7 +284,7 @@ class NanoScaleLM(nn.Module):
             top_p: Nucleus cutoff (``1.0`` disables).
             eos_id: Stop once every sequence in the batch has emitted this token.
             use_cache: Use the KV cache. ``False`` recomputes the full prefix each step
-                and must produce identical output — that equivalence is a test.
+                and must produce identical output; that equivalence is a test.
             generator: RNG for reproducible sampling.
 
         Returns:

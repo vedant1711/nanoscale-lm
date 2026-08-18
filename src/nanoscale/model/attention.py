@@ -19,7 +19,7 @@ the softmax saturates as ``d_h`` grows.
 
 **Grouped-query attention** (Ainslie et al., arXiv:2305.13245) gives each *group* of
 query heads one shared key/value head. With ``n_heads=8, n_kv_heads=4`` the KV cache
-halves, which at decode time — where the bottleneck is memory bandwidth, not FLOPs — is
+halves, which at decode time, where the bottleneck is memory bandwidth, not FLOPs, is
 close to a 2x throughput win for a quality cost that is small at this scale. MQA
 (``n_kv_heads=1``) and MHA (``n_kv_heads=n_heads``) are the endpoints of the same knob.
 
@@ -30,7 +30,7 @@ small-model training. It is part of the modded-nanoGPT speedrun stack and is on 
 default here, with an ablation flag so Phase 5 can measure it.
 
 **Ordering.** QK-norm is applied *before* RoPE. RoPE is norm-preserving, so the two
-commute as far as the normalization is concerned — but the learned QK gain does not
+commute as far as the normalization is concerned, but the learned QK gain does not
 commute with the rotation, so the order is a real choice and is pinned here and by test.
 """
 
@@ -60,7 +60,7 @@ def repeat_kv(x: torch.Tensor, n_rep: int) -> torch.Tensor:
 
     Returns:
         ``(B, n_kv_heads * n_rep, T, D)``, with head ``i`` of the input mapped to heads
-        ``[i*n_rep, (i+1)*n_rep)`` of the output — the grouping the GQA paper specifies.
+        ``[i*n_rep, (i+1)*n_rep)`` of the output: the grouping the GQA paper specifies.
     """
     if n_rep == 1:
         return x

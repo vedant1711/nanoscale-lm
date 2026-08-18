@@ -90,7 +90,7 @@ HEADER = """# Results
 Every figure and number on this page is copied verbatim from a committed artifact under
 `results/`, which was in turn produced by a committed script and stamped with the git SHA
 and hardware that produced it. This page is **generated** by
-`scripts/build_docs_results.py` — editing it by hand will be reverted by CI.
+`scripts/build_docs_results.py`: editing it by hand will be reverted by CI.
 
 !!! warning "Read the limitations first"
     Two models produced everything here. The **`micro`** tier is 40.4M parameters trained
@@ -101,8 +101,8 @@ and hardware that produced it. This page is **generated** by
     run many controlled arms against.
 
     Neither is a frontier-scale claim. See [Limitations](limitations.md) for what these
-    numbers do and do not support. Several results here are *negative* — a predicted effect
-    that did not appear, or appeared backwards — and they are reported rather than omitted.
+    numbers do and do not support. Several results here are *negative*; a predicted effect
+    that did not appear, or appeared backwards, and they are reported rather than omitted.
 
 ## On this page
 

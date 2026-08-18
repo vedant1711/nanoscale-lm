@@ -4,7 +4,7 @@ The one thing that has to be right
 -----------------------------------
 SFT trains the model to *produce assistant turns*, not to *predict the whole
 transcript*. If the loss covers prompt tokens too, the model spends capacity learning to
-generate plausible user messages, and — worse — it learns that the ``<user>`` role marker
+generate plausible user messages, and, worse; it learns that the ``<user>`` role marker
 is followed by user-like text, which makes it prone to continuing the conversation on
 the user's behalf at inference time.
 

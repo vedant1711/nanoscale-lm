@@ -1,14 +1,14 @@
 """The end-to-end smoke test (spec D3).
 
-Runs the **entire pipeline** at `nano` tier on CPU — tokenizer → pretrain → SFT → DPO →
-quantize → speculative decode → evaluate — and asserts a sanity metric at every stage.
+Runs the **entire pipeline** at `nano` tier on CPU, tokenizer → pretrain → SFT → DPO →
+quantize → speculative decode → evaluate, and asserts a sanity metric at every stage.
 The spec's requirement is that this completes in under 10 minutes on a CPU with no GPU
 and no network.
 
 Why this exists on top of 500 unit tests: every stage is individually correct and the
 pipeline can still be broken at the seams. A tokenizer whose vocabulary does not match
 the model's, a checkpoint that does not carry its config, an aligned model the quantizer
-cannot load — none of those show up in a unit test of the component.
+cannot load, none of those show up in a unit test of the component.
 
 Run it directly with ``make smoke``, or as part of the suite with
 ``pytest -m slow tests/e2e``.
@@ -138,7 +138,7 @@ def test_full_pipeline_on_cpu(tmp_path: Path) -> None:
     mark("quantize")
 
     # ---------------------------------------------------------------- 7. speculate
-    # The draft here is *untrained* — training one would blow the time budget, and the
+    # The draft here is *untrained*, training one would blow the time budget, and the
     # measured acceptance rate is reported by `scripts/specdec_bench.py` against the
     # distilled draft, not here. So the bar is only "the wiring works and at least some
     # proposals survive the accept rule"; the real assertion is losslessness below.

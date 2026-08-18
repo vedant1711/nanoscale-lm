@@ -8,7 +8,7 @@ Each entry corresponds to one phase of the build plan in `nanoscale_lm_spec.md`.
 
 ## [Unreleased]
 
-### Phase 0 — Foundation
+### Phase 0, Foundation
 
 **Added**
 
@@ -30,12 +30,12 @@ Each entry corresponds to one phase of the build plan in `nanoscale_lm_spec.md`.
 - Tooling: `ruff` (lint + format), `mypy --strict`, `pytest`, `pre-commit`, a
   `Makefile`, and a GitHub Actions CI matrix (Python 3.11/3.12, CPU only).
 
-### Phase 1 — Tokenizer
+### Phase 1, Tokenizer
 
 **Added**
 
-- `nanoscale.tokenizer.bpe`: byte-level BPE from scratch — train, encode, decode,
-  save/load — with GPT-2 and GPT-4 pre-tokenization regexes. Training uses an
+- `nanoscale.tokenizer.bpe`: byte-level BPE from scratch: train, encode, decode,
+  save/load: with GPT-2 and GPT-4 pre-tokenization regexes. Training uses an
   incremental pair counter plus a `pair -> words` inverted index, so a merge touches
   only the words that contain it rather than rescanning the corpus.
 - `nanoscale.tokenizer.chat`: chat templating with an SFT completion mask. Role
@@ -57,23 +57,23 @@ Each entry corresponds to one phase of the build plan in `nanoscale_lm_spec.md`.
   corpus can fill (761 merges), and dead embedding rows cost parameters and CPU time
   for nothing. `nano` is now 4,952,064 parameters.
 
-### Phase 2 — Model
+### Phase 2, Model
 
 **Added**
 
 - `nanoscale.model`: the full decoder-only transformer, from scratch.
-  - `rope.py` — RoPE in the paper's interleaved-pair convention, with a slow literal
+  - `rope.py`: RoPE in the paper's interleaved-pair convention, with a slow literal
     reference implementation used only by tests, and configurable table precision.
-  - `norm.py` — RMSNorm (default) and a bias-free LayerNorm ablation.
-  - `mlp.py` — SwiGLU (default, 8/3 expansion) and the ReLU² speedrun variant.
-  - `attention.py` — causal self-attention with GQA, RoPE, QK-norm, KV caching, and
+  - `norm.py`: RMSNorm (default) and a bias-free LayerNorm ablation.
+  - `mlp.py`: SwiGLU (default, 8/3 expansion) and the ReLU² speedrun variant.
+  - `attention.py`: causal self-attention with GQA, RoPE, QK-norm, KV caching, and
     an optional SDPA fast path behind the same interface.
-  - `kv_cache.py` — preallocated per-layer KV storage with `clone`/`truncate` for
+  - `kv_cache.py`: preallocated per-layer KV storage with `clone`/`truncate` for
     speculative rollback and byte-level memory accounting.
-  - `block.py`, `lm.py`, `mtp.py` — pre-norm blocks, the LM with zero-init or
+  - `block.py`, `lm.py`, `mtp.py`: pre-norm blocks, the LM with zero-init or
     depth-scaled initialisation, tanh logit soft-capping, optional multi-token
     prediction heads, and the reference generation loop.
-  - `numerics.py` — "promote to at least fp32, never demote" for the reduction-heavy
+  - `numerics.py`: "promote to at least fp32, never demote" for the reduction-heavy
     ops.
 - 119 new tests: manual attention == SDPA in fp32 and fp64 across MHA/GQA/MQA with and
   without QK-norm and padding masks; cached decode == full recompute token-for-token;
@@ -81,18 +81,18 @@ Each entry corresponds to one phase of the build plan in `nanoscale_lm_spec.md`.
   hand-computed RMSNorm/SwiGLU values; parameter counts against the tier table;
   `ln(vocab)` initial loss; plus hypothesis properties over the whole config space.
 
-### Phase 3 — Optimizer
+### Phase 3, Optimizer
 
 **Added**
 
-- `nanoscale.optim.adamw` — decoupled-weight-decay Adam from scratch, matching
+- `nanoscale.optim.adamw`: decoupled-weight-decay Adam from scratch, matching
   `torch.optim.AdamW` to 1e-12 including the exact `eps`-outside-the-sqrt placement.
-- `nanoscale.optim.muon` — Muon: momentum orthogonalized by a five-step quintic
+- `nanoscale.optim.muon`: Muon: momentum orthogonalized by a five-step quintic
   Newton–Schulz iteration, with both the original shape-aware update scaling and the
   RMS-matching (Moonlight) alternative.
-- `nanoscale.optim.cautious` — cautious weight decay: decay only where it agrees with
+- `nanoscale.optim.cautious`: cautious weight decay: decay only where it agrees with
   the optimizer's own update direction, plus a `wd_scale` hook for a decaying λ.
-- `nanoscale.optim.router` — the documented Muon/AdamW parameter split and a
+- `nanoscale.optim.router`: the documented Muon/AdamW parameter split and a
   `CompositeOptimizer` that presents both as one interface to the trainer.
 - 57 unit tests and 7 hypothesis properties covering all four Phase-3 acceptance
   criteria.
@@ -102,20 +102,20 @@ Each entry corresponds to one phase of the build plan in `nanoscale_lm_spec.md`.
 - Two honest negative results are recorded as tests rather than omitted: AdamW beats
   Muon on a convex single-matrix problem (Muon's win needs depth and stochasticity),
   and long-horizon AdamW/torch divergence at aggressive hyperparameters is chaos
-  amplification, not a formula error — pinned by measuring the growth curve.
+  amplification, not a formula error: pinned by measuring the growth curve.
 
-### Phase 4 — Pretraining
+### Phase 4, Pretraining
 
 **Added**
 
-- `nanoscale.train.data` — packing, contiguous train/val splitting, and a deterministic
+- `nanoscale.train.data`: packing, contiguous train/val splitting, and a deterministic
   batcher whose position in the stream is a pure function of `(seed, batches consumed)`.
-- `nanoscale.train.schedule` — cosine+warmup and warmup-stable-decay, both returning a
+- `nanoscale.train.schedule`: cosine+warmup and warmup-stable-decay, both returning a
   multiplier so Muon and AdamW can share one schedule at different peak LRs; plus the
   decaying-λ schedule for cautious weight decay.
-- `nanoscale.train.checkpoint` — resumable checkpoints carrying weights, optimizer
+- `nanoscale.train.checkpoint`: resumable checkpoints carrying weights, optimizer
   state, counters and RNG state.
-- `nanoscale.train.loop` — gradient accumulation, clipping, AMP with fp32 master
+- `nanoscale.train.loop`: gradient accumulation, clipping, AMP with fp32 master
   weights, token-budget stopping, metric logging and manifest writing.
 - `nanoscale train pretrain|generate` CLI; `make train-nano` / `make train-micro`.
 - `nanoscale.utils.plotting` and `scripts/plot_loss_curve.py` /
@@ -128,18 +128,18 @@ Each entry corresponds to one phase of the build plan in `nanoscale_lm_spec.md`.
   correct offset, so a resumed run silently re-trained on data it had already seen and
   diverged from an uninterrupted one. Data position is now derived from the step count.
 
-### Phase 5 — Ablations
+### Phase 5; Ablations
 
 **Added**
 
-- `nanoscale.bench.ablation` — a controlled-A/B harness where every arm is one base
+- `nanoscale.bench.ablation`: a controlled-A/B harness where every arm is one base
   config plus named overrides, sharing seed, data order, schedule and step budget, and
   where the reporting helper refuses to name a winner on a gap below single-seed noise.
 - `scripts/ablate.py` with two suites (optimizer, architecture), a `--replay` mode that
   re-renders findings from the committed JSON without retraining, and committed results
   in `results/ablations/`.
 
-**Findings** (nano tier, single seed — directional only)
+**Findings** (nano tier, single seed, directional only)
 
 - **Muon + AdamW reaches the target loss in 50 steps vs AdamW's 105 (2.1×)** and ends
   3.5% lower. This reproduces the spec's E3 claim qualitatively.
@@ -147,21 +147,21 @@ Each entry corresponds to one phase of the build plan in `nanoscale_lm_spec.md`.
   difference in final loss** at this scale. Removing QK-norm does cost 1.5× more steps
   to reach the target, which the write-up reports rather than rounding to "no effect".
 
-### Phase 6 — Alignment
+### Phase 6, Alignment
 
 **Added**
 
-- `nanoscale.align.sft` — completion-masked SFT; prompt tokens are verified to receive
+- `nanoscale.align.sft`: completion-masked SFT; prompt tokens are verified to receive
   exactly zero gradient.
-- `nanoscale.align.losses` — DPO (with cDPO label smoothing) and SimPO, both matched
+- `nanoscale.align.losses`: DPO (with cDPO label smoothing) and SimPO, both matched
   against hand-computed values on tiny fixtures.
-- `nanoscale.align.preference` — the trainer, with a properly frozen reference policy,
+- `nanoscale.align.preference`: the trainer, with a properly frozen reference policy,
   the length-exploitation diagnostic, and an RPO-style auxiliary NLL term.
-- `nanoscale.align.grpo` — the optional RLVR track: group-relative advantages, a
+- `nanoscale.align.grpo`: the optional RLVR track: group-relative advantages, a
   PPO-clipped surrogate, a k3 KL penalty, and a programmatic arithmetic verifier.
-- `nanoscale.eval.preference_eval` — a stated, length-insensitive programmatic judge
+- `nanoscale.eval.preference_eval`: a stated, length-insensitive programmatic judge
   and a paired head-to-head harness.
-- `nanoscale.data.instruct` — instruction and preference data whose chosen/rejected
+- `nanoscale.data.instruct`: instruction and preference data whose chosen/rejected
   lengths are matched by construction, so the length diagnostic is interpretable.
 - `nanoscale align sft|preference|grpo` CLI and `scripts/align_pipeline.py`.
 
@@ -170,7 +170,7 @@ Each entry corresponds to one phase of the build plan in `nanoscale_lm_spec.md`.
 - All three preference arms reach 100% preference accuracy, but plain DPO's mean
   per-token log-probability of the *chosen* response falls (−0.045) while the margin
   rises: the objective satisfies itself by pushing both sides down. Adding the auxiliary
-  NLL anchor flips that to +0.010 — and DPO+NLL is the only arm that **wins** the
+  NLL anchor flips that to +0.010, and DPO+NLL is the only arm that **wins** the
   scripted head-to-head against the SFT model (3–0–37 vs DPO's 0–7–33).
 
 **Fixed**
@@ -178,46 +178,46 @@ Each entry corresponds to one phase of the build plan in `nanoscale_lm_spec.md`.
 - The synthetic "repetitive" rejection could reproduce the chosen response exactly for
   single-sentence answers, feeding DPO a pair labelled both preferred and dispreferred.
 
-### Phase 7 — Distillation
+### Phase 7, Distillation
 
 **Added**
 
-- `nanoscale.distill.losses` — forward-KL (Hinton, with the τ² gradient-scale
+- `nanoscale.distill.losses`: forward-KL (Hinton, with the τ² gradient-scale
   correction), SeqKD, and MiniLLM-style on-policy reverse KL via a reward-to-go policy
   gradient with a single-step regularisation term.
-- `nanoscale.distill.trainer` — a controlled comparison harness with an MLE warm-start
+- `nanoscale.distill.trainer`: a controlled comparison harness with an MLE warm-start
   phase applied identically to every objective.
 - `scripts/distill_compare.py` and `results/distillation/`.
 
-**Findings** — reverse-KL reaches perplexity 2.50 vs forward-KL's 2.05 (worse) but a
+**Findings**: reverse-KL reaches perplexity 2.50 vs forward-KL's 2.05 (worse) but a
 repetition rate of 0.0000 vs 0.0064 and SeqKD's 0.0372, and below the teacher's own
 0.0383. That is MiniLLM's qualitative result: mode-seeking students score worse on a
 coverage metric and degenerate less when generating.
 
-### Phase 8 — Quantization
+### Phase 8, Quantization
 
 **Added**
 
-- `nanoscale.quantize` — RTN, GPTQ (Cholesky-based Hessian error compensation, lazy
+- `nanoscale.quantize`: RTN, GPTQ (Cholesky-based Hessian error compensation, lazy
   block updates, activation ordering), AWQ-style scale search, and KV-cache
   quantization with separate key/value bit-widths.
 - `scripts/quantize_frontier.py` and `results/quantization/`, plotting against
   **effective** bits so the stored scales are counted.
 
-**Findings** — at 4 and 8 bits all methods tie with fp32 at this scale. At 2 bits GPTQ
+**Findings**: at 4 and 8 bits all methods tie with fp32 at this scale. At 2 bits GPTQ
 wins clearly (1.500 vs RTN's 1.541 and AWQ's 1.547), and does so while having the
-*highest* weight error — which is the method's whole thesis.
+*highest* weight error, which is the method's whole thesis.
 
-### Phase 9 — Speculative decoding
+### Phase 9, Speculative decoding
 
 **Added**
 
-- `nanoscale.specdec` — the modified rejection rule as pure functions, draft–target
+- `nanoscale.specdec`: the modified rejection rule as pure functions, draft–target
   speculation with an exact cache invariant, and Medusa-style tree attention with
   depth-derived position IDs.
 - `scripts/specdec_bench.py` and `results/speculative/`.
 
-**Findings** — with a distilled draft, 2.94 tokens per target forward pass at γ=6
+**Findings**: with a distilled draft, 2.94 tokens per target forward pass at γ=6
 against 0.98 autoregressive, and it composes with GPTQ-4bit (2.91). Wall-clock is
 *worse* on a CPU at this scale, and the write-up explains why rather than omitting it.
 
@@ -236,29 +236,29 @@ against 0.98 autoregressive, and it composes with GPTQ-4bit (2.91). Wall-clock i
   non-embedding) are reported honestly and asserted in tests. See
   `DESIGN_DECISIONS.md`.
 
-### Phase 10 — Serving, benchmarks, demo and docs
+### Phase 10, Serving, benchmarks, demo and docs
 
 **Added**
 
-- `nanoscale.serve` — streaming generation with an incremental UTF-8 decoder, stop
+- `nanoscale.serve`: streaming generation with an incremental UTF-8 decoder, stop
   sequences applied to the decoded text rather than to token IDs, sampling transforms
   (temperature, top-k, top-p, repetition penalty) shared with the speculative path, and
   a prefill/decode timing breakdown. `nanoscale serve generate|chat|eval`.
-- `nanoscale.bench` — a variant harness that measures params, weight footprint at
+- `nanoscale.bench`: a variant harness that measures params, weight footprint at
   effective bit-width, KV footprint, prefill p50, decode throughput, latency p50/p95 and
   peak memory, plus `scripts/bench_all.py` producing the unified table across base,
   distilled, GPTQ-4bit, speculative and speculative+GPTQ.
-- `nanoscale.eval.tiny_bench` — 28 hand-written questions across subject–verb agreement,
+- `nanoscale.eval.tiny_bench`: 28 hand-written questions across subject–verb agreement,
   coreference, schema completion and arithmetic, scored by likelihood with a binomial
   standard error and an explicit chance line.
 - Documentation site (`mkdocs.yml`, `docs/`): home, quickstart, architecture,
   methodology, results, limitations and an enterprise-scale chapter, published by a
   Pages workflow.
-- `scripts/build_docs_results.py` — **generates** `docs/results.md` from the committed
+- `scripts/build_docs_results.py`: **generates** `docs/results.md` from the committed
   per-measurement Markdown under `results/`, with stable section anchors, a table of
   contents and figure copying. `--check` fails if the committed page has drifted, and
   CI runs it.
-- `tests/e2e/test_smoke.py` and `make smoke` — the whole pipeline (tokenizer → pretrain
+- `tests/e2e/test_smoke.py` and `make smoke`: the whole pipeline (tokenizer → pretrain
   → SFT → DPO → quantize → speculate → evaluate) on CPU with a per-stage assertion and a
   10-minute budget. Measured: **45 seconds**.
 - Two Colab notebooks: `colab_train_from_scratch.ipynb` (tokenizer, model, optimizer,
@@ -279,12 +279,12 @@ against 0.98 autoregressive, and it composes with GPTQ-4bit (2.91). Wall-clock i
   detected. Replaced with `codecs.getincrementaldecoder("utf-8")("replace")`.
 - The tiny benchmark's agreement probe scored exactly chance because its single-sentence
   context was off-distribution for a model trained on multi-sentence stories. With a full
-  story prefix the base model scores 12/12 — the probe was broken, not the model.
+  story prefix the base model scores 12/12; the probe was broken, not the model.
 - The results page's cross-references resolved against auto-generated heading anchors
   that changed whenever a measurement script's prose changed; sections now carry explicit
   stable slugs.
 
-**Findings** — the unified table is where Arc 2 gets honest. Distillation gives 17.7×
+**Findings**: the unified table is where Arc 2 gets honest. Distillation gives 17.7×
 smaller weights and 2.4× decode throughput at a real capability cost (tiny bench 100% →
 67.9%). GPTQ-4bit gives 4.3× smaller weights at no measurable perplexity or benchmark
 cost. Speculative decoding cuts target forward passes 3× and is nonetheless *slower* in

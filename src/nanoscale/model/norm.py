@@ -5,7 +5,7 @@ keeps only the rescaling:
 
 .. math::  \mathrm{RMSNorm}(x) = \frac{x}{\sqrt{\frac{1}{d}\sum_i x_i^2 + ε}} \odot g
 
-The claim from the paper — and the reason essentially every modern LM uses it — is that
+The claim from the paper, and the reason essentially every modern LM uses it, is that
 re-centering contributes little to the stabilisation while costing a mean, a
 subtraction and an extra pass over the activations. There is no bias term, which is
 also standard in modern decoder stacks.
@@ -70,7 +70,7 @@ class LayerNorm(nn.Module):
     """Bias-free LayerNorm, available as a controlled ablation against RMSNorm.
 
     Kept bias-free so that the only difference from :class:`RMSNorm` is the
-    mean-centering — which is what makes an A/B between them interpretable.
+    mean-centering, which is what makes an A/B between them interpretable.
     """
 
     def __init__(self, dim: int, *, eps: float = 1e-5, elementwise_affine: bool = True) -> None:

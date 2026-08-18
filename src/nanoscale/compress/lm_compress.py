@@ -7,7 +7,7 @@ that it works. Both capabilities fall out of the same forward pass, and both are
 **Compression.** The model's next-token distribution drives an arithmetic coder
 (:mod:`nanoscale.compress.coder`), so its cross-entropy becomes an actual file size. On
 in-domain text this beats every classical compressor by a wide margin, because a general
-compressor can only exploit repetition while a language model exploits *meaning* — it
+compressor can only exploit repetition while a language model exploits *meaning*; it
 knows "the cat sat on the" is followed by a small set of words, which no substitution
 dictionary can represent.
 
@@ -59,7 +59,7 @@ class CompressionResult:
 
     @property
     def bits_per_byte(self) -> float:
-        """Achieved rate — the number that can be checked against the file on disk."""
+        """Achieved rate; the number that can be checked against the file on disk."""
         return self.n_bytes_out * 8 / max(1, self.n_bytes_in)
 
     @property
@@ -106,11 +106,11 @@ class _Stepper:
 
     * **One-shot teacher-forced encode** (score the whole sequence in one pass, since the
       encoder knows all the tokens). Measured drift against the stepwise path:
-      **1.7e-6** — only 12x below the bucket width. That is not a safety margin, it is a
+      **1.7e-6**: only 12x below the bucket width. That is not a safety margin, it is a
       coin flip at scale, and it is *rejected*: at 16k symbols per position the chance
       that some probability sits within 1.7e-6 of a boundary is not small.
     * **Incremental decoding with a KV cache.** The repository already pins this against
-      full recomputation at atol=1e-9 — **20,000x** below the bucket width. And the
+      full recomputation at atol=1e-9, **20,000x** below the bucket width. And the
       stronger argument is structural: encoder and decoder both use *this* path, so they
       execute identical operations on identical inputs and agree exactly, with the 1e-9
       figure only bounding the difference from the uncached path.
@@ -193,7 +193,7 @@ def decompress(
     """Reconstruct the original text from ``payload``.
 
     ``n_tokens`` must be transmitted alongside the payload; the coder has no end-of-stream
-    symbol. A production format would either reserve one or write the count in a header —
+    symbol. A production format would either reserve one or write the count in a header;
     the benchmark reports both so the accounting stays honest.
     """
     dev = device or next(model.parameters()).device
@@ -284,7 +284,7 @@ def score_lines(
     """Mean bits-per-token for each line, independently.
 
     Scored independently rather than as one stream so that a single anomalous line cannot
-    raise the surprisal of the lines that follow it — which would smear one anomaly across
+    raise the surprisal of the lines that follow it, which would smear one anomaly across
     a whole window and is a real failure mode of naive streaming scores.
 
     Length-normalised, because an unnormalised total scores every long line as anomalous.

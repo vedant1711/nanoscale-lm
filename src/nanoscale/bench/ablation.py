@@ -199,7 +199,7 @@ def describe_difference(
         line = (
             f"**No measurable difference in final loss.** {challenger.variant.display()} "
             f"reaches {other_loss:.4f} vs {base_loss:.4f} for {baseline.variant.display()} "
-            f"— a {abs(relative) * 100:.1f}% gap, below the {threshold * 100:.0f}% we are "
+            f": a {abs(relative) * 100:.1f}% gap, below the {threshold * 100:.0f}% we are "
             f"willing to call a result from a single seed at this scale."
         )
         # Converging to the same place and getting there at the same rate are different

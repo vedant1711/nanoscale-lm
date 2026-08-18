@@ -16,8 +16,8 @@ decoding token-by-token can produce replacement characters mid-emoji. :class:`Te
 uses Python's **incremental UTF-8 decoder**, which distinguishes the two cases that a
 naive try/except cannot:
 
-* bytes that are *incomplete but still potentially valid* — buffer them and emit nothing;
-* bytes that are *definitively invalid* — emit a replacement character and move on.
+* bytes that are *incomplete but still potentially valid*, buffer them and emit nothing;
+* bytes that are *definitively invalid*: emit a replacement character and move on.
 
 A hand-rolled ``try: buffer.decode() except UnicodeDecodeError: return ""`` conflates
 them, and on an untrained model (whose tokens are effectively random bytes) it buffers
@@ -112,7 +112,7 @@ def _apply_repetition_penalty(logits: Tensor, generated: Sequence[int], penalty:
 
     Following Keskar et al. (CTRL): for a *negative* logit the penalty must **multiply**
     rather than divide, otherwise dividing a negative number by a number greater than one
-    moves it closer to zero and makes the token *more* likely — the opposite of the
+    moves it closer to zero and makes the token *more* likely, the opposite of the
     intent. Getting this backwards is a common bug.
     """
     if penalty == 1.0 or not generated:

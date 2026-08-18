@@ -1,7 +1,7 @@
 """Tests for the tokenizer-independent, calibration and significance metrics.
 
-The pattern throughout is to construct a case whose answer is known from theory — a
-uniform model, a perfectly calibrated one, two samples with a hand-computable t — and
+The pattern throughout is to construct a case whose answer is known from theory: a
+uniform model, a perfectly calibrated one, two samples with a hand-computable t, and
 assert against that rather than against a previously observed number.
 """
 
@@ -231,7 +231,7 @@ def test_self_bleu_is_undefined_for_fewer_than_two_samples() -> None:
 def test_wilson_interval_stays_inside_zero_one_at_the_boundary() -> None:
     """The reason this is used instead of the normal approximation.
 
-    At p=1.0 the normal interval is [1.0, 1.0] — implying certainty from a finite sample —
+    At p=1.0 the normal interval is [1.0, 1.0]: implying certainty from a finite sample:
     and at p near 1 it extends above 1.0. Wilson does neither.
     """
     lo, hi = wilson_interval(100, 100)

@@ -87,7 +87,7 @@ def render_chat(
         add_bos: Prepend ``<bos>``.
         add_eos: Append ``<eos>`` after the final turn.
         train_on_all_assistant_turns: If True, every assistant turn is supervised. If
-            False, only the last one is — which is what you want when a multi-turn
+            False, only the last one is, which is what you want when a multi-turn
             example was constructed by appending to a fixed transcript.
 
     Returns:
@@ -144,7 +144,7 @@ def render_prompt(
     """Render a conversation as a *generation prompt*.
 
     Identical to :func:`render_chat` except that it ends with an open
-    ``<assistant>`` turn — the model is expected to continue from there. This is the
+    ``<assistant>`` turn; the model is expected to continue from there. This is the
     exact prefix used at inference time, which keeps train/serve formatting in sync.
     """
     if not messages:

@@ -3,7 +3,7 @@
 Perplexity is the field's default headline number and it has a serious flaw for the kind
 of comparison this project wants to make: **it depends on the tokenizer**. A model with a
 larger vocabulary needs fewer tokens to express the same text, so each token carries more
-information and its per-token perplexity looks worse — even if it predicts the underlying
+information and its per-token perplexity looks worse: even if it predicts the underlying
 *text* better. Comparing perplexities across models with different tokenizers is
 meaningless, and it is done constantly.
 
@@ -20,7 +20,7 @@ and the Chinchilla paper report for cross-model comparison, and it is what makes
 a fair one rather than an artefact of vocabulary size.
 
 The second metric here is **calibration**. A model can be accurate and still badly
-miscalibrated — assigning 99% confidence to predictions that are right 70% of the time.
+miscalibrated, assigning 99% confidence to predictions that are right 70% of the time.
 Expected calibration error bins predictions by confidence and measures the gap between
 confidence and accuracy in each bin. It matters for a small model specifically because
 overconfidence is the failure mode that makes generation degenerate: a model certain of a
@@ -61,7 +61,7 @@ class BitsPerByteResult:
 
     @property
     def bytes_per_token(self) -> float:
-        """How much text each token carried — the tokenizer's compression rate."""
+        """How much text each token carried: the tokenizer's compression rate."""
         return self.n_bytes / max(1, self.n_tokens)
 
     @property
@@ -110,7 +110,7 @@ def bits_per_byte(
         A :class:`BitsPerByteResult`.
 
     The standard error is propagated from the per-token NLL spread, scaled by the same
-    ``tokens/bytes`` factor as the mean — this treats byte count as exact, which it is.
+    ``tokens/bytes`` factor as the mean; this treats byte count as exact, which it is.
     """
     if n_bytes <= 0:
         raise ValueError(f"n_bytes must be positive, got {n_bytes}")
@@ -198,7 +198,7 @@ def calibration(
 
     A perfectly calibrated model has ECE 0: among predictions it made with 80%
     confidence, exactly 80% are correct. ECE is reported alongside accuracy because the
-    two are independent — a model can be accurate and overconfident, which is precisely
+    two are independent; a model can be accurate and overconfident, which is precisely
     the state that produces confident degenerate generation.
     """
     if n_bins < 2:
@@ -306,7 +306,7 @@ def self_bleu(texts: Sequence[str], *, max_n: int = 4) -> float:
     """Mean BLEU of each generation against all the others.
 
     Measures how similar a model's outputs are *to each other*. High self-BLEU means the
-    model produces the same thing regardless of prompt — mode collapse — which perplexity
+    model produces the same thing regardless of prompt: mode collapse, which perplexity
     cannot see. Implemented directly (uniform weights, brevity penalty) rather than pulled
     from a library, in keeping with the rest of the project.
 

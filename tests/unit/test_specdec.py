@@ -1,4 +1,4 @@
-"""Speculative-decoding correctness (spec D1) — the most important tests in the repo.
+"""Speculative-decoding correctness (spec D1), the most important tests in the repo.
 
 The claim under test is not "it is fast" but "it is **exactly** the target distribution".
 A speculative decoder with a subtly wrong acceptance rule still produces fluent text; the
@@ -8,10 +8,10 @@ the target, which is what :func:`test_accepted_tokens_match_target_sampling` doe
 
 Three deliberately different levels of evidence:
 
-1. **Algebraic** — the branch probabilities sum to ``p(x)`` exactly, checked in fp64.
-2. **Statistical** — the empirical distribution over 120k samples matches, and a
+1. **Algebraic**: the branch probabilities sum to ``p(x)`` exactly, checked in fp64.
+2. **Statistical**: the empirical distribution over 120k samples matches, and a
    deliberately *broken* rule fails the same test (so the test has teeth).
-3. **End-to-end** — greedy speculative decoding produces token-for-token identical
+3. **End-to-end**: greedy speculative decoding produces token-for-token identical
    output to greedy autoregressive decoding on a real model.
 """
 
@@ -186,7 +186,7 @@ def test_the_equivalence_test_rejects_a_deliberately_broken_rule() -> None:
     ).squeeze(-1)
     tv = total_variation(empirical(broken), empirical(direct))
     assert tv > TV_TOLERANCE, (
-        f"the broken rule produced TV {tv:.5f}, which the test would have accepted — "
+        f"the broken rule produced TV {tv:.5f}, which the test would have accepted, "
         "the tolerance is too loose to be meaningful"
     )
 
@@ -287,7 +287,7 @@ def test_greedy_speculation_with_a_disagreeing_draft_is_a_net_loss() -> None:
     """An honest negative case, pinned rather than hidden.
 
     At temperature 0 both distributions are one-hot. If the draft's argmax differs from
-    the target's, ``p(x_draft) = 0`` and the token is rejected with certainty — so every
+    the target's, ``p(x_draft) = 0`` and the token is rejected with certainty, so every
     round costs a full target pass and yields exactly one token, plus the drafting work
     on top. Speculation only pays when the draft *agrees often*, which for an untrained
     draft at temperature 0 it does not. This is a property of the method, not a bug:

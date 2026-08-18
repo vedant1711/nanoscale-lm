@@ -7,7 +7,7 @@ the trajectory itself: the losses live in a committed JSON file, and a run that 
 from them fails.
 
 **On the tolerance.** The natural instinct is to demand bit-exactness. That would be a
-cross-platform flake, not a test — the same PyTorch program produces slightly different
+cross-platform flake, not a test, the same PyTorch program produces slightly different
 floats on different BLAS backends, CPU microarchitectures and thread counts, and CI runs
 on hardware nobody controls. So the tolerance here is loose enough to survive that
 (`rtol = 3%`) and the test is aimed at a different target: a change in *behaviour*.

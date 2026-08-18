@@ -21,7 +21,7 @@ down to ``base^{-1}``. Written as a matrix, pair ``i`` of ``x`` at position ``m`
 
 Why it works
 ------------
-Rotations are orthogonal, so ``‖RoPE(x, m)‖ = ‖x‖`` — position never changes a vector's
+Rotations are orthogonal, so ``‖RoPE(x, m)‖ = ‖x‖``: position never changes a vector's
 magnitude. And because rotations compose additively,
 
 .. math::  \langle RoPE(q, m), RoPE(k, n) \rangle = f(q, k, m - n)
@@ -35,8 +35,8 @@ Implementation notes
 * This module uses the paper's *interleaved-pair* convention (pairs are ``(x0,x1)``,
   ``(x2,x3)``, …). LLaMA and Hugging Face use a "rotate-half" convention that pairs
   ``x_i`` with ``x_{i+d/2}``. The two are related by a fixed permutation of the head
-  dimension and are mathematically equivalent — a model trained under either is
-  identical up to relabelling its head coordinates — but they are **not**
+  dimension and are mathematically equivalent; a model trained under either is
+  identical up to relabelling its head coordinates, but they are **not**
   interchangeable at the level of loaded weights, so the convention is stated here and
   pinned by a test.
 * The cache is built once in fp32 and reused. Rotation is applied at fp32 or better

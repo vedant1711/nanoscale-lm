@@ -128,14 +128,14 @@ footer { margin-top:3.5rem; padding-top:1.5rem; border-top:1px solid var(--rule)
   <p class="eyebrow">Live demo &middot; NanoScale-LM</p>
   <h1>A 40M-parameter language model, built from scratch.</h1>
   <p class="sub">
-    Everything on this page is genuine output from the trained checkpoint &mdash; every token,
+    Everything on this page is genuine output from the trained checkpoint; every token,
     probability, byte count and surprisal score. Each panel shows what the model produced
     <em>and</em> explains what it is doing to produce it.
   </p>
   <div class="toplinks">
     <a href="explainer.html">&#128214; Full documentation</a>
     <a href="https://github.com/vedant1711/nanoscale-lm">Source</a>
-    <a href="results.html">Results</a>
+    <a href="results/">Results</a>
     <span class="theme" role="group" aria-label="Theme">
       <button type="button" data-theme-set="light" aria-pressed="false">Light</button>
       <button type="button" data-theme-set="dark" aria-pressed="false">Dark</button>
@@ -178,7 +178,7 @@ footer { margin-top:3.5rem; padding-top:1.5rem; border-top:1px solid var(--rule)
       <p>
         The model predicts a probability for every one of its 16,384 tokens, given everything
         before. To write the next word it <em>samples</em> from that distribution, appends the
-        result, and repeats &mdash; one token at a time, each one conditioned on all of the
+        result, and repeats: one token at a time, each one conditioned on all of the
         previous ones.
       </p>
       <p>
@@ -209,7 +209,7 @@ footer { margin-top:3.5rem; padding-top:1.5rem; border-top:1px solid var(--rule)
       <h3>What the model is actually choosing between</h3>
       <p style="font-size:.94rem;color:var(--ink-2)">
         Step through a greedy continuation. At each step you see the six most likely next
-        tokens and their probabilities &mdash; the real distribution, not a summary.
+        tokens and their probabilities: the real distribution, not a summary.
       </p>
       <div class="out" id="n-ctx" style="min-height:4.5rem"></div>
       <div class="row" style="margin-top:1rem">
@@ -223,9 +223,9 @@ footer { margin-top:3.5rem; padding-top:1.5rem; border-top:1px solid var(--rule)
     <div class="card explain">
       <h3>What is happening</h3>
       <p>
-        This is the entire computation a language model performs. Everything else &mdash;
-        attention, the feed-forward blocks, sixty-four million multiply-accumulates per token
-        &mdash; exists to produce this one list of numbers.
+        This is the entire computation a language model performs. Everything else:
+attention, the feed-forward blocks, sixty-four million multiply-accumulates per token
+, exists to produce this one list of numbers.
       </p>
       <p>
         Watch how the confidence changes. After <code>"Once upon a"</code> the model is nearly
@@ -235,7 +235,7 @@ footer { margin-top:3.5rem; padding-top:1.5rem; border-top:1px solid var(--rule)
       </p>
       <p style="margin-bottom:0">
         That spread is the model's uncertainty, and it is measurable. Averaged over a corpus it
-        is <b>cross-entropy</b> &mdash; the number every training curve plots, and the number
+        is <b>cross-entropy</b>: the number every training curve plots, and the number
         that decides how well the model can compress text in panel 3.
       </p>
     </div>
@@ -272,7 +272,7 @@ footer { margin-top:3.5rem; padding-top:1.5rem; border-top:1px solid var(--rule)
       </p>
       <p>
         <b>Now switch between the three samples.</b> On children's stories the model needs
-        about <b>0.6 bits per byte</b> &mdash; roughly four times better than <code>xz</code>.
+        about <b>0.6 bits per byte</b>, roughly four times better than <code>xz</code>.
         On encyclopedia prose it needs six times more. On source code it does <em>worse than
         storing the raw bytes</em>.
       </p>
@@ -293,7 +293,7 @@ footer { margin-top:3.5rem; padding-top:1.5rem; border-top:1px solid var(--rule)
       <h3>Surprisal as an anomaly score</h3>
       <p style="font-size:.94rem;color:var(--ink-2)">
         Each line scored by how many bits the model needs to encode it. No labels, no rules
-        &mdash; just "how unlike my training data is this?". Sorted most-surprising first.
+, just "how unlike my training data is this?". Sorted most-surprising first.
       </p>
       <div id="a-rows"></div>
       <p class="legend" id="a-note"></p>
@@ -320,13 +320,13 @@ footer { margin-top:3.5rem; padding-top:1.5rem; border-top:1px solid var(--rule)
       </p>
       <p>
         <b>The interesting row is not the gibberish.</b> Look at <em>"Tom picked up the quantum
-        entanglement and put it in his pocket"</em> &mdash; perfectly grammatical, right register,
+        entanglement and put it in his pocket"</em>: perfectly grammatical, right register,
         right characters. It scores high because one noun phrase is impossible in this world.
         That is semantic detection, not spell-checking.
       </p>
       <p style="margin-bottom:0">
         For a model trained on one system's logs, this is a definition of "anomalous log line"
-        that needs no labels, no regex library and no maintenance &mdash; it just needs the
+        that needs no labels, no regex library and no maintenance; it just needs the
         model to have read enough normal traffic.
       </p>
     </div>
@@ -337,7 +337,7 @@ footer { margin-top:3.5rem; padding-top:1.5rem; border-top:1px solid var(--rule)
   <p>
     <b>How this page works.</b> GitHub Pages serves static files and cannot run PyTorch, so every
     output here was precomputed by <code>scripts/build_demo_data.py</code> against the committed
-    checkpoint and shipped as JSON. Nothing is faked or interpolated &mdash; but you cannot type a
+    checkpoint and shipped as JSON. Nothing is faked or interpolated, but you cannot type a
     free-form prompt. For that, clone the repo and run <code>python demo/app.py</code>, which
     serves the same model live.
   </p>
@@ -1408,7 +1408,7 @@ footer { margin-top:3.5rem; padding-top:1.5rem; border-top:1px solid var(--rule)
     var max = s.top[0].p;
     $("n-bars").innerHTML =
       '<p class="legend" style="margin:1rem 0 .5rem">Step ' + (step + 1) + " of " +
-      D.next_token.length + " — top 6 of " + D.vocab_size.toLocaleString() + " tokens</p>" +
+      D.next_token.length + ": top 6 of " + D.vocab_size.toLocaleString() + " tokens</p>" +
       s.top.map(function (t, i) {
         var w = Math.max(2, (t.p / max) * 100);
         return '<div style="display:grid;grid-template-columns:8.5rem 1fr 4rem;gap:.6rem;' +

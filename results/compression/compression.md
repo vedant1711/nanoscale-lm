@@ -12,7 +12,7 @@ A language model is a compressor: Shannon says a symbol of probability `p` costs
 | 8,000 B | **0.7320** bpb (10.93x) | 3.2400 (2.47x) | 2.9410 (2.72x) | 3.2360 (2.47x) |
 | 24,000 B | **0.7078** bpb (11.30x) | 2.8523 (2.80x) | 2.4581 (3.25x) | 2.7167 (2.94x) |
 
-At the largest size tested, NanoScale-LM reaches **0.7078 bits/byte** against the best classical result of 2.4581 — a **3.5x** improvement in compressed size. Coder overhead against the model's own cross-entropy is 0.31%, so almost all of the theoretical rate is actually realised.
+At the largest size tested, NanoScale-LM reaches **0.7078 bits/byte** against the best classical result of 2.4581: a **3.5x** improvement in compressed size. Coder overhead against the model's own cross-entropy is 0.31%, so almost all of the theoretical rate is actually realised.
 
 Throughput is 182 tokens/s encode on this hardware, single-threaded, with a KV cache. That is far slower than `xz` and it is the honest cost of the method.
 
@@ -26,13 +26,13 @@ The model has to be stored alongside the archive, so the saving only pays back a
 | int8 | 41 MB | **187 MB** of in-domain text |
 | int4 | 22 MB | **99 MB** of in-domain text |
 
-Each byte of input costs 0.7078 bits with the model against 2.4581 with the best classical coder, saving 0.2188 bytes per input byte. Below the break-even volume, use `xz`. Above it — which is one day of logs for a mid-sized service — the neural codec wins and keeps winning.
+Each byte of input costs 0.7078 bits with the model against 2.4581 with the best classical coder, saving 0.2188 bytes per input byte. Below the break-even volume, use `xz`. Above it, which is one day of logs for a mid-sized service; the neural codec wins and keeps winning.
 
 This is also why the model has to be *small*. The same arithmetic with a 7B model at 14 GB puts break-even in the tens of terabytes, and its throughput would make the archive take longer to write than to generate.
 
 ## Anomaly detection, from the same forward pass
 
-Per-token surprisal is the compressor's cost function, un-summed. A line the model finds expensive to encode is a line unlike its training distribution — an unsupervised anomaly score with no labels, no rules and one threshold.
+Per-token surprisal is the compressor's cost function, un-summed. A line the model finds expensive to encode is a line unlike its training distribution; an unsupervised anomaly score with no labels, no rules and one threshold.
 
 In-domain lines have a median cost of **4.64 bits/token** (60 lines), and the 95th percentile sits at **6.41**. Using that as the alarm threshold, **5 of 5** injected anomalies are flagged.
 
@@ -51,6 +51,6 @@ In-domain lines have a median cost of **4.64 bits/token** (60 lines), and the 95
 | 6.03 | normal | `They swam faster and faster to reach the light` |
 | 5.97 | normal | `The sign had letters, but they could not read them` |
 
-The ordering is the useful part: gibberish and out-of-domain technical prose cost several times what in-domain narrative costs, and they separate cleanly. The 'subtle' case — a grammatical sentence in the right register with one impossible noun phrase — is the hard one, and is where a surprisal detector earns or loses its keep.
+The ordering is the useful part: gibberish and out-of-domain technical prose cost several times what in-domain narrative costs, and they separate cleanly. The 'subtle' case: a grammatical sentence in the right register with one impossible noun phrase, is the hard one, and is where a surprisal detector earns or loses its keep.
 
 Reproduce with: `python scripts/compression_bench.py --replay`

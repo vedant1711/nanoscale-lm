@@ -6,7 +6,7 @@ r"""Feed-forward blocks (spec B2): SwiGLU by default, ReLU² as the speedrun abl
 
 The gate is the point: one branch decides *how much* of the other branch to let
 through, per feature. It costs a third matrix, which is why the hidden width is
-conventionally set to ``8/3 · d_model`` — that keeps the parameter count level with a
+conventionally set to ``8/3 · d_model``: that keeps the parameter count level with a
 classic ``4 · d_model`` two-matrix MLP so the comparison is fair.
 
 **ReLU²** (used by the modded-nanoGPT speedrun) is the ungated alternative

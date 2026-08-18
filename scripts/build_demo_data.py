@@ -9,8 +9,8 @@ probability, byte count and surprisal score in `demo/demo_data.json` came out of
 
 What that buys, and what it costs:
 
-* The visitor sees genuine model behaviour — generations at several temperatures and
-  seeds, real arithmetic-coding byte counts, real per-token surprisal — with no server,
+* The visitor sees genuine model behaviour, generations at several temperatures and
+  seeds, real arithmetic-coding byte counts, real per-token surprisal, with no server,
   no cold start and no cost.
 * They cannot type a free-form prompt. The page says so plainly rather than pretending
   otherwise; `demo/app.py` remains the live version for anyone who clones the repo.

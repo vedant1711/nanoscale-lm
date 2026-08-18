@@ -10,7 +10,7 @@ One claim in the spec is deliberately **not** asserted here:
 
     "speculative tokens/sec > autoregressive"
 
-Because at this scale it is false, and measured to be false — 0.79x at gamma=6 (see
+Because at this scale it is false, and measured to be false, 0.79x at gamma=6 (see
 `results/speculative/speculative.md`). Speculation trades compute for memory bandwidth,
 and a 5M-parameter forward pass on a CPU is bound by Python dispatch, not by streaming
 weights. Asserting a claim the project does not make would be worse than useless. What is
@@ -175,7 +175,7 @@ def test_speculation_cuts_target_forward_passes(
     """README claim: ~3x fewer target passes at gamma=6, output distribution unchanged.
 
     The draft is distilled here rather than random, because that is the configuration the
-    claim is about — an untrained draft has an acceptance rate near zero and speculation
+    claim is about; an untrained draft has an acceptance rate near zero and speculation
     correctly degenerates to autoregressive decoding.
     """
     target, tok, cfg, _val, _calib = trained

@@ -12,7 +12,7 @@ becomes a two-sample test rather than a subtraction:
 
     Welch's t  =  (mean_a − mean_b) / sqrt(s_a²/n_a + s_b²/n_b)
 
-Welch rather than Student because the two arms have no reason to share a variance — an
+Welch rather than Student because the two arms have no reason to share a variance; an
 architectural change can affect run-to-run stability as well as the mean, and assuming
 equal variances would be assuming away part of what is being measured.
 
@@ -324,12 +324,12 @@ class MultiSeedComparison:
         stats = f"Welch t={self.t:.2f}, p={self.p_value:.3f}, d={self.effect_size:.2f}"
         if not self.significant:
             return (
-                f"{stem}. **Not significant** ({stats}) — the gap is within run-to-run "
+                f"{stem}. **Not significant** ({stats}); the gap is within run-to-run "
                 f"variance, so this experiment cannot distinguish the arms."
             )
         if not self.large_enough:
             return (
-                f"{stem}. **Significant but negligible** ({stats}) — the difference is real "
+                f"{stem}. **Significant but negligible** ({stats}); the difference is real "
                 f"and smaller than |d|={MIN_EFFECT_SIZE}, so it is unlikely to survive a "
                 f"change of scale or hardware."
             )

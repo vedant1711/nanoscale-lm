@@ -3,7 +3,7 @@
 The training checkpoints under ``runs/`` are resumable: they carry optimizer state, RNG
 state and history, which roughly triples their size and is useless to anyone who only
 wants to *run* the model. They are also gitignored, which meant the Gradio demo worked on
-the machine that trained the models and nowhere else — a demo that cannot be shared is
+the machine that trained the models and nowhere else; a demo that cannot be shared is
 not a demo.
 
 This script strips each checkpoint to weights plus the embedded config, which is enough

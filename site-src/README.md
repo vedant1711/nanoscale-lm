@@ -1,4 +1,4 @@
-# `site-src/` — the single-page documentation
+# `site-src/`: the single-page documentation
 
 `explainer.html` is the whole project in one self-contained page: every algorithm with its
 motivation and mathematics, the architecture diagrams, the design decisions, all measured
@@ -29,6 +29,6 @@ Every number in the page comes from a committed artifact under `results/` or a r
 manifest under `runs/`. The page hard-codes them rather than reading them at render time,
 so it is a **snapshot**: when `results/` changes, the page must be regenerated to match.
 
-`docs/results.md` is the complementary surface — it is generated from `results/` on every
+`docs/results.md` is the complementary surface; it is generated from `results/` on every
 build and CI fails if it has drifted. That one cannot go stale; this one is the narrative
 version and can, so it is regenerated alongside any result change.

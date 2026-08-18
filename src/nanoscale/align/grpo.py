@@ -4,7 +4,7 @@ Reference: Shao et al., *DeepSeekMath* (arXiv:2402.03300).
 
 The idea
 --------
-PPO needs a learned value function to compute advantages — a second network of
+PPO needs a learned value function to compute advantages: a second network of
 comparable size, trained on a moving target. GRPO removes it. For each prompt, sample a
 **group** of ``G`` completions, score them all, and use the group itself as the
 baseline:
@@ -23,14 +23,14 @@ Verifiable rewards
 ------------------
 The reward here is **programmatic, not learned**: arithmetic problems whose answers are
 checked by evaluating them. That is what "RLVR" means, and it is why this track is worth
-including at ``nano`` scale — with a learned reward model there would be nothing to
+including at ``nano`` scale, with a learned reward model there would be nothing to
 distinguish "the policy improved" from "the policy found a hole in the reward model",
 whereas an arithmetic checker cannot be gamed.
 
 What this track is not
 ----------------------
 This is a scoped demonstration on a task a ~5M-parameter model can actually learn, not a
-reasoning-RL result. The 2026 successors to cite — and the documented next step — are
+reasoning-RL result. The 2026 successors to cite, and the documented next step, are
 **GSPO** (sequence-level importance ratios, which fix the token-level ratio's variance
 at long horizons) and **DHPO** (hybrid token+sequence). Neither is implemented here.
 """
@@ -117,7 +117,7 @@ def verify_arithmetic(completion: str, answer: int) -> float:
 
 
 def group_relative_advantages(rewards: Tensor, *, eps: float = 1e-4) -> Tensor:
-    """Normalise rewards within each group — GRPO's critic-free baseline.
+    """Normalise rewards within each group, GRPO's critic-free baseline.
 
     Args:
         rewards: ``(n_prompts, group_size)`` rewards.

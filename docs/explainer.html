@@ -161,7 +161,16 @@ body {
   body { font-size: 16.5px; }
   h1 { font-size: clamp(1.9rem, 8vw, 2.6rem); }
   .math { font-size: .78rem; padding: .8rem .85rem; }
-  .kpis { grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); }
+  .hero-links { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.8rem 0 0; }
+.hero-links a {
+  font-family: var(--mono); font-size: .76rem; letter-spacing: .03em; text-decoration: none;
+  padding: .45rem .8rem; border: 1px solid var(--rule-strong); border-radius: 4px;
+  color: var(--ink-2); background: var(--surface);
+}
+.hero-links a:hover { color: var(--accent); border-color: var(--accent); }
+.hero-links a b { color: var(--accent); font-weight: 700; }
+
+.kpis { grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); }
   .grid2 { grid-template-columns: 1fr; gap: 1rem; }
   figcaption { font-size: .84rem; }
 }
@@ -223,6 +232,15 @@ section:first-of-type { border-top: 0; }
   max-width: 60ch; margin: 1.4rem 0 0;
 }
 .hero .lede b { color: var(--ink); font-weight: 700; }
+.hero-links { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.8rem 0 0; }
+.hero-links a {
+  font-family: var(--mono); font-size: .76rem; letter-spacing: .03em; text-decoration: none;
+  padding: .45rem .8rem; border: 1px solid var(--rule-strong); border-radius: 4px;
+  color: var(--ink-2); background: var(--surface);
+}
+.hero-links a:hover { color: var(--accent); border-color: var(--accent); }
+.hero-links a b { color: var(--accent); font-weight: 700; }
+
 .kpis {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 1px; background: var(--rule); border: 1px solid var(--rule);
@@ -283,6 +301,28 @@ pre code { background: none; padding: 0; font-size: inherit; }
   border-left: 2px solid var(--rule-strong); white-space: pre-wrap;
 }
 .math b { color: var(--accent); font-weight: 700; }
+
+/* ============================================================ worked examples */
+.eg {
+  border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+  border-radius: 0 4px 4px 0; background: var(--surface);
+  padding: .9rem 1.1rem; margin: 1.4rem 0; font-size: .92rem; line-height: 1.55;
+}
+.eg-t {
+  font-family: var(--mono); font-size: .66rem; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--accent); font-weight: 600;
+  display: block; margin-bottom: .5rem;
+}
+.eg > :last-child { margin-bottom: 0; }
+.eg pre, .eg .math { margin: .6rem 0; font-size: .8rem; }
+.eg table { font-size: .8rem; }
+.toks { display: flex; flex-wrap: wrap; gap: .25rem; margin: .6rem 0; }
+.toks span {
+  font-family: var(--mono); font-size: .78rem; white-space: pre;
+  padding: .18em .4em; border-radius: 3px;
+  background: var(--accent-soft); border: 1px solid var(--rule);
+}
+.toks span i { color: var(--ink-3); font-style: normal; font-size: .85em; }
 
 /* ============================================================ callouts */
 .note, .caveat, .win {
@@ -350,6 +390,16 @@ input[type="range"] { accent-color: var(--accent); }
 .readout { font-family: var(--mono); font-size: .78rem; color: var(--ink-2); line-height: 1.75; }
 .readout b { color: var(--ink); font-variant-numeric: tabular-nums; }
 
+/* ============================================================ rail links */
+.rail-links { display: flex; flex-direction: column; gap: .12rem; margin-top: 1.5rem;
+  padding-top: .9rem; border-top: 1px solid var(--rule); }
+.rail-links a {
+  display: block; text-decoration: none; color: var(--ink-2);
+  padding: .3rem .45rem; border-radius: 3px; font-size: 11.5px;
+}
+.rail-links a::before { content: "\2192"; color: var(--ink-3); margin-right: .45rem; }
+.rail-links a:hover { color: var(--accent); background: var(--surface-2); }
+
 /* ============================================================ theme toggle */
 .theme-toggle {
   display: inline-flex; gap: 0; margin-top: 1.4rem;
@@ -405,8 +455,8 @@ section > .note, section > .caveat, section > .win { max-width: var(--col); marg
   <nav id="toc" aria-label="Contents">
     <p class="grp">Orientation</p>
     <ol>
-      <li><a href="#thesis"><span class="n">—</span><span>The thesis</span></a></li>
-      <li><a href="#reading"><span class="n">—</span><span>How to read this</span></a></li>
+      <li><a href="#thesis"><span class="n">, </span><span>The thesis</span></a></li>
+      <li><a href="#reading"><span class="n">, </span><span>How to read this</span></a></li>
       <li><a href="#baseline"><span class="n">00</span><span>Your starting point</span></a></li>
     </ol>
     <p class="grp">Arc 1 · Build the model</p>
@@ -420,7 +470,7 @@ section > .note, section > .caveat, section > .win { max-width: var(--col); marg
     </ol>
     <p class="grp">Arc 2 · Serve it cheaply</p>
     <ol>
-      <li><a href="#cost"><span class="n">—</span><span>The cost model</span></a></li>
+      <li><a href="#cost"><span class="n">, </span><span>The cost model</span></a></li>
       <li><a href="#distill"><span class="n">07</span><span>Distillation</span></a></li>
       <li><a href="#quant"><span class="n">08</span><span>Quantization</span></a></li>
       <li><a href="#spec"><span class="n">09</span><span>Speculative decoding</span></a></li>
@@ -432,16 +482,21 @@ section > .note, section > .caveat, section > .win { max-width: var(--col); marg
     </ol>
     <p class="grp">Evidence</p>
     <ol>
-      <li><a href="#evaluation"><span class="n">—</span><span>How it is measured</span></a></li>
-      <li><a href="#results"><span class="n">—</span><span>All results</span></a></li>
+      <li><a href="#evaluation"><span class="n">, </span><span>How it is measured</span></a></li>
+      <li><a href="#results"><span class="n">, </span><span>All results</span></a></li>
       <li><a href="#stats"><span class="n">&#8721;</span><span>Ablations, with statistics</span></a></li>
       <li><a href="#emergence"><span class="n">&#8599;</span><span>When capabilities appear</span></a></li>
-      <li><a href="#negative"><span class="n">—</span><span>What went wrong</span></a></li>
-      <li><a href="#decisions"><span class="n">—</span><span>Design decisions</span></a></li>
-      <li><a href="#limits"><span class="n">—</span><span>Limits &amp; scale-up</span></a></li>
-      <li><a href="#repo"><span class="n">—</span><span>Run it yourself</span></a></li>
+      <li><a href="#negative"><span class="n">, </span><span>What went wrong</span></a></li>
+      <li><a href="#decisions"><span class="n">, </span><span>Design decisions</span></a></li>
+      <li><a href="#limits"><span class="n">, </span><span>Limits &amp; scale-up</span></a></li>
+      <li><a href="#repo"><span class="n">, </span><span>Run it yourself</span></a></li>
     </ol>
   </nav>
+  <div class="rail-links">
+    <a href="demo.html">Live demo</a>
+    <a href="results/">Results</a>
+    <a href="https://github.com/vedant1711/nanoscale-lm">Source</a>
+  </div>
   <div class="theme-toggle" role="group" aria-label="Colour theme">
     <button type="button" data-theme-set="light" aria-pressed="false">Light</button>
     <button type="button" data-theme-set="dark" aria-pressed="false">Dark</button>
@@ -459,11 +514,17 @@ section > .note, section > .caveat, section > .win { max-width: var(--col); marg
     GQA and RoPE, the Newton&ndash;Schulz orthogonalization inside the Muon optimizer, the DPO loss,
     GPTQ's Hessian error compensation, the speculative-decoding accept/reject rule.
     <b>No high-level trainer library appears anywhere in <code>src/nanoscale/</code>.</b>
-    This page explains all of it &mdash; the mathematics, the engineering, and the measurements,
+    This page explains all of it: the mathematics, the engineering, and the measurements,
     including the ones that contradicted the plan. It is the complete documentation for the
     project: architecture, methodology, decisions, results and limitations in one place
-    &mdash; ending with <a href="#usecase">what the finished artifact is actually good for</a>,
+, ending with <a href="#usecase">what the finished artifact is actually good for</a>,
     which turns out to be a compressor and an anomaly detector rather than a chatbot.
+  </p>
+
+  <p class="hero-links">
+    <a href="demo.html"><b>&#9654; Try the live demo</b></a>
+    <a href="results/">All results</a>
+    <a href="https://github.com/vedant1711/nanoscale-lm">Source on GitHub</a>
   </p>
 
   <div class="kpis">
@@ -490,9 +551,9 @@ section > .note, section > .caveat, section > .win { max-width: var(--col); marg
   </div>
 
   <p>
-    If you understand a Transformer decoder &mdash; multi-head self-attention, the feed-forward
+    If you understand a Transformer decoder: multi-head self-attention, the feed-forward
     block, residual connections, layer normalization, causal masking, cross-entropy on
-    next-token prediction &mdash; you have every prerequisite for this page. Everything past that
+    next-token prediction; you have every prerequisite for this page. Everything past that
     point is developed here from first principles.
   </p>
   <p>
@@ -512,7 +573,7 @@ section > .note, section > .caveat, section > .win { max-width: var(--col); marg
 
   <div class="grid2">
     <div class="card">
-      <h4>Arc 1 &mdash; build the model</h4>
+      <h4>Arc 1: build the model</h4>
       <p>
         Tokenizer, architecture, optimizer, pretraining, alignment. This arc answers
         <em>how is a language model actually made</em>, and ends with a trained, instruction-following
@@ -521,7 +582,7 @@ section > .note, section > .caveat, section > .win { max-width: var(--col); marg
       <p class="footnote">Sections 01&ndash;06.</p>
     </div>
     <div class="card">
-      <h4>Arc 2 &mdash; make it cheap</h4>
+      <h4>Arc 2, make it cheap</h4>
       <p>
         Distillation, quantization, speculative decoding, serving. This arc answers
         <em>why does inference cost what it costs, and what can be done about it</em>. It takes
@@ -536,7 +597,7 @@ section > .note, section > .caveat, section > .win { max-width: var(--col); marg
     <p>
       Every measurement on this page was produced by a script committed to the repository, stamped
       with the git commit and the hardware that produced it, and is regenerable offline from
-      committed data. Several results here are <em>negative</em> &mdash; the technique did not do
+      committed data. Several results here are <em>negative</em>; the technique did not do
       what the literature predicted at this scale. Those are reported in the same detail as the
       positive ones, because a page where every prediction came true is a page that either got
       lucky or stopped looking.
@@ -663,27 +724,27 @@ section > .note, section > .caveat, section > .win { max-width: var(--col); marg
           <td>Learned absolute position embeddings are a fixed-size table: the model cannot be run
               on a sequence longer than the table, and it must learn "5 tokens apart" separately
               at every absolute offset.</td>
-          <td>&sect;02 &mdash; RoPE</td>
+          <td>&sect;02, RoPE</td>
         </tr>
         <tr>
           <td><b>Trainability</b></td>
           <td>Post-norm residuals mean the identity path is normalized at every layer, so deep
               stacks need learning-rate warmup on a knife-edge. Attention logits grow without
               bound during training and can saturate the softmax.</td>
-          <td>&sect;02 &mdash; pre-norm, RMSNorm, QK-norm, zero-init</td>
+          <td>&sect;02: pre-norm, RMSNorm, QK-norm, zero-init</td>
         </tr>
         <tr>
           <td><b>Optimization</b></td>
           <td>Adam rescales every weight <em>independently</em>. A weight matrix is not a bag of
               independent scalars; its useful structure is spectral, and per-coordinate scaling
               is blind to it.</td>
-          <td>&sect;03 &mdash; Muon</td>
+          <td>&sect;03, Muon</td>
         </tr>
         <tr>
           <td><b>Serving cost</b></td>
           <td>Generation is sequential and, at scale, bound by memory bandwidth rather than
               arithmetic. Every token generated re-reads the entire weight matrix from memory.</td>
-          <td>Arc 2 &mdash; the cost model, then &sect;07&ndash;&sect;09</td>
+          <td>Arc 2; the cost model, then &sect;07&ndash;&sect;09</td>
         </tr>
       </tbody>
     </table>
@@ -710,8 +771,8 @@ section > .note, section > .caveat, section > .win { max-width: var(--col); marg
     Byte-pair encoding is the compromise, and it is genuinely a compression algorithm before it is
     an NLP one. Start with an alphabet. Repeatedly find the most frequent adjacent pair of symbols
     in the corpus, and add a new symbol that means "that pair". Stop at the target vocabulary
-    size. Frequent sequences &mdash; <code>&nbsp;the</code>, <code>ing</code>, <code>&nbsp;Congratulations</code>
-    &mdash; become single tokens; rare ones stay decomposed into pieces.
+    size. Frequent sequences, <code>&nbsp;the</code>, <code>ing</code>, <code>&nbsp;Congratulations</code>
+, become single tokens; rare ones stay decomposed into pieces.
   </p>
 
   <h3>Byte-level is the part that matters</h3>
@@ -719,8 +780,8 @@ section > .note, section > .caveat, section > .win { max-width: var(--col); marg
     The critical design choice is what the starting alphabet is. If it is Unicode characters, the
     alphabet is effectively unbounded (there are ~150,000 assigned code points) and you are back to
     needing an <code>&lt;unk&gt;</code>. If it is <b>the 256 possible byte values</b>, the alphabet
-    is exactly 256 and closed. Every possible string &mdash; any language, any emoji, any corrupted
-    file, any lone surrogate &mdash; is <em>some</em> sequence of bytes, so it is always encodable.
+    is exactly 256 and closed. Every possible string: any language, any emoji, any corrupted
+    file, any lone surrogate, is <em>some</em> sequence of bytes, so it is always encodable.
   </p>
   <div class="math">
 decode(encode(s)) == s&nbsp;&nbsp;<span class="ann">for every string s, with no exceptions</span>
@@ -735,18 +796,36 @@ decode(encode(s)) == s&nbsp;&nbsp;<span class="ann">for every string s, with no 
   <h3>Pre-tokenization: the constraint that keeps merges sane</h3>
   <p>
     Left alone, BPE will happily learn a single token for <code>"&nbsp;of&nbsp;the"</code>, because
-    that string is extremely frequent. That is wasteful &mdash; it spends vocabulary slots on
-    phrase-level accidents instead of morphology &mdash; and it makes the tokenization of a word
+    that string is extremely frequent. That is wasteful, it spends vocabulary slots on
+    phrase-level accidents instead of morphology, and it makes the tokenization of a word
     depend on what precedes it. The fix is a <b>pre-tokenization regex</b> that first splits text
     into chunks (roughly: words with their leading space, runs of digits, runs of punctuation), and
     merges are only ever allowed <em>inside</em> a chunk.
   </p>
   <pre><code>// GPT-2's pattern, implemented in src/nanoscale/tokenizer/bpe.py
 's|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+</code></pre>
+  <div class="eg">
+    <span class="eg-t">Worked example: one sentence through the real 16k vocabulary</span>
+    <p style="margin-bottom:.3rem"><code>"The boy near the cats runs quickly."</code> becomes 8 tokens:</p>
+    <div class="toks">
+      <span>The<i> 417</i></span><span>&#9251;boy<i> 505</i></span><span>&#9251;near<i> 826</i></span>
+      <span>&#9251;the<i> 262</i></span><span>&#9251;cats<i> 2996</i></span><span>&#9251;runs<i> 1801</i></span>
+      <span>&#9251;quickly<i> 1512</i></span><span>.<i> 46</i></span>
+    </div>
+    <p style="margin-bottom:0">
+      Note the leading space is <em>part of</em> the token: <code>&#9251;the</code> is a
+      different token from <code>the</code>. That is what the pre-tokenization regex buys, and
+      why a model can tell "thecat" from "the cat". Common whole words survive intact
+      (<code>&#9251;quickly</code>, and even <code>&#9251;Congratulations</code>, one token
+      each), while a rarer word splits into pieces: <code>&#9251;unhappiness</code> becomes
+      <code>&#9251;unh</code> + <code>appiness</code>.
+    </p>
+  </div>
+
   <p>
     This has a pleasant efficiency consequence. Because merges never cross chunk boundaries,
     training does not need to rescan the corpus: it can count chunk <em>types</em> with their
-    frequencies, and maintain a <code>pair &rarr; which chunks contain it</code> inverted index so
+    frequencies, and maintain a <code>pair &rarr, which chunks contain it</code> inverted index so
     that applying a merge only touches the chunks that actually contain that pair. Encoding gets
     the same benefit as a cache keyed on the chunk, which is why this pure-Python tokenizer still
     encodes at ~14 MB/s.
@@ -756,13 +835,13 @@ decode(encode(s)) == s&nbsp;&nbsp;<span class="ann">for every string s, with no 
     <span class="caveat-t">A property I assumed and Hypothesis disproved</span>
     <p>
       I wrote a test asserting that token counts are <em>subadditive</em> under concatenation
-      &mdash; that <code>len(encode(a + b)) &le; len(encode(a)) + len(encode(b))</code>, on the
+: that <code>len(encode(a + b)) &le; len(encode(a)) + len(encode(b))</code>, on the
       reasoning that concatenating can only create merge opportunities. Hypothesis found
       <code>a = "eps"</code>, <code>b = "ep"</code>: one token each, but
       <code>"epsep"</code> encodes to <b>three</b>. Concatenation creates a new chunk whose
       greedy merge order differs from either part's, and greedy merging is not monotone.
-      The counterexample is now a named regression test, and the true property &mdash; token
-      counts <em>are</em> additive across pre-token boundaries &mdash; is tested instead.
+      The counterexample is now a named regression test, and the true property, token
+      counts <em>are</em> additive across pre-token boundaries, is tested instead.
     </p>
   </div>
 
@@ -784,13 +863,13 @@ decode(encode(s)) == s&nbsp;&nbsp;<span class="ann">for every string s, with no 
         </tr>
         <tr>
           <td>In-domain compression is comparable</td>
-          <td>4.19 bytes/token in-domain, 4.23 on a held-out seed &mdash; a 1,024-token vocabulary
+          <td>4.19 bytes/token in-domain, 4.23 on a held-out seed; a 1,024-token vocabulary
               matching a 50,257-token one on the distribution it was trained for.</td>
         </tr>
         <tr>
           <td>Out-of-domain degradation is bounded</td>
           <td>2.25 bytes/token on prose the vocabulary never saw, against <code>tiktoken</code>'s
-              4.79. <span class="worse">A 2.1&times; regression</span> &mdash; reported, not hidden.
+              4.79. <span class="worse">A 2.1&times; regression</span>: reported, not hidden.
               A small in-domain vocabulary <em>should</em> degrade off-distribution; a test that
               demanded parity here would be testing the wrong thing.</td>
         </tr>
@@ -800,7 +879,7 @@ decode(encode(s)) == s&nbsp;&nbsp;<span class="ann">for every string s, with no 
   <p class="footnote">
     Longest learned tokens in the 16k TinyStories vocabulary:
     <code>&nbsp;enthusiastically</code>, <code>&nbsp;Congratulations</code>,
-    <code>&nbsp;understandingly</code>, <code>&nbsp;recommendations</code> &mdash; whole words, which
+    <code>&nbsp;understandingly</code>, <code>&nbsp;recommendations</code>, whole words, which
     is what a healthy merge schedule produces.
   </p>
 </section>
@@ -816,8 +895,8 @@ decode(encode(s)) == s&nbsp;&nbsp;<span class="ann">for every string s, with no 
 
   <p>
     This is the model the repository builds. Read it against the 2017 diagram above: the skeleton
-    is identical &mdash; attention sublayer, feed-forward sublayer, residuals, stacked N times
-    &mdash; and every difference is annotated below.
+    is identical: attention sublayer, feed-forward sublayer, residuals, stacked N times
+, and every difference is annotated below.
   </p>
 
   <figure>
@@ -891,7 +970,7 @@ decode(encode(s)) == s&nbsp;&nbsp;<span class="ann">for every string s, with no 
     </figcaption>
   </figure>
 
-  <h3>2.1 &nbsp;Pre-norm residuals &mdash; the trainability fix</h3>
+  <h3>2.1 &nbsp;Pre-norm residuals; the trainability fix</h3>
   <p>
     In the 2017 block the order is <code>x &rarr; sublayer &rarr; add &rarr; normalize</code>.
     That means the residual stream itself is renormalized at every layer. Whatever the embedding
@@ -915,7 +994,7 @@ x<sub>out</sub> = x<sub>in</sub> + Attn(Norm(x<sub>in</sub>)) + MLP(Norm(&middot
     writes to.
   </p>
 
-  <h3>2.2 &nbsp;RMSNorm &mdash; delete the part nobody could justify</h3>
+  <h3>2.2 &nbsp;RMSNorm, delete the part nobody could justify</h3>
   <p>
     LayerNorm subtracts the mean, divides by the standard deviation, then applies a learned gain
     and bias. RMSNorm keeps only the scaling:
@@ -930,12 +1009,30 @@ RMSNorm(x)&nbsp;&nbsp; = &gamma; &#8857; x / &radic;(mean(x&sup2;) + &epsilon;)
     one full pass over the vector, one reduction, and the bias parameters. At a 5M-parameter scale
     that saving is invisible; at 70B it is not, and every current open model uses RMSNorm.
   </p>
+  <div class="eg">
+    <span class="eg-t">Worked example: a 4-dimensional vector</span>
+    <div class="math">
+x = [3, &minus;1, 4, &minus;2]
+
+LayerNorm:  &mu; = 1.0, so centre first: [2, &minus;2, 3, &minus;3];  &sigma; = 2.55
+            &rarr; [0.78, &minus;0.78, 1.18, &minus;1.18]
+
+RMSNorm:    rms = &radic;((9+1+16+4)/4) = &radic;7.5 = 2.74;  no centring
+            &rarr; [1.09, &minus;0.36, 1.46, &minus;0.73]
+    </div>
+    <p style="margin-bottom:0">
+      RMSNorm leaves the vector pointing the same way and only fixes its length. LayerNorm
+      additionally slides it so the components average zero, which costs a second pass over
+      the vector and, per Zhang &amp; Sennrich, buys nothing measurable.
+    </p>
+  </div>
+
   <div class="note">
     <span class="note-t">An engineering detail that turned out to matter</span>
     <p>
       The <code>mean(x&sup2;)</code> reduction must accumulate in higher precision than the
       activations, or bf16 training produces garbage. The obvious way to write that is
-      <code>x.float()</code>. But <code>.float()</code> means "cast to fp32" &mdash; which
+      <code>x.float()</code>. But <code>.float()</code> means "cast to fp32": which
       promotes bf16 as intended and silently <em>demotes</em> float64. The repository's numerical
       tests use fp64 reference implementations to get their sharpness, and this demotion capped
       their agreement at 1e&minus;5 when the true agreement is 1e&minus;10. A test passing at a
@@ -945,7 +1042,7 @@ RMSNorm(x)&nbsp;&nbsp; = &gamma; &#8857; x / &radic;(mean(x&sup2;) + &epsilon;)
     </p>
   </div>
 
-  <h3>2.3 &nbsp;RoPE &mdash; position as a rotation</h3>
+  <h3>2.3 &nbsp;RoPE, position as a rotation</h3>
   <p>
     This is the delta most worth understanding properly, because the trick is genuinely elegant and
     the implementations look opaque until you see it.
@@ -976,15 +1073,35 @@ RMSNorm(x)&nbsp;&nbsp; = &gamma; &#8857; x / &radic;(mean(x&sup2;) + &epsilon;)
   </p>
   <div class="math">
 &#10216; R<sub>m</sub>q , R<sub>n</sub>k &#10217; = q<sup>T</sup>R<sub>m</sub><sup>T</sup>R<sub>n</sub>k = q<sup>T</sup>R<sub>n&minus;m</sub>k
-<span class="ann">the attention score depends on (n &minus; m) alone &mdash; relative position, for free</span>
+<span class="ann">the attention score depends on (n &minus; m) alone, relative position, for free</span>
   </div>
   <p>
     No parameters were added. No table can be run off the end of. And the model learns
     "two tokens apart" <em>once</em>, not once per absolute offset. The multi-frequency construction
-    &mdash; fast rotations in the early dimensions, slow ones in the late dimensions &mdash; is the
+: fast rotations in the early dimensions, slow ones in the late dimensions, is the
     same idea as sinusoidal encodings: it gives the dot product a basis in which both short-range
     and long-range offsets are distinguishable.
   </p>
+
+  <div class="eg">
+    <span class="eg-t">Worked example: the actual angles, d_head = 64</span>
+    <div class="math">
+&theta;<sub>0</sub> = 10000<sup>&minus;0/64</sup> = 1.0000     <span class="ann">pair 0 rotates fastest</span>
+&theta;<sub>1</sub> = 10000<sup>&minus;2/64</sup> = 0.7499
+&theta;<sub>31</sub> = 10000<sup>&minus;62/64</sup> = 0.0001   <span class="ann">pair 31 barely moves across the whole context</span>
+
+token at position 1, pair 0:  rotate by 1 &times; 1.0000 = 57.3&deg;
+token at position 2, pair 0:  rotate by 2 &times; 1.0000 = 114.6&deg;
+token at position 5, pair 1:  rotate by 5 &times; 0.7499 = 214.8&deg;
+    </div>
+    <p style="margin-bottom:0">
+      So a query at position 5 and a key at position 3 end up 2 &times; 57.3&deg; = 114.6&deg;
+      apart in pair 0, and 2 &times; 43.0&deg; = 86.0&deg; apart in pair 1. Every pair encodes
+      the same distance at a different frequency, exactly like the hands of a clock: the fast
+      hand distinguishes neighbouring tokens, the slow hand distinguishes distant ones, and
+      together they identify the gap without ambiguity.
+    </p>
+  </div>
 
   <figure>
     <div class="fig-frame">
@@ -1019,8 +1136,8 @@ RMSNorm(x)&nbsp;&nbsp; = &gamma; &#8857; x / &radic;(mean(x&sup2;) + &epsilon;)
     </div>
     <figcaption>
       <b>Why the dot product only sees distance.</b> Both vectors of a pair get rotated by their own
-      absolute position, so the <em>angle between them</em> &mdash; which is what the dot product
-      measures &mdash; is the difference of those rotations. Tokens two apart look identical to
+      absolute position, so the <em>angle between them</em>, which is what the dot product
+      measures, is the difference of those rotations. Tokens two apart look identical to
       attention whether they sit at positions 3 and 5 or 103 and 105.
     </figcaption>
   </figure>
@@ -1031,19 +1148,19 @@ RMSNorm(x)&nbsp;&nbsp; = &gamma; &#8857; x / &radic;(mean(x&sup2;) + &epsilon;)
       There are two layouts in the wild: <em>interleaved</em> pairs
       (<code>[0,1], [2,3], &hellip;</code>, the original paper) and <em>split-half</em> pairs
       (<code>[0, d/2], [1, d/2+1], &hellip;</code>, common in Hugging Face ports). Both are correct
-      rotations and both train, so mismatching them produces no error &mdash; only a checkpoint that
+      rotations and both train, so mismatching them produces no error, only a checkpoint that
       quietly does not transfer. This repository uses interleaved and pins it with a test against a
       slow fp64 reference rotation written independently of the fast path.
     </p>
   </div>
 
-  <h3>2.4 &nbsp;Grouped-query attention &mdash; a fix for a problem you only see at inference</h3>
+  <h3>2.4 &nbsp;Grouped-query attention: a fix for a problem you only see at inference</h3>
   <p>
     During training, attention reads the whole sequence at once and nothing is stored between
     steps. During generation the picture inverts. Generating token <code>t+1</code> needs the keys
     and values of all <code>t</code> previous tokens, and recomputing them every step would make
-    generation <code>O(T&sup2;)</code> per token. So they are cached &mdash; the <b>KV cache</b>
-    &mdash; and the cache is the thing that dominates inference memory.
+    generation <code>O(T&sup2;)</code> per token. So they are cached, the <b>KV cache</b>
+, and the cache is the thing that dominates inference memory.
   </p>
   <div class="math">
 KV bytes = 2 &times; L &times; n_kv &times; d_head &times; T &times; batch &times; bytes_per_element
@@ -1059,13 +1176,13 @@ KV bytes = 2 &times; L &times; n_kv &times; d_head &times; T &times; batch &time
   </div>
   <p>
     Two gigabytes of cache for one user, against 13&nbsp;GB of weights that are shared by everyone.
-    Batch sixteen users and the cache is 34&nbsp;GB &mdash; the cache, not the model, is what
+    Batch sixteen users and the cache is 34&nbsp;GB; the cache, not the model, is what
     decides how many people your GPU can serve. That is the bottleneck GQA exists to attack.
   </p>
   <p>
     The observation is that <code>n_kv</code> does not have to equal the number of query heads.
-    Keep all <code>H</code> query heads &mdash; they are where attention's expressiveness lives
-    &mdash; but let groups of them <em>share</em> one key/value head. With
+    Keep all <code>H</code> query heads; they are where attention's expressiveness lives
+, but let groups of them <em>share</em> one key/value head. With
     <code>n_kv = H</code> you have classic multi-head attention; with <code>n_kv = 1</code> you have
     multi-query attention, which is maximally cheap and measurably hurts quality; GQA is the middle
     that Ainslie et al. showed keeps almost all the quality.
@@ -1105,7 +1222,7 @@ KV bytes = 2 &times; L &times; n_kv &times; d_head &times; T &times; batch &time
 
           <!-- GQA -->
           <text x="270" y="22" font-size="11.5" font-weight="600">GQA &nbsp;n_kv = 4</text>
-          <text x="270" y="38" font-size="10" fill="#12655F">cache &times;0.5 &mdash; used here</text>
+          <text x="270" y="38" font-size="10" fill="#12655F">cache &times;0.5, used here</text>
           <g>
             <rect x="270" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
             <rect x="294" y="52" width="20" height="20" rx="2" fill="none" stroke="currentColor"/>
@@ -1149,7 +1266,7 @@ KV bytes = 2 &times; L &times; n_kv &times; d_head &times; T &times; batch &time
           <rect x="600" y="104" width="20" height="20" rx="2" fill="#12655F" opacity=".9"/>
 
           <text x="360" y="176" text-anchor="middle" font-size="11" opacity=".75">
-            query heads (hollow) stay at 8 in all three &mdash; only the shaded key/value heads are cut
+            query heads (hollow) stay at 8 in all three, only the shaded key/value heads are cut
           </text>
           <text x="360" y="196" text-anchor="middle" font-size="11" opacity=".75">
             and the KV cache is exactly proportional to that shaded count
@@ -1161,12 +1278,28 @@ KV bytes = 2 &times; L &times; n_kv &times; d_head &times; T &times; batch &time
       <b>GQA cuts the cache, not the query capacity.</b> The <code>micro</code> tier here uses
       8&nbsp;query heads over 4&nbsp;KV heads, halving cache memory. In the code this is implemented
       by projecting <code>k</code> and <code>v</code> to <code>n_kv</code> heads and expanding them
-      with <code>repeat_kv</code> before the dot product &mdash; a view, not a copy, so nothing is
+      with <code>repeat_kv</code> before the dot product; a view, not a copy, so nothing is
       materialized.
     </figcaption>
   </figure>
 
-  <h3>2.5 &nbsp;QK-norm &mdash; keeping the softmax out of saturation</h3>
+  <div class="eg">
+    <span class="eg-t">Worked example: this project's own micro tier</span>
+    <div class="math">
+L = 8 layers, 8 query heads, <b>4 kv heads</b>, d_head = 64, context 512, fp32
+
+KV cache = 2 &times; 8 &times; 4 &times; 64 &times; 512 &times; 4 bytes = <b>8.0 MB</b>
+with plain MHA (8 kv heads)                       = 16.0 MB
+    </div>
+    <p style="margin-bottom:0">
+      8 MB against a 154 MB model looks negligible, and that is exactly the trap: the cache
+      is <em>per sequence</em> and the weights are shared. Serve 64 users at once and the
+      weights are still 154 MB while the caches are 512 MB. GQA turns that into 256 MB, which
+      is the difference between 64 concurrent users and 128 on the same card.
+    </p>
+  </div>
+
+  <h3>2.5 &nbsp;QK-norm, keeping the softmax out of saturation</h3>
   <p>
     Attention scores are <code>q&middot;k / &radic;d_head</code>. Nothing bounds the norms of
     <code>q</code> and <code>k</code>, and during training they tend to grow. Once the scores get
@@ -1185,12 +1318,12 @@ KV bytes = 2 &times; L &times; n_kv &times; d_head &times; T &times; batch &time
       QK-norm must be applied <em>before</em> RoPE, not after. Normalizing after rotating would
       rescale the rotated vector and break the exact orthogonality the relative-position identity
       depends on. Doing it in the wrong order produces a model that trains perfectly well and has
-      subtly wrong position handling &mdash; so the repository pins the order with an explicit test
+      subtly wrong position handling, so the repository pins the order with an explicit test
       rather than a comment.
     </p>
   </div>
 
-  <h3>2.6 &nbsp;SwiGLU &mdash; a gate on the feed-forward network</h3>
+  <h3>2.6 &nbsp;SwiGLU: a gate on the feed-forward network</h3>
   <p>
     The 2017 feed-forward network is <code>ReLU(xW&#8321;)W&#8322;</code>: project up, threshold,
     project down. SwiGLU splits the up-projection into two and uses one half to gate the other:
@@ -1203,8 +1336,8 @@ SwiGLU(x)&nbsp;&nbsp;&nbsp;  = ( SiLU(x W<sub>gate</sub>) &#8857; (x W<sub>up</s
   <p>
     The gate is the point. In the ReLU version the only decision available per unit is
     "pass or zero". In the gated version one branch computes a <em>value</em> and the other
-    computes, from the same input, a smooth multiplicative <em>weight</em> on that value &mdash;
-    so a unit can be attenuated by any amount rather than only switched off, and the attenuation is
+    computes, from the same input, a smooth multiplicative <em>weight</em> on that value,
+so a unit can be attenuated by any amount rather than only switched off, and the attenuation is
     input-dependent. Because three matrices replace two, the hidden width is conventionally scaled
     by <code>2/3</code> (here to <code>8/3&nbsp;&middot;&nbsp;d</code> rounded to a multiple of 64)
     so parameter count stays comparable.
@@ -1213,9 +1346,26 @@ SwiGLU(x)&nbsp;&nbsp;&nbsp;  = ( SiLU(x W<sub>gate</sub>) &#8857; (x W<sub>up</s
     Shazeer's paper introducing this is unusually honest: it offers no theoretical justification and
     ends "we attribute their success, as all else, to divine benevolence." It won on benchmarks and
     the field adopted it. The ungated ReLU&sup2; alternative from the modded-nanoGPT speedrun is
-    implemented here too, as a togglable ablation &mdash; see <a href="#ablations">&sect;05</a> for
+    implemented here too, as a togglable ablation, see <a href="#ablations">&sect;05</a> for
     what it actually measured.
   </p>
+
+  <div class="eg">
+    <span class="eg-t">Worked example: what the gate does to one unit</span>
+    <div class="math">
+unit value from the up branch : 4.0
+gate pre-activation            : &minus;3.0  &rarr;  SiLU(&minus;3.0) = &minus;0.14
+output                         : 4.0 &times; &minus;0.14 = <b>&minus;0.57</b>
+
+same value, gate pre-activation:  2.0  &rarr;  SiLU(2.0)  = 1.76
+output                         : 4.0 &times; 1.76 = <b>7.05</b>
+    </div>
+    <p style="margin-bottom:0">
+      One value, two gates, a 12&times; swing in what reaches the residual stream. A ReLU
+      network can only pass 4.0 or 0; the gate lets the same unit be strongly suppressed,
+      lightly attenuated, or amplified, and the decision is computed from the same input.
+    </p>
+  </div>
 
   <h3>2.7 &nbsp;Zero-init output projections and an untied head</h3>
   <p>
@@ -1232,18 +1382,31 @@ SwiGLU(x)&nbsp;&nbsp;&nbsp;  = ( SiLU(x W<sub>gate</sub>) &#8857; (x W<sub>up</s
   </p>
   <div class="math">
 loss(step 0) = ln(V)
-<span class="ann">measured: 9.7041 for V = 16,384; ln(16384) = 9.70406 &mdash; agreement to five decimals</span>
+<span class="ann">measured: 9.7041 for V = 16,384; ln(16384) = 9.70406, agreement to five decimals</span>
   </div>
   <p>
     If a refactor breaks the initialization, the very first logged number changes, and it changes
     against a value derived from theory rather than from a previous run.
   </p>
+  <div class="eg">
+    <span class="eg-t">Worked example: the first number every run prints</span>
+    <div class="math">
+nano  (V = 1,024):   ln(1024)  = 6.9315   measured first loss: <b>6.9315</b>
+micro (V = 16,384):  ln(16384) = 9.70406  measured first loss: <b>9.7041</b>
+    </div>
+    <p style="margin-bottom:0">
+      Both agree to five decimals with a constant nobody chose. If a refactor breaks the
+      initialization the very first logged number moves, and it moves against theory rather
+      than against a previous run, so the test cannot rot.
+    </p>
+  </div>
+
   <p>
     <b>Untying</b> the LM head means the output projection is a separate matrix from the input
     embedding table rather than its transpose. Tying saves <code>V&times;d</code> parameters and was
     standard when vocabularies were small relative to model width. It also forces one matrix to
-    serve two different jobs &mdash; "what does this token mean" and "how likely is this token here"
-    &mdash; and at modern vocabulary sizes the parameter saving is not worth the constraint.
+    serve two different jobs, "what does this token mean" and "how likely is this token here"
+, and at modern vocabulary sizes the parameter saving is not worth the constraint.
   </p>
 
   <h3>2.8 &nbsp;Two optional heads</h3>
@@ -1266,7 +1429,7 @@ loss(step 0) = ln(V)
       representation to carry information about tokens further ahead is a denser learning signal
       than next-token alone. The <em>inference</em> argument is more interesting and is why this
       belongs in a project with an Arc 2: those heads are already a draft model, which makes them
-      reusable for self-speculation with no separate network &mdash; the Medusa idea in
+      reusable for self-speculation with no separate network: the Medusa idea in
       <a href="#spec">&sect;09</a>.
     </dd>
   </dl>
@@ -1274,8 +1437,8 @@ loss(step 0) = ln(V)
   <h3>The size ladder</h3>
   <p>
     One architecture; only depth, width, context and token budget change. Parameter counts are
-    asserted as exact constants in the test suite &mdash; against both the analytic formula and the
-    built <code>nn.Module</code> &mdash; so an accidental architecture change fails loudly rather
+    asserted as exact constants in the test suite, against both the analytic formula and the
+    built <code>nn.Module</code>, so an accidental architecture change fails loudly rather
     than quietly shifting every number downstream.
   </p>
   <div class="tbl">
@@ -1297,7 +1460,7 @@ loss(step 0) = ln(V)
   <p class="footnote">
     Both totals are reported because "parameter count" is ambiguous without saying whether
     embeddings and an untied head are included. At <code>micro</code> the embedding table plus head
-    is 16.8M of the 40.4M &mdash; 42% of the model is the vocabulary interface, which is what small
+    is 16.8M of the 40.4M, 42% of the model is the vocabulary interface, which is what small
     models look like.
   </p>
 </section>
@@ -1313,8 +1476,8 @@ loss(step 0) = ln(V)
 
   <p>
     Start from what Adam does, because Muon is best understood as a critique of it. Adam keeps two
-    running averages per parameter &mdash; the gradient <code>m</code> and its square
-    <code>v</code> &mdash; and steps by <code>m / (&radic;v + &epsilon;)</code>. Dividing by the
+    running averages per parameter, the gradient <code>m</code> and its square
+    <code>v</code>, and steps by <code>m / (&radic;v + &epsilon;)</code>. Dividing by the
     root-mean-square gradient makes the step size roughly scale-invariant per coordinate: a weight
     whose gradients are consistently tiny still moves, and one whose gradients are huge does not
     blow up. AdamW's refinement is to apply weight decay <em>directly to the weight</em> rather than
@@ -1336,7 +1499,7 @@ loss(step 0) = ln(V)
     directions and suppress others.
   </p>
   <p>
-    Raw gradients of such matrices are typically very badly conditioned &mdash; their top singular
+    Raw gradients of such matrices are typically very badly conditioned: their top singular
     value dominates the rest by orders of magnitude. So a gradient step, and an Adam step too, moves
     the matrix mostly along one direction. The other directions get a step that is smaller by that
     same factor, which is to say they barely move at all. You are doing a low-rank update while
@@ -1350,13 +1513,13 @@ loss(step 0) = ln(V)
   </p>
   <div class="math">
 B = U&Sigma;V<sup>T</sup>&nbsp;&nbsp;&rarr;&nbsp;&nbsp; update = UV<sup>T</sup>
-<span class="ann">every singular value becomes exactly 1 &mdash; the nearest orthogonal matrix to B</span>
+<span class="ann">every singular value becomes exactly 1; the nearest orthogonal matrix to B</span>
   </div>
   <p>
     <code>UV<sup>T</sup></code> is the orthogonal polar factor of <code>B</code>: the closest
     orthogonal matrix in Frobenius norm. Every direction the gradient identified now receives an
-    equally-sized step. The update still says <em>which way</em> to move each direction &mdash; that
-    information is entirely in <code>U</code> and <code>V</code> &mdash; it just refuses to let the
+    equally-sized step. The update still says <em>which way</em> to move each direction; that
+    information is entirely in <code>U</code> and <code>V</code>, it just refuses to let the
     dominant direction monopolize the step budget.
   </p>
 
@@ -1416,18 +1579,36 @@ B = U&Sigma;V<sup>T</sup>&nbsp;&nbsp;&rarr;&nbsp;&nbsp; update = UV<sup>T</sup>
     <figcaption>
       <b>What five Newton&ndash;Schulz steps do to a badly-conditioned update.</b> Measured on a
       synthetic matrix with a logarithmic spectrum, exactly as the notebook reproduces it. Note
-      the honest part: after five steps the smallest directions are still under-amplified &mdash;
-      this is <em>not</em> a perfectly orthogonal matrix. It does not need to be. The purpose is to
+      the honest part: after five steps the smallest directions are still under-amplified;
+this is <em>not</em> a perfectly orthogonal matrix. It does not need to be. The purpose is to
       stop the top direction monopolizing the step, and a ~190&times; spectral compression achieves
       that at a fraction of an SVD's cost.
     </figcaption>
   </figure>
 
+  <div class="eg">
+    <span class="eg-t">Worked example: a 3&times;3 momentum buffer</span>
+    <div class="math">
+singular values of B :  [12.0, 0.8, 0.05]
+
+Adam-style step follows B, so the first direction moves 240&times; further
+than the third, and 15&times; further than the second.
+
+after orthogonalization: [1.0, 1.0, 1.0]
+all three directions now receive the same size of step.
+    </div>
+    <p style="margin-bottom:0">
+      The update still knows <em>which way</em> to move each direction, that lives in
+      <code>U</code> and <code>V</code> and is untouched. What it loses is the ability to
+      spend the entire step budget on one direction while the other two sit still.
+    </p>
+  </div>
+
   <h3>Newton&ndash;Schulz: orthogonalizing without an SVD</h3>
   <p>
     Computing an SVD every step for every weight matrix would be far more expensive than the
     forward pass. Newton&ndash;Schulz iteration approximates the polar factor using
-    <em>only matrix multiplications</em> &mdash; which is exactly the operation accelerators are
+    <em>only matrix multiplications</em>, which is exactly the operation accelerators are
     built for. Normalize <code>B</code> so its spectral norm is at most 1, then iterate five times:
   </p>
   <div class="math">
@@ -1449,10 +1630,10 @@ update &larr; &radic;(max(1, rows/cols)) &times; orthogonalize(B)
 <span class="ann">shape-aware scale, so the update's RMS magnitude is comparable across differently-shaped layers</span>
   </div>
 
-  <h3>The router: which parameters get Muon</h3>
+  <h3>The router, which parameters get Muon</h3>
   <p>
-    Muon applies to <b>2-D hidden weight matrices only</b>. Everything else &mdash; norm gains,
-    biases, the token embedding, and the LM head &mdash; goes to AdamW. The embedding and head are
+    Muon applies to <b>2-D hidden weight matrices only</b>. Everything else: norm gains,
+    biases, the token embedding, and the LM head, goes to AdamW. The embedding and head are
     two-dimensional, so this needs a reason rather than a shape check.
   </p>
   <p>
@@ -1498,7 +1679,7 @@ AdamW :   528,384 params  [embed_tokens, lm_head, *.attn_norm, *.q_norm, *.k_nor
     <span class="caveat-t">Two results that made me revise what I was claiming</span>
     <p>
       <b>Muon loses to AdamW on a convex problem.</b> My first toy benchmark was single-matrix
-      least squares. Muon lost, clearly. That is not a bug &mdash; a convex quadratic in one matrix
+      least squares. Muon lost, clearly. That is not a bug; a convex quadratic in one matrix
       is precisely the regime where Adam's per-coordinate scaling is near-optimal, and there is no
       badly-conditioned <em>composition</em> of layers for orthogonalization to help with. Muon's
       advantage appears on deep, badly-conditioned stacks. Both outcomes are now pinned as named
@@ -1509,7 +1690,7 @@ AdamW :   528,384 params  [embed_tokens, lm_head, *.attn_norm, *.q_norm, *.k_nor
       That looks like a formula bug. It is not: I measured the divergence growth and it goes
       1e&minus;17 &rarr; 1e&minus;15 &rarr; 1e&minus;12 &rarr; 1e&minus;5 over the run. That is
       floating-point noise being amplified by a chaotic trajectory, not a systematic difference
-      &mdash; a formula error would show a constant or linearly-growing gap from step one. The test
+; a formula error would show a constant or linearly-growing gap from step one. The test
       asserts the <em>growth pattern</em>, which is a stronger statement than any fixed tolerance
       would have been.
     </p>
@@ -1566,7 +1747,7 @@ AdamW :   528,384 params  [embed_tokens, lm_head, *.attn_norm, *.q_norm, *.k_nor
       <p>
         Cosine decay with linear warmup by default; warmup&ndash;stable&ndash;decay (WSD) behind a
         flag. WSD's appeal is that the stable phase can be extended indefinitely and the decay
-        applied whenever you decide to stop &mdash; you do not have to know the total step count in
+        applied whenever you decide to stop; you do not have to know the total step count in
         advance, which matters when your compute budget is "until Colab disconnects".
       </p>
     </div>
@@ -1574,7 +1755,7 @@ AdamW :   528,384 params  [embed_tokens, lm_head, *.attn_norm, *.q_norm, *.k_nor
       <h4>Determinism as a tested property</h4>
       <p>
         Two runs at the same seed produce identical loss curves. A different seed produces a
-        different one (also tested &mdash; otherwise the first test could pass on a loop that ignores
+        different one (also tested, otherwise the first test could pass on a loop that ignores
         the seed entirely). A committed golden trajectory pins what the model learns across
         refactors.
       </p>
@@ -1584,7 +1765,7 @@ AdamW :   528,384 params  [embed_tokens, lm_head, *.attn_norm, *.q_norm, *.k_nor
   <div class="caveat">
     <span class="caveat-t">A real bug this found: resume was silently worse</span>
     <p>
-      Checkpoint resume restored the model, the optimizer state and the RNG &mdash; and then started
+      Checkpoint resume restored the model, the optimizer state and the RNG, and then started
       the data iterator from the beginning of its epoch. The run continued, the loss curve looked
       plausible, and final validation loss came out at 5.28 against 5.09 for the uninterrupted run.
       The model was being re-shown data it had already seen while never reaching the tail of the
@@ -1641,7 +1822,7 @@ AdamW :   528,384 params  [embed_tokens, lm_head, *.attn_norm, *.q_norm, *.k_nor
   <p>
     The one signal that <em>is</em> above noise is in the steps-to-target column: without QK-norm the
     model needs 75 steps to reach the loss the default reaches in 50. The two converge to the same
-    place at different rates &mdash; which is exactly what a <em>stability</em> aid should do, and
+    place at different rates, which is exactly what a <em>stability</em> aid should do, and
     exactly what a final-loss-only comparison would have missed.
   </p>
   <div class="note">
@@ -1671,7 +1852,7 @@ AdamW :   528,384 params  [embed_tokens, lm_head, *.attn_norm, *.q_norm, *.k_nor
     <div>
       <h2>Alignment</h2>
       <p class="deck">A pretrained model completes text. Turning it into something that answers
-      you takes SFT, then preference optimization &mdash; and the preference step has a failure
+      you takes SFT, then preference optimization, and the preference step has a failure
       mode this project ran straight into.</p>
     </div>
   </div>
@@ -1695,8 +1876,8 @@ AdamW :   528,384 params  [embed_tokens, lm_head, *.attn_norm, *.q_norm, *.k_nor
   <h3>6.2 &nbsp;DPO, derived</h3>
   <p>
     Classical RLHF has three stages: collect human preferences, fit a reward model, then optimize
-    the language model against that reward with PPO. It works and it is a lot of machinery &mdash;
-    a second network to train, and an RL loop that is notoriously sensitive. Direct Preference
+    the language model against that reward with PPO. It works and it is a lot of machinery:
+a second network to train, and an RL loop that is notoriously sensitive. Direct Preference
     Optimization removes both. The derivation is short and worth following, because the conclusion
     is genuinely surprising.
   </p>
@@ -1709,11 +1890,11 @@ max<sub>&pi;</sub> &nbsp;E<sub>x~D, y~&pi;</sub>[ r(x,y) ] &nbsp;&minus;&nbsp; &
   </div>
   <p>
     <b>Step 2.</b> This constrained problem has a known closed-form solution. It is a standard
-    result &mdash; the optimum is the reference policy reweighted by exponentiated reward:
+    result; the optimum is the reference policy reweighted by exponentiated reward:
   </p>
   <div class="math">
 &pi;*(y|x) = (1 / Z(x)) &middot; &pi;<sub>ref</sub>(y|x) &middot; exp( r(x,y) / &beta; )
-<span class="ann">Z(x) = &Sigma;<sub>y</sub> &pi;_ref(y|x)&thinsp;exp(r(x,y)/&beta;) &mdash; intractable, sums over all possible responses</span>
+<span class="ann">Z(x) = &Sigma;<sub>y</sub> &pi;_ref(y|x)&thinsp;exp(r(x,y)/&beta;): intractable, sums over all possible responses</span>
   </div>
   <p>
     <b>Step 3.</b> Now invert it. Instead of solving for the policy given the reward, solve for the
@@ -1729,7 +1910,7 @@ r(x,y) = &beta;&thinsp;log( &pi;*(y|x) / &pi;<sub>ref</sub>(y|x) ) + &beta;&thin
   <p>
     <b>Step 4.</b> Preferences are modelled with Bradley&ndash;Terry: the probability that
     <code>y<sub>w</sub></code> is preferred over <code>y<sub>l</sub></code> is the sigmoid of their
-    reward difference. Substitute step 3 into it &mdash; and because both responses share the same
+    reward difference. Substitute step 3 into it, and because both responses share the same
     prompt, <code>&beta; log Z(x)</code> appears in both terms and <b>cancels exactly</b>:
   </p>
   <div class="math">
@@ -1740,11 +1921,33 @@ P(y<sub>w</sub> &#8827; y<sub>l</sub> | x) = &sigma;( r(x,y<sub>w</sub>) &minus;
   </div>
   <p>
     <b>Step 5.</b> Maximize the likelihood of the observed preferences under that expression. That
-    is the DPO loss, and it is a plain supervised objective &mdash; no reward model, no sampling, no
+    is the DPO loss, and it is a plain supervised objective: no reward model, no sampling, no
     RL:
   </p>
   <div class="math">
 L<sub>DPO</sub> = &minus;E [ log &sigma;( &beta;&thinsp;log(&pi;<sub>&theta;</sub>(y<sub>w</sub>|x)/&pi;<sub>ref</sub>(y<sub>w</sub>|x)) &minus; &beta;&thinsp;log(&pi;<sub>&theta;</sub>(y<sub>l</sub>|x)/&pi;<sub>ref</sub>(y<sub>l</sub>|x)) ) ]
+  </div>
+
+  <div class="eg">
+    <span class="eg-t">Worked example: one preference pair</span>
+    <div class="math">
+prompt   "How do I make tea?"
+chosen   "Boil water, add a tea bag, steep for three minutes."
+rejected "tea is a drink you can make it hot or cold whatever"
+
+&beta; = 0.1                       log &pi;<sub>&theta;</sub>      log &pi;<sub>ref</sub>     ratio
+chosen                       &minus;18.2       &minus;19.0      +0.8
+rejected                     &minus;31.5       &minus;28.0      &minus;3.5
+
+margin = 0.1 &times; (0.8 &minus; (&minus;3.5)) = <b>+0.43</b>
+loss   = &minus;log &sigma;(0.43) = 0.50
+    </div>
+    <p style="margin-bottom:0">
+      The model is rewarded for raising the chosen response's probability relative to the
+      reference and lowering the rejected one's. Notice there is nothing in that arithmetic
+      that requires <code>log &pi;<sub>&theta;</sub>(chosen)</code> to go <em>up</em>. Which
+      is the whole problem.
+    </p>
   </div>
 
   <h3>6.3 &nbsp;The failure this project hit</h3>
@@ -1786,7 +1989,7 @@ L<sub>DPO</sub> = &minus;E [ log &sigma;( &beta;&thinsp;log(&pi;<sub>&theta;</su
     </div>
     <figcaption>
       <b>Both bars point left for plain DPO.</b> The margin grew because the rejected response's
-      log-probability collapsed &mdash; and the chosen one fell too, just less far. The objective
+      log-probability collapsed, and the chosen one fell too, just less far. The objective
       was satisfied by making the model worse at everything, slightly less so at good answers.
       Adding the NLL anchor flips the chosen bar positive, and the head-to-head with it.
     </figcaption>
@@ -1806,7 +2009,7 @@ L<sub>DPO</sub> = &minus;E [ log &sigma;( &beta;&thinsp;log(&pi;<sub>&theta;</su
     </table>
   </div>
   <p>
-    The margin rose because the rejected response's likelihood fell off a cliff &mdash; and the
+    The margin rose because the rejected response's likelihood fell off a cliff, and the
     chosen response's likelihood fell too, just less far. The model was not learning to produce good
     answers; it was learning to produce <em>nothing in particular</em>, slightly less unlike good
     answers than bad ones. A rising margin was concealing a model getting worse at everything.
@@ -1814,7 +2017,7 @@ L<sub>DPO</sub> = &minus;E [ log &sigma;( &beta;&thinsp;log(&pi;<sub>&theta;</su
   <div class="win">
     <span class="win-t">The fix, and why it generalizes</span>
     <p>
-      Add an auxiliary negative-log-likelihood term on the chosen response &mdash; the RPO-style
+      Add an auxiliary negative-log-likelihood term on the chosen response: the RPO-style
       anchor, exposed here as <code>align.preference.sft_loss_weight</code>. It pins the
       <em>absolute</em> likelihood so the objective can no longer satisfy itself by pushing
       everything down. <code>&Delta; log p(chosen)</code> flips positive and the head-to-head becomes
@@ -1822,7 +2025,7 @@ L<sub>DPO</sub> = &minus;E [ log &sigma;( &beta;&thinsp;log(&pi;<sub>&theta;</su
     </p>
     <p>
       The transferable lesson is not about DPO. <em>Any</em> objective defined on a difference can
-      be satisfied by moving both terms. The remedy is never a better margin metric &mdash; it is
+      be satisfied by moving both terms. The remedy is never a better margin metric; it is
       reporting the terms.
     </p>
   </div>
@@ -1832,7 +2035,7 @@ L<sub>DPO</sub> = &minus;E [ log &sigma;( &beta;&thinsp;log(&pi;<sub>&theta;</su
     The other known DPO pathology: <code>log &pi;(y)</code> is a <em>sum</em> over tokens, each
     negative, so longer responses have systematically lower log-probability. The objective can be
     partly satisfied by changing length rather than content, and DPO-tuned models are widely
-    observed to become verbose. The repository measures this directly &mdash; not by comparing the
+    observed to become verbose. The repository measures this directly: not by comparing the
     lengths of training responses, which only describes the data, but by measuring what the model
     actually <em>generates</em> for held-out prompts, before and after. Here mean generated length
     went 26.6 &rarr; 24.3 tokens: no exploitation at this scale, on this data.
@@ -1840,17 +2043,17 @@ L<sub>DPO</sub> = &minus;E [ log &sigma;( &beta;&thinsp;log(&pi;<sub>&theta;</su
 
   <h3>6.4 &nbsp;SimPO and GRPO</h3>
   <dl class="defs">
-    <dt>SimPO &mdash; reference-free</dt>
+    <dt>SimPO, reference-free</dt>
     <dd>
       Drops <code>&pi;<sub>ref</sub></code> entirely, normalizes by length, and adds an explicit
       target margin <code>&gamma;</code>:
       <code>&minus;log &sigma;( (&beta;/|y<sub>w</sub>|)&thinsp;log &pi;(y<sub>w</sub>) &minus; (&beta;/|y<sub>l</sub>|)&thinsp;log &pi;(y<sub>l</sub>) &minus; &gamma; )</code>.
       Length normalization attacks the verbosity bias at its root, and removing the reference model
-      halves the memory needed for preference tuning &mdash; you no longer hold a frozen copy of the
+      halves the memory needed for preference tuning; you no longer hold a frozen copy of the
       network. It produced the largest reward margin here (+16.2) and still lost its head-to-head,
       which is a useful reminder that the margin is not the objective you care about.
     </dd>
-    <dt>GRPO &mdash; RL with a verifiable reward</dt>
+    <dt>GRPO; RL with a verifiable reward</dt>
     <dd>
       For tasks where correctness can be checked by a program (arithmetic here), you do not need a
       learned reward model at all. Sample a <em>group</em> of <code>G</code> completions per prompt,
@@ -1858,7 +2061,7 @@ L<sub>DPO</sub> = &minus;E [ log &sigma;( &beta;&thinsp;log(&pi;<sub>&theta;</su
       <code>A<sub>i</sub> = (r<sub>i</sub> &minus; mean(r)) / std(r)</code>. No value network, which
       is what makes this cheap enough to matter. The KL penalty to the reference uses the <b>k3
       estimator</b>, <code>E[&rho; &minus; log &rho; &minus; 1]</code> with
-      <code>&rho; = &pi;<sub>ref</sub>/&pi;<sub>&theta;</sub></code> &mdash; unbiased, and unlike the
+      <code>&rho; = &pi;<sub>ref</sub>/&pi;<sub>&theta;</sub></code>, unbiased, and unlike the
       naive <code>&minus;log &rho;</code> it is guaranteed non-negative, so it cannot pay the policy
       to move away from the reference.
     </dd>
@@ -1867,7 +2070,7 @@ L<sub>DPO</sub> = &minus;E [ log &sigma;( &beta;&thinsp;log(&pi;<sub>&theta;</su
     The judge used for head-to-head comparisons is programmatic and stated in the code: on-topic
     overlap with the prompt, absence of degenerate repetition, and whether the model emitted
     <code>&lt;eot&gt;</code> rather than running to the token cap. Those are the properties the
-    preference labels encode, so this measures <em>did the model learn the labels</em> &mdash; not
+    preference labels encode, so this measures <em>did the model learn the labels</em>: not
     <em>is the model good</em>. It is deliberately length-insensitive, so a model that learned to
     game length gains nothing from it.
   </p>
@@ -1889,7 +2092,7 @@ L<sub>DPO</sub> = &minus;E [ log &sigma;( &beta;&thinsp;log(&pi;<sub>&theta;</su
   <p>
     <b>Prefill</b> processes the whole prompt at once. Every weight matrix is loaded from memory
     once and multiplied against <code>T</code> token vectors. Lots of arithmetic per byte loaded
-    &mdash; this phase is <em>compute-bound</em>, and it parallelizes beautifully.
+; this phase is <em>compute-bound</em>, and it parallelizes beautifully.
   </p>
   <p>
     <b>Decode</b> generates one token at a time, and each token depends on the one before it, so it
@@ -1902,7 +2105,7 @@ arithmetic intensity of decode = 2N FLOPs / (N &times; bytes_per_weight)
   </div>
   <p>
     Now compare that to what the hardware wants. An A100 delivers roughly 312 TFLOP/s of bf16
-    arithmetic against 1.5&nbsp;TB/s of memory bandwidth &mdash; a ratio of about <b>200 FLOPs per
+    arithmetic against 1.5&nbsp;TB/s of memory bandwidth, a ratio of about <b>200 FLOPs per
     byte</b>. Decode offers it one. The arithmetic units sit idle by a factor of two hundred while
     the memory bus does all the work.
   </p>
@@ -1912,11 +2115,31 @@ arithmetic intensity of decode = 2N FLOPs / (N &times; bytes_per_weight)
     matter how fast the GPU can multiply. You are not compute-limited. You are waiting for memory.
   </p>
 
+  <div class="eg">
+    <span class="eg-t">Worked example: why a 7B model tops out around 107 tokens/second</span>
+    <div class="math">
+weights           7B params &times; 2 bytes (fp16)  = 14 GB
+A100 bandwidth                                = 1,555 GB/s
+
+one decode step must read all 14 GB:  14 / 1555 = <b>9.0 ms</b>
+                                      &rarr; 111 tokens/second, ceiling
+
+arithmetic actually done in those 9 ms: 2 &times; 7e9 = 14 GFLOP
+what the card could have done in 9 ms : 2,800 GFLOP
+utilisation                           : <b>0.5%</b>
+    </div>
+    <p style="margin-bottom:0">
+      Buying a card with twice the arithmetic throughput changes this number by nothing at
+      all. Halving the bytes doubles it. That single asymmetry is why Arc 2 is about bytes
+      and passes rather than about FLOPs.
+    </p>
+  </div>
+
   <figure>
     <div class="fig-frame">
       <svg viewBox="0 0 720 250" role="img" aria-label="Prefill is compute bound because one weight read serves many tokens; decode is memory bound because one weight read serves a single token, leaving the arithmetic units idle.">
         <g font-family="ui-monospace, monospace" font-size="11" fill="currentColor">
-          <text x="30" y="22" font-size="12" font-weight="600">PREFILL &mdash; compute bound</text>
+          <text x="30" y="22" font-size="12" font-weight="600">PREFILL, compute bound</text>
           <rect x="30" y="38" width="60" height="106" rx="3" fill="none" stroke="currentColor" stroke-width="1.3"/>
           <text x="60" y="86" text-anchor="middle" font-size="10">weights</text>
           <text x="60" y="102" text-anchor="middle" font-size="10">14 GB</text>
@@ -1942,7 +2165,7 @@ arithmetic intensity of decode = 2N FLOPs / (N &times; bytes_per_weight)
 
           <line x1="330" y1="30" x2="330" y2="215" stroke="currentColor" stroke-width="1" opacity=".25"/>
 
-          <text x="380" y="22" font-size="12" font-weight="600">DECODE &mdash; memory bound</text>
+          <text x="380" y="22" font-size="12" font-weight="600">DECODE, memory bound</text>
           <rect x="380" y="38" width="60" height="106" rx="3" fill="none" stroke="currentColor" stroke-width="1.3"/>
           <text x="410" y="86" text-anchor="middle" font-size="10">weights</text>
           <text x="410" y="102" text-anchor="middle" font-size="10">14 GB</text>
@@ -1985,10 +2208,10 @@ arithmetic intensity of decode = 2N FLOPs / (N &times; bytes_per_weight)
     <span class="win-t">Now the three techniques stop looking arbitrary</span>
     <p style="margin-bottom:.6rem">Each attacks the same ratio from a different side:</p>
     <ul style="margin-bottom:0">
-      <li><b>Distillation</b> shrinks <code>N</code> &mdash; there are simply fewer weights to read.</li>
-      <li><b>Quantization</b> shrinks <code>bytes_per_weight</code> &mdash; the same weights, in a
+      <li><b>Distillation</b> shrinks <code>N</code>; there are simply fewer weights to read.</li>
+      <li><b>Quantization</b> shrinks <code>bytes_per_weight</code>: the same weights, in a
           quarter of the bytes.</li>
-      <li><b>Speculative decoding</b> increases the <em>numerator</em> &mdash; verify several
+      <li><b>Speculative decoding</b> increases the <em>numerator</em>: verify several
           candidate tokens in one pass, so one weight read yields several tokens instead of one.</li>
     </ul>
   </div>
@@ -2010,7 +2233,7 @@ arithmetic intensity of decode = 2N FLOPs / (N &times; bytes_per_weight)
     <div>
       <h2>Distillation</h2>
       <p class="deck">Train a small model to imitate a big one. The interesting question is not
-      <em>how</em> &mdash; it is <em>which direction of the KL divergence you minimize</em>, because
+      <em>how</em>; it is <em>which direction of the KL divergence you minimize</em>, because
       the two answers behave oppositely.</p>
     </div>
   </div>
@@ -2019,12 +2242,12 @@ arithmetic intensity of decode = 2N FLOPs / (N &times; bytes_per_weight)
     A trained model's output distribution carries far more information than the one-hot label it was
     trained on. Told the next token is <code>&nbsp;cat</code>, the label says nothing else. The
     teacher's distribution says <code>&nbsp;cat</code> 0.6, <code>&nbsp;dog</code> 0.25,
-    <code>&nbsp;kitten</code> 0.1 &mdash; encoding that dogs are more like cats than staplers are.
+    <code>&nbsp;kitten</code> 0.1, encoding that dogs are more like cats than staplers are.
     Hinton called these the <em>dark knowledge</em> in the logits, and distillation is training a
     student on that distribution rather than on the labels.
   </p>
 
-  <h3>7.1 &nbsp;Forward KL &mdash; the baseline, and its problem</h3>
+  <h3>7.1 &nbsp;Forward KL: the baseline, and its problem</h3>
   <div class="math">
 L = &alpha;&thinsp;H(y, student) + (1 &minus; &alpha;)&thinsp;&tau;&sup2;&thinsp;KL( teacher<sub>&tau;</sub> &#8214; student<sub>&tau;</sub> )
 <span class="ann">&tau; softens both distributions; the &tau;&sup2; factor restores the gradient magnitude, which softening scales by 1/&tau;&sup2;</span>
@@ -2039,11 +2262,11 @@ L = &alpha;&thinsp;H(y, student) + (1 &minus; &alpha;)&thinsp;&tau;&sup2;&thinsp
   <p>
     For a student with comparable capacity that is fine. For a student 17&times; smaller it is a
     trap: it cannot represent the teacher's full distribution, so being punished for every gap
-    forces it to smear probability thinly across regions it cannot model well &mdash; including the
+    forces it to smear probability thinly across regions it cannot model well, including the
     empty space between modes, where the teacher has nothing but the student now does.
   </p>
 
-  <h3>7.2 &nbsp;Reverse KL &mdash; permission to give up</h3>
+  <h3>7.2 &nbsp;Reverse KL, permission to give up</h3>
   <p>
     Swap the arguments. <code>KL(q &#8214; p) = &Sigma; q log(q/p)</code> is weighted by the
     <em>student</em>, so it only cares about places the student puts mass, and the infinite penalty
@@ -2057,14 +2280,14 @@ L = &alpha;&thinsp;H(y, student) + (1 &minus; &alpha;)&thinsp;&tau;&sup2;&thinsp
       <svg viewBox="0 0 660 190" role="img" aria-label="A bimodal teacher distribution fitted by a limited student: minimizing forward KL produces a broad distribution covering both modes and the empty valley between them, while minimizing reverse KL produces a narrow distribution locked onto one mode.">
         <g font-family="ui-monospace, monospace" font-size="10.5" fill="currentColor">
           <g transform="translate(10,14)">
-            <text x="18" y="0" font-size="11" font-weight="600">forward KL &mdash; mode covering</text>
+            <text x="18" y="0" font-size="11" font-weight="600">forward KL, mode covering</text>
             <line x1="18" y1="132" x2="282" y2="132" stroke="currentColor" stroke-width=".9" opacity=".4"/>
             <polyline points="18.0,132.0 19.7,132.0 21.3,132.0 23.0,132.0 24.6,132.0 26.3,132.0 27.9,132.0 29.6,132.0 31.2,132.0 32.8,132.0 34.5,132.0 36.1,132.0 37.8,132.0 39.5,132.0 41.1,132.0 42.8,132.0 44.4,132.0 46.1,131.9 47.7,131.9 49.3,131.9 51.0,131.8 52.6,131.7 54.3,131.6 55.9,131.4 57.6,131.1 59.2,130.8 60.9,130.3 62.6,129.7 64.2,128.9 65.9,127.9 67.5,126.7 69.1,125.2 70.8,123.3 72.4,121.2 74.1,118.6 75.8,115.7 77.4,112.4 79.0,108.8 80.7,104.9 82.3,100.7 84.0,96.5 85.6,92.2 87.3,88.0 89.0,84.0 90.6,80.4 92.2,77.2 93.9,74.7 95.5,72.9 97.2,71.9 98.9,71.7 100.5,72.3 102.1,73.7 103.8,75.9 105.5,78.7 107.1,82.1 108.8,85.9 110.4,90.1 112.0,94.3 113.7,98.6 115.4,102.8 117.0,106.9 118.7,110.6 120.3,114.1 122.0,117.2 123.6,119.9 125.2,122.3 126.9,124.3 128.6,126.0 130.2,127.4 131.9,128.5 133.5,129.3 135.2,130.0 136.8,130.6 138.5,131.0 140.1,131.3 141.8,131.5 143.4,131.6 145.1,131.7 146.7,131.8 148.3,131.8 150.0,131.9 151.7,131.8 153.3,131.8 155.0,131.7 156.6,131.6 158.2,131.5 159.9,131.3 161.6,131.0 163.2,130.6 164.8,130.0 166.5,129.3 168.1,128.5 169.8,127.4 171.5,126.0 173.1,124.3 174.7,122.3 176.4,119.9 178.1,117.2 179.7,114.1 181.3,110.6 183.0,106.9 184.7,102.8 186.3,98.6 187.9,94.3 189.6,90.1 191.2,85.9 192.9,82.1 194.5,78.7 196.2,75.9 197.8,73.7 199.5,72.3 201.2,71.7 202.8,71.9 204.5,72.9 206.1,74.7 207.7,77.2 209.4,80.4 211.1,84.0 212.7,88.0 214.3,92.2 216.0,96.5 217.7,100.7 219.3,104.9 220.9,108.8 222.6,112.4 224.2,115.7 225.9,118.6 227.5,121.2 229.2,123.3 230.8,125.2 232.5,126.7 234.2,127.9 235.8,128.9 237.5,129.7 239.1,130.3 240.8,130.8 242.4,131.1 244.1,131.4 245.7,131.6 247.3,131.7 249.0,131.8 250.7,131.9 252.3,131.9 254.0,131.9 255.6,132.0 257.2,132.0 258.9,132.0 260.6,132.0 262.2,132.0 263.8,132.0 265.5,132.0 267.2,132.0 268.8,132.0 270.4,132.0 272.1,132.0 273.8,132.0 275.4,132.0 277.1,132.0 278.7,132.0 280.4,132.0 282.0,132.0" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".5"/>
             <polyline points="18.0,130.5 19.7,130.4 21.3,130.3 23.0,130.1 24.6,130.0 26.3,129.8 27.9,129.7 29.6,129.5 31.2,129.3 32.8,129.1 34.5,128.9 36.1,128.7 37.8,128.5 39.5,128.3 41.1,128.0 42.8,127.8 44.4,127.5 46.1,127.2 47.7,126.9 49.3,126.6 51.0,126.3 52.6,126.0 54.3,125.6 55.9,125.3 57.6,124.9 59.2,124.5 60.9,124.1 62.6,123.7 64.2,123.3 65.9,122.8 67.5,122.4 69.1,121.9 70.8,121.4 72.4,120.9 74.1,120.4 75.8,119.9 77.4,119.4 79.0,118.9 80.7,118.3 82.3,117.8 84.0,117.2 85.6,116.7 87.3,116.1 89.0,115.5 90.6,114.9 92.2,114.3 93.9,113.7 95.5,113.1 97.2,112.6 98.9,112.0 100.5,111.4 102.1,110.8 103.8,110.2 105.5,109.6 107.1,109.0 108.8,108.5 110.4,107.9 112.0,107.4 113.7,106.8 115.4,106.3 117.0,105.8 118.7,105.3 120.3,104.9 122.0,104.4 123.6,104.0 125.2,103.5 126.9,103.1 128.6,102.8 130.2,102.4 131.9,102.1 133.5,101.8 135.2,101.5 136.8,101.3 138.5,101.1 140.1,100.9 141.8,100.7 143.4,100.6 145.1,100.5 146.7,100.4 148.3,100.3 150.0,100.3 151.7,100.3 153.3,100.4 155.0,100.5 156.6,100.6 158.2,100.7 159.9,100.9 161.6,101.1 163.2,101.3 164.8,101.5 166.5,101.8 168.1,102.1 169.8,102.4 171.5,102.8 173.1,103.1 174.7,103.5 176.4,104.0 178.1,104.4 179.7,104.9 181.3,105.3 183.0,105.8 184.7,106.3 186.3,106.8 187.9,107.4 189.6,107.9 191.2,108.5 192.9,109.0 194.5,109.6 196.2,110.2 197.8,110.8 199.5,111.4 201.2,112.0 202.8,112.6 204.5,113.1 206.1,113.7 207.7,114.3 209.4,114.9 211.1,115.5 212.7,116.1 214.3,116.7 216.0,117.2 217.7,117.8 219.3,118.3 220.9,118.9 222.6,119.4 224.2,119.9 225.9,120.4 227.5,120.9 229.2,121.4 230.8,121.9 232.5,122.4 234.2,122.8 235.8,123.3 237.5,123.7 239.1,124.1 240.8,124.5 242.4,124.9 244.1,125.3 245.7,125.6 247.3,126.0 249.0,126.3 250.7,126.6 252.3,126.9 254.0,127.2 255.6,127.5 257.2,127.8 258.9,128.0 260.6,128.3 262.2,128.5 263.8,128.7 265.5,128.9 267.2,129.1 268.8,129.3 270.4,129.5 272.1,129.7 273.8,129.8 275.4,130.0 277.1,130.1 278.7,130.3 280.4,130.4 282.0,130.5" fill="none" stroke="#12655F" stroke-width="2.2"/>
             <text x="150" y="152" text-anchor="middle" opacity=".7">puts mass in the valley the teacher never visits</text>
           </g>
           <g transform="translate(360,14)">
-            <text x="18" y="0" font-size="11" font-weight="600">reverse KL &mdash; mode seeking</text>
+            <text x="18" y="0" font-size="11" font-weight="600">reverse KL, mode seeking</text>
             <line x1="18" y1="132" x2="282" y2="132" stroke="currentColor" stroke-width=".9" opacity=".4"/>
             <polyline points="18.0,132.0 19.7,132.0 21.3,132.0 23.0,132.0 24.6,132.0 26.3,132.0 27.9,132.0 29.6,132.0 31.2,132.0 32.8,132.0 34.5,132.0 36.1,132.0 37.8,132.0 39.5,132.0 41.1,132.0 42.8,132.0 44.4,132.0 46.1,131.9 47.7,131.9 49.3,131.9 51.0,131.8 52.6,131.7 54.3,131.6 55.9,131.4 57.6,131.1 59.2,130.8 60.9,130.3 62.6,129.7 64.2,128.9 65.9,127.9 67.5,126.7 69.1,125.2 70.8,123.3 72.4,121.2 74.1,118.6 75.8,115.7 77.4,112.4 79.0,108.8 80.7,104.9 82.3,100.7 84.0,96.5 85.6,92.2 87.3,88.0 89.0,84.0 90.6,80.4 92.2,77.2 93.9,74.7 95.5,72.9 97.2,71.9 98.9,71.7 100.5,72.3 102.1,73.7 103.8,75.9 105.5,78.7 107.1,82.1 108.8,85.9 110.4,90.1 112.0,94.3 113.7,98.6 115.4,102.8 117.0,106.9 118.7,110.6 120.3,114.1 122.0,117.2 123.6,119.9 125.2,122.3 126.9,124.3 128.6,126.0 130.2,127.4 131.9,128.5 133.5,129.3 135.2,130.0 136.8,130.6 138.5,131.0 140.1,131.3 141.8,131.5 143.4,131.6 145.1,131.7 146.7,131.8 148.3,131.8 150.0,131.9 151.7,131.8 153.3,131.8 155.0,131.7 156.6,131.6 158.2,131.5 159.9,131.3 161.6,131.0 163.2,130.6 164.8,130.0 166.5,129.3 168.1,128.5 169.8,127.4 171.5,126.0 173.1,124.3 174.7,122.3 176.4,119.9 178.1,117.2 179.7,114.1 181.3,110.6 183.0,106.9 184.7,102.8 186.3,98.6 187.9,94.3 189.6,90.1 191.2,85.9 192.9,82.1 194.5,78.7 196.2,75.9 197.8,73.7 199.5,72.3 201.2,71.7 202.8,71.9 204.5,72.9 206.1,74.7 207.7,77.2 209.4,80.4 211.1,84.0 212.7,88.0 214.3,92.2 216.0,96.5 217.7,100.7 219.3,104.9 220.9,108.8 222.6,112.4 224.2,115.7 225.9,118.6 227.5,121.2 229.2,123.3 230.8,125.2 232.5,126.7 234.2,127.9 235.8,128.9 237.5,129.7 239.1,130.3 240.8,130.8 242.4,131.1 244.1,131.4 245.7,131.6 247.3,131.7 249.0,131.8 250.7,131.9 252.3,131.9 254.0,131.9 255.6,132.0 257.2,132.0 258.9,132.0 260.6,132.0 262.2,132.0 263.8,132.0 265.5,132.0 267.2,132.0 268.8,132.0 270.4,132.0 272.1,132.0 273.8,132.0 275.4,132.0 277.1,132.0 278.7,132.0 280.4,132.0 282.0,132.0" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".5"/>
             <polyline points="18.0,132.0 19.7,132.0 21.3,132.0 23.0,132.0 24.6,132.0 26.3,132.0 27.9,132.0 29.6,132.0 31.2,132.0 32.8,132.0 34.5,132.0 36.1,132.0 37.8,132.0 39.5,132.0 41.1,132.0 42.8,132.0 44.4,132.0 46.1,132.0 47.7,132.0 49.3,132.0 51.0,132.0 52.6,132.0 54.3,132.0 55.9,132.0 57.6,132.0 59.2,132.0 60.9,132.0 62.6,132.0 64.2,132.0 65.9,132.0 67.5,132.0 69.1,132.0 70.8,132.0 72.4,132.0 74.1,132.0 75.8,132.0 77.4,132.0 79.0,132.0 80.7,132.0 82.3,132.0 84.0,132.0 85.6,132.0 87.3,132.0 89.0,132.0 90.6,132.0 92.2,132.0 93.9,132.0 95.5,132.0 97.2,132.0 98.9,132.0 100.5,132.0 102.1,132.0 103.8,132.0 105.5,132.0 107.1,132.0 108.8,132.0 110.4,132.0 112.0,132.0 113.7,132.0 115.4,132.0 117.0,132.0 118.7,132.0 120.3,132.0 122.0,132.0 123.6,132.0 125.2,132.0 126.9,132.0 128.6,132.0 130.2,132.0 131.9,132.0 133.5,132.0 135.2,132.0 136.8,132.0 138.5,132.0 140.1,132.0 141.8,132.0 143.4,131.9 145.1,131.9 146.7,131.9 148.3,131.8 150.0,131.7 151.7,131.6 153.3,131.4 155.0,131.2 156.6,130.8 158.2,130.4 159.9,129.8 161.6,129.0 163.2,127.9 164.8,126.6 166.5,125.0 168.1,122.9 169.8,120.4 171.5,117.4 173.1,113.8 174.7,109.7 176.4,104.9 178.1,99.5 179.7,93.4 181.3,86.9 183.0,79.8 184.7,72.4 186.3,64.8 187.9,57.1 189.6,49.6 191.2,42.4 192.9,35.8 194.5,30.0 196.2,25.2 197.8,21.5 199.5,19.1 201.2,18.0 202.8,18.4 204.5,20.1 206.1,23.2 207.7,27.5 209.4,32.8 211.1,39.0 212.7,45.9 214.3,53.3 216.0,60.9 217.7,68.6 219.3,76.1 220.9,83.4 222.6,90.2 224.2,96.5 225.9,102.2 227.5,107.3 229.2,111.8 230.8,115.7 232.5,119.0 234.2,121.7 235.8,124.0 237.5,125.9 239.1,127.3 240.8,128.5 242.4,129.4 244.1,130.1 245.7,130.6 247.3,131.0 249.0,131.3 250.7,131.5 252.3,131.7 254.0,131.8 255.6,131.8 257.2,131.9 258.9,131.9 260.6,132.0 262.2,132.0 263.8,132.0 265.5,132.0 267.2,132.0 268.8,132.0 270.4,132.0 272.1,132.0 273.8,132.0 275.4,132.0 277.1,132.0 278.7,132.0 280.4,132.0 282.0,132.0" fill="none" stroke="#12655F" stroke-width="2.2"/>
@@ -2076,12 +2299,30 @@ L = &alpha;&thinsp;H(y, student) + (1 &minus; &alpha;)&thinsp;&tau;&sup2;&thinsp
     </div>
     <figcaption>
       <b>The same teacher, the same student capacity, opposite failure modes.</b> A student that must
-      cover everything ends up assigning real probability to the gap between modes &mdash; text that
+      cover everything ends up assigning real probability to the gap between modes, text that
       is a blend of two plausible continuations and is itself implausible. A student allowed to
       abandon a mode produces narrower but self-consistent output. This is why perplexity ranks these
       two backwards from generation quality.
     </figcaption>
   </figure>
+
+  <div class="eg">
+    <span class="eg-t">Worked example: a teacher with two modes, a student that can only fit one</span>
+    <div class="math">
+teacher p  = [0.45, 0.45, 0.10]   two good continuations plus a tail
+student A  = [0.50, 0.50, 0.00]   picks both modes, drops the tail
+student B  = [0.33, 0.33, 0.34]   spreads out to cover everything
+
+forward  KL(p &#8214; q):   A = &infin;  (p&#8323;&gt;0 where q&#8323;=0)     B = 0.15
+reverse  KL(q &#8214; p):   A = 0.11                        B = 0.31
+    </div>
+    <p style="margin-bottom:0">
+      Forward KL calls student A <em>infinitely</em> bad for ignoring a 10% tail, and prefers
+      B, which has smeared a third of its mass onto the teacher's least-likely option.
+      Reverse KL prefers A. When the student is 17&times; smaller and cannot represent the
+      tail anyway, A is the model you want, and B is the one that generates the mush.
+    </p>
+  </div>
 
   <h3>7.3 &nbsp;Why reverse KL needs a policy gradient</h3>
   <p>
@@ -2093,7 +2334,7 @@ L = &alpha;&thinsp;H(y, student) + (1 &minus; &alpha;)&thinsp;&tau;&sup2;&thinsp
   </p>
   <ul>
     <li><b>On-policy sampling.</b> Trajectories come from the student, which also fixes
-        <em>exposure bias</em> &mdash; the mismatch where a model trained only on teacher-generated
+        <em>exposure bias</em>; the mismatch where a model trained only on teacher-generated
         prefixes has never seen its own mistakes and cannot recover from them.</li>
     <li><b>Reward-to-go decomposition.</b> Credit each token with the reward accumulated from that
         point forward, rather than a single sequence-level score, which drastically cuts variance.</li>
@@ -2106,15 +2347,15 @@ L = &alpha;&thinsp;H(y, student) + (1 &minus; &alpha;)&thinsp;&tau;&sup2;&thinsp
     <p>
       My first reverse-KL runs produced students with perplexity <b>1028</b>, against 28 and 129 for
       the other two objectives. I assumed a bug in the policy gradient. There was no bug. A policy
-      gradient optimizes the distribution of trajectories the policy actually generates &mdash; and a
+      gradient optimizes the distribution of trajectories the policy actually generates, and a
       randomly-initialized student generates noise. Reverse KL was faithfully teaching it to produce
       slightly less surprising noise, from a starting point it could never escape.
     </p>
     <p>
       MiniLLM's paper says to warm-start with plain MLE. Adding that (applied identically to all
       three arms, so the comparison stays controlled) moved the three to 2.05&thinsp;/&thinsp;4.45&thinsp;/&thinsp;41.
-      Then scaling the learning rate down for the on-policy phase &mdash; a policy gradient is far
-      higher-variance than a supervised loss &mdash; gave the final
+      Then scaling the learning rate down for the on-policy phase; a policy gradient is far
+      higher-variance than a supervised loss, gave the final
       2.05&thinsp;/&thinsp;4.45&thinsp;/&thinsp;2.50. Both fixes are config fields with defaults, not
       hard-coded constants, so their effect stays measurable.
     </p>
@@ -2129,12 +2370,12 @@ L = &alpha;&thinsp;H(y, student) + (1 &minus; &alpha;)&thinsp;&tau;&sup2;&thinsp
         <tr><td>forward KL</td><td class="num best">2.0536</td><td class="num">0.0064</td><td class="num">45.5</td><td class="num">18.2&nbsp;s</td></tr>
         <tr><td>SeqKD</td><td class="num">4.4499</td><td class="num worse">0.0372</td><td class="num">39.2</td><td class="num">33.5&nbsp;s</td></tr>
         <tr><td><b>reverse KL, on-policy</b></td><td class="num">2.4974</td><td class="num best">0.0000</td><td class="num">30.2</td><td class="num">18.1&nbsp;s</td></tr>
-        <tr><td><em>teacher, for reference</em></td><td class="num">&mdash;</td><td class="num">0.0383</td><td class="num">46.8</td><td class="num">&mdash;</td></tr>
+        <tr><td><em>teacher, for reference</em></td><td class="num">, </td><td class="num">0.0383</td><td class="num">46.8</td><td class="num">, </td></tr>
       </tbody>
     </table>
   </div>
   <p>
-    <b>Reverse KL has worse perplexity and better generations &mdash; and that is the MiniLLM finding,
+    <b>Reverse KL has worse perplexity and better generations, and that is the MiniLLM finding,
     reproduced.</b> It is not a contradiction. Perplexity rewards a model for spreading probability
     over everything in the evaluation set, which is precisely the mode-covering behaviour reverse KL
     is designed to avoid. A mode-seeking student scores worse on a coverage metric and degenerates
@@ -2150,7 +2391,7 @@ L = &alpha;&thinsp;H(y, student) + (1 &minus; &alpha;)&thinsp;&tau;&sup2;&thinsp
   <p class="footnote">
     Compression: 4,952,064 &rarr; 279,168 parameters (17.7&times; overall, 29.9&times; on
     non-embedding parameters). Teacher and student share a tokenizer by necessity, so the embedding
-    table and LM head are the same width in both and their cost is irreducible &mdash; the
+    table and LM head are the same width in both and their cost is irreducible; the
     non-embedding figure is the one that describes the actual depth and width reduction.
   </p>
 </section><section id="quant">
@@ -2172,7 +2413,7 @@ s = (max &minus; min) / (2<sup>k</sup> &minus; 1)&nbsp;&nbsp;&nbsp;z = &minus;ro
 q = clamp( round(w / s) + z , 0 , 2<sup>k</sup>&minus;1 )&nbsp;&nbsp;&nbsp;&#373; = s&thinsp;(q &minus; z)
   </div>
   <p>
-    One scale for a whole matrix is far too coarse &mdash; a single outlier weight stretches the
+    One scale for a whole matrix is far too coarse: a single outlier weight stretches the
     grid and everything else collapses onto a few levels. So scales are computed per <b>group</b> of
     columns (64 here). That costs storage, and the repository accounts for it honestly:
   </p>
@@ -2180,6 +2421,25 @@ q = clamp( round(w / s) + z , 0 , 2<sup>k</sup>&minus;1 )&nbsp;&nbsp;&nbsp;&#373
 effective bits = k + (scale_bits + zero_bits) / group_size
 &nbsp;&nbsp;4-bit, group 64, fp16 scale + fp16 zero = 4 + 32/64 = <b>4.5 bits</b>
 <span class="ann">every "4-bit" figure in this project is plotted at 4.5</span>
+  </div>
+
+  <div class="eg">
+    <span class="eg-t">Worked example: one group of weights at 4 bits</span>
+    <div class="math">
+weights   [ 0.42, &minus;0.13,  0.88, &minus;0.71,  0.05 ]
+min &minus;0.71, max 0.88  &rarr;  s = 1.59/15 = 0.106,  z = 7
+
+quantised [   11,      6,     15,      0,      7 ]     &lt;- 4 bits each
+restored  [ 0.424, &minus;0.106,  0.848, &minus;0.742,  0.000 ]
+error     [ +0.004, +0.024, &minus;0.032, &minus;0.032, &minus;0.050 ]
+    </div>
+    <p style="margin-bottom:0">
+      Each weight lands within half a step (0.053) of where it started, which is the best any
+      independent rounding can do. The last weight, 0.05, suffers most in relative terms: it
+      rounds to exactly zero. Whether that matters depends entirely on how large the
+      activation it multiplies usually is, and that is the information RTN throws away and
+      GPTQ uses.
+    </p>
   </div>
 
   <h3>8.1 &nbsp;Why round-to-nearest is not the best you can do</h3>
@@ -2195,7 +2455,7 @@ minimize &nbsp;&#8214; WX &minus; &#372;X &#8214;&sup2;<sub>F</sub>
   <p>
     Those are different objectives. A weight multiplying an input channel that is almost always zero
     can be rounded badly at no cost; a weight multiplying a high-variance channel cannot. And
-    crucially, the rounding errors <em>interact</em> &mdash; if one weight rounds up, another can
+    crucially, the rounding errors <em>interact</em>, if one weight rounds up, another can
     round down to partially cancel it in the output.
   </p>
 
@@ -2211,7 +2471,7 @@ H = 2 X X<sup>T</sup>
   <p>
     GPTQ (following Optimal Brain Quantization) processes columns one at a time. Quantize column
     <code>q</code>, measure the error you just introduced, and then <b>adjust all the
-    not-yet-quantized columns</b> to compensate for it &mdash; using the Hessian to work out which
+    not-yet-quantized columns</b> to compensate for it, using the Hessian to work out which
     adjustment best cancels the error in the output:
   </p>
   <div class="math">
@@ -2219,7 +2479,7 @@ H = 2 X X<sup>T</sup>
   </div>
   <p>
     The later columns absorb the earlier columns' mistakes. By the end, the accumulated output error
-    is far smaller than independent rounding would give &mdash; even though the individual weights
+    is far smaller than independent rounding would give, even though the individual weights
     have moved <em>further</em> from their original values.
   </p>
   <p>
@@ -2227,7 +2487,7 @@ H = 2 X X<sup>T</sup>
     repository: a <b>Cholesky factorization</b> of <code>H<sup>&minus;1</sup></code> for numerical
     stability (the naive iterative inverse-update becomes indefinite and produces NaNs on real
     layers), <b>lazy block updates</b> that batch the compensation over 128 columns instead of
-    applying it one at a time, and <b>activation ordering</b> &mdash; quantizing the
+    applying it one at a time, and <b>activation ordering</b>: quantizing the
     highest-activation-magnitude columns first, while the largest pool of un-quantized columns is
     still available to absorb their error.
   </p>
@@ -2237,7 +2497,7 @@ H = 2 X X<sup>T</sup>
     <p>
       With <code>act_order</code> enabled, my 2-bit GPTQ was <em>losing</em> to plain round-to-nearest.
       The cause: to restore the original column order after quantizing in permuted order, the code
-      was un-permuting the <em>dequantized</em> matrix &mdash; which meant re-quantizing it, adding a
+      was un-permuting the <em>dequantized</em> matrix, which meant re-quantizing it, adding a
       second, uncompensated rounding pass on top of the error the algorithm had just carefully
       minimized. The fix is to carry the permutation <em>with</em> the integer codes
       (<code>QuantizedTensor.perm</code>) and apply it at dequantization time, so the codes are only
@@ -2249,11 +2509,11 @@ H = 2 X X<sup>T</sup>
     <p>
       I wrote a test asserting "GPTQ's advantage comes from the Hessian's off-diagonal structure",
       checking that GPTQ's edge over RTN disappears with white (uncorrelated) calibration activations.
-      It failed &mdash; error compensation helps even with white activations, because the benefit
+      It failed: error compensation helps even with white activations, because the benefit
       comes from sequentially absorbing error at all, not only from cross-channel correlation. The
       hypothesis was wrong, not the implementation. It is now two narrower tests that are each true.
       While fixing it I also found the test was measuring <code>act_order</code>'s effect as exactly
-      zero &mdash; because I built the synthetic activations with <code>logspace</code>, which is
+      zero: because I built the synthetic activations with <code>logspace</code>, which is
       already sorted, so the "ordering" permutation was the identity. A shuffle now makes it
       non-vacuous.
     </p>
@@ -2262,13 +2522,13 @@ H = 2 X X<sup>T</sup>
   <h3>8.3 &nbsp;AWQ: protect the channels that matter</h3>
   <p>
     A different attack on the same problem. AWQ observes that a small fraction of weight channels
-    are <em>salient</em> &mdash; they multiply consistently large activations, so their error
+    are <em>salient</em>: they multiply consistently large activations, so their error
     dominates the output. Rather than compensating after the fact, scale those channels up by
     <code>s</code> before quantizing and divide the corresponding activation by <code>s</code>:
   </p>
   <div class="math">
 W X = (W &middot; diag(s)) &middot; (diag(s)<sup>&minus;1</sup> X)
-<span class="ann">mathematically identical &mdash; but the scaled-up channels now span more of the quantization grid, so their <em>relative</em> rounding error shrinks</span>
+<span class="ann">mathematically identical, but the scaled-up channels now span more of the quantization grid, so their <em>relative</em> rounding error shrinks</span>
   </div>
   <p>
     No mixed precision, no second pass over the data at inference: the scaling is folded into the
@@ -2308,7 +2568,7 @@ W X = (W &middot; diag(s)) &middot; (diag(s)<sup>&minus;1</sup> X)
   <div class="caveat">
     <span class="caveat-t">Negative result: GPTQ does not beat RTN at 4 bits here</span>
     <p>
-      The plan predicted GPTQ would beat RTN at 4 bits "by a clear margin". It does not &mdash; all
+      The plan predicted GPTQ would beat RTN at 4 bits "by a clear margin". It does not; all
       three methods are indistinguishable from fp32 (1.4767 / 1.4766 / 1.4765 against a 1.4764
       baseline). There is no margin left to win: a 5M-parameter model on a narrow corpus has little
       redundancy for 4-bit rounding to destroy in the first place. The separation only appears at 2
@@ -2321,7 +2581,7 @@ W X = (W &middot; diag(s)) &middot; (diag(s)<sup>&minus;1</sup> X)
   <p>
     The weights are not the only thing occupying memory bandwidth. As
     <a href="#cost">the cost model</a> showed, the KV cache can exceed the model itself at long
-    context and large batch. It is quantized with the same machinery &mdash; per-token, per-head
+    context and large batch. It is quantized with the same machinery: per-token, per-head
     scales, with independent bit-widths for keys and values, since keys are empirically more
     sensitive than values. The repository reports the memory saved and the perplexity cost side by
     side, at several context lengths, because the trade only becomes worthwhile as context grows.
@@ -2333,7 +2593,7 @@ W X = (W &middot; diag(s)) &middot; (diag(s)<sup>&minus;1</sup> X)
     <div>
       <h2>Speculative decoding</h2>
       <p class="deck">Guess several tokens with a cheap model, check them all with the expensive one
-      in a single pass, and &mdash; this is the surprising part &mdash; get output that is
+      in a single pass, and; this is the surprising part, get output that is
       <em>exactly</em> as if the expensive model had generated every token itself.</p>
     </div>
   </div>
@@ -2346,7 +2606,7 @@ W X = (W &middot; diag(s)) &middot; (diag(s)<sup>&minus;1</sup> X)
   </p>
   <p>
     So: let a small draft model generate <code>&gamma;</code> candidate tokens autoregressively
-    (cheap &mdash; it is a small model). Then feed the whole candidate sequence to the target model
+    (cheap; it is a small model). Then feed the whole candidate sequence to the target model
     in <b>one</b> forward pass. Because the sequence is known, the target can score every position in
     parallel, exactly as in training. Now decide which candidates to keep.
   </p>
@@ -2360,7 +2620,7 @@ W X = (W &middot; diag(s)) &middot; (diag(s)<sup>&minus;1</sup> X)
           </marker>
         </defs>
         <g font-family="ui-monospace, monospace" font-size="11" fill="currentColor">
-          <text x="20" y="20" font-size="11.5" font-weight="600">1 &mdash; draft proposes &gamma;=4, sequentially (4 cheap passes)</text>
+          <text x="20" y="20" font-size="11.5" font-weight="600">1: draft proposes &gamma;=4, sequentially (4 cheap passes)</text>
           <g>
             <rect x="20" y="32" width="86" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="1" opacity=".55"/>
             <text x="63" y="51" text-anchor="middle" opacity=".7">prefix&hellip;</text>
@@ -2374,11 +2634,11 @@ W X = (W &middot; diag(s)) &middot; (diag(s)<sup>&minus;1</sup> X)
             <text x="382" y="51" text-anchor="middle">&nbsp;down</text>
           </g>
 
-          <text x="20" y="92" font-size="11.5" font-weight="600">2 &mdash; target scores all 5 positions in ONE pass</text>
+          <text x="20" y="92" font-size="11.5" font-weight="600">2, target scores all 5 positions in ONE pass</text>
           <rect x="20" y="102" width="398" height="26" rx="3" fill="none" stroke="#12655F" stroke-width="1.4"/>
           <text x="34" y="119" fill="#12655F">single target forward pass &rarr; p&#8321; p&#8322; p&#8323; p&#8324; p&#8325;</text>
 
-          <text x="20" y="160" font-size="11.5" font-weight="600">3 &mdash; accept/reject, left to right</text>
+          <text x="20" y="160" font-size="11.5" font-weight="600">3: accept/reject, left to right</text>
           <g>
             <rect x="112" y="170" width="72" height="28" rx="3" fill="#12655F" fill-opacity=".18" stroke="#12655F" stroke-width="1.3"/>
             <text x="148" y="189" text-anchor="middle">&nbsp;the</text>
@@ -2408,14 +2668,14 @@ W X = (W &middot; diag(s)) &middot; (diag(s)<sup>&minus;1</sup> X)
     <figcaption>
       <b>One target pass, four tokens.</b> Note the last box: a rejection is not wasted work. The
       target's distribution at that position is already computed, so the round always yields at
-      least one token &mdash; speculation degrades to ordinary autoregressive decoding in the worst
+      least one token: speculation degrades to ordinary autoregressive decoding in the worst
       case, never worse.
     </figcaption>
   </figure>
 
   <h3>9.1 &nbsp;The accept rule, and why it is exactly lossless</h3>
   <p>
-    The naive approach &mdash; accept a draft token if the target also likes it &mdash; would bias
+    The naive approach, accept a draft token if the target also likes it, would bias
     the output. The correct rule is a form of rejection sampling:
   </p>
   <div class="math">
@@ -2447,12 +2707,33 @@ P(residual gives x) = max(0, p(x) &minus; q(x)) / &Sigma;<sub>y</sub> max(0, p(y
     still exactly the target's. A bad draft costs you speed, never correctness.
   </p>
 
+  <div class="eg">
+    <span class="eg-t">Worked example: one token, three outcomes</span>
+    <div class="math">
+draft proposes " cat", with q(" cat") = 0.30
+target says                p(" cat") = 0.45   &rarr; accept with prob min(1, 0.45/0.30) = <b>1.00</b>
+                                                  the target likes it more; always keep it
+
+draft proposes " cat", with q(" cat") = 0.30
+target says                p(" cat") = 0.12   &rarr; accept with prob min(1, 0.12/0.30) = <b>0.40</b>
+                                                  keep it 40% of the time; otherwise resample
+
+on rejection, draw from norm(max(0, p &minus; q)) over the whole vocabulary,
+which is the part of the target's mass the draft under-supplied.
+    </div>
+    <p style="margin-bottom:0">
+      The rule is doing bookkeeping, not judgement. It keeps a proposal exactly as often as
+      the target would have produced it, and makes up any shortfall from the residual. That
+      is why the arithmetic comes out to exactly <code>p</code> and not approximately.
+    </p>
+  </div>
+
   <div class="demo" id="specdemo">
-    <p class="eyebrow" style="margin-bottom:.75rem">Interactive &mdash; verify it yourself</p>
+    <p class="eyebrow" style="margin-bottom:.75rem">Interactive, verify it yourself</p>
     <p style="font-size:.94rem; margin-bottom:1rem; max-width:64ch">
       A deliberately poor draft <code>q</code> against a target <code>p</code> over six tokens. Draw
       samples through the accept/reject rule above and watch the empirical distribution converge to
-      <code>p</code> &mdash; not to <code>q</code>, and not to anything in between.
+      <code>p</code>: not to <code>q</code>, and not to anything in between.
     </p>
     <div class="demo-bar">
       <button class="btn primary" id="sd-draw">Draw 200 samples</button>
@@ -2473,7 +2754,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
   </div>
   <p>
     This explains the shape of the results below. Larger <code>&gamma;</code> has diminishing returns
-    &mdash; each extra proposal is only reached if all before it were accepted &mdash; while the
+; each extra proposal is only reached if all before it were accepted, while the
     draft cost grows linearly in <code>&gamma;</code>. There is an optimum, and it moves with
     <code>&alpha;</code>.
   </p>
@@ -2482,7 +2763,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
   <p>
     Maintaining a separate draft model is operationally annoying: two checkpoints, two tokenizers to
     keep in sync, extra memory. Medusa's alternative is to bolt extra prediction heads onto the
-    target itself &mdash; exactly the multi-token-prediction heads from
+    target itself: exactly the multi-token-prediction heads from
     <a href="#model">&sect;02.8</a>. Head <code>k</code> predicts token <code>t+k</code>, each head
     proposes its top few candidates, and the cross product forms a <em>tree</em> of candidate
     continuations.
@@ -2497,8 +2778,8 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
     <p>
       My packed tree evaluated differently from the same paths evaluated one at a time. The mask was
       correct; the position IDs were not. I was numbering nodes by their index in the flattened
-      packing order, but a node's position for RoPE purposes is its <b>depth in the tree</b> &mdash;
-      two siblings at depth 2 are both at prefix_len + 2, regardless of where they landed in the
+      packing order, but a node's position for RoPE purposes is its <b>depth in the tree</b>,
+two siblings at depth 2 are both at prefix_len + 2, regardless of where they landed in the
       packing. With packing-order IDs, RoPE placed sibling branches at different distances from the
       prefix and quietly scored them wrong. The fix is a <code>tree_position_ids()</code> function
       derived from depth, and a test that compares packed-tree evaluation against per-path
@@ -2512,17 +2793,17 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
       <thead><tr><th>Arm</th><th class="num">Target passes</th><th class="num">Tokens / pass</th>
                  <th class="num">Acceptance</th><th class="num">Tokens/s</th><th class="num">vs baseline</th></tr></thead>
       <tbody>
-        <tr><td>autoregressive</td><td class="num">520</td><td class="num">0.98</td><td class="num">&mdash;</td><td class="num">677.4</td><td class="num">1.00&times;</td></tr>
+        <tr><td>autoregressive</td><td class="num">520</td><td class="num">0.98</td><td class="num">, </td><td class="num">677.4</td><td class="num">1.00&times;</td></tr>
         <tr><td>speculative &gamma;=2</td><td class="num">245</td><td class="num">2.09</td><td class="num">0.590</td><td class="num">483.2</td><td class="num worse">0.71&times;</td></tr>
         <tr><td>speculative &gamma;=4</td><td class="num">203</td><td class="num">2.52</td><td class="num">0.424</td><td class="num">463.2</td><td class="num worse">0.68&times;</td></tr>
         <tr><td><b>speculative &gamma;=6</b></td><td class="num best">174</td><td class="num best">2.94</td><td class="num">0.367</td><td class="num">535.5</td><td class="num worse">0.79&times;</td></tr>
-        <tr><td>autoregressive + GPTQ-4bit</td><td class="num">520</td><td class="num">0.98</td><td class="num">&mdash;</td><td class="num">774.8</td><td class="num best">1.14&times;</td></tr>
+        <tr><td>autoregressive + GPTQ-4bit</td><td class="num">520</td><td class="num">0.98</td><td class="num">, </td><td class="num">774.8</td><td class="num best">1.14&times;</td></tr>
         <tr><td>speculative &gamma;=6 + GPTQ-4bit</td><td class="num">176</td><td class="num">2.91</td><td class="num">0.362</td><td class="num">535.8</td><td class="num worse">0.79&times;</td></tr>
       </tbody>
     </table>
   </div>
   <p>
-    <b>3&times; fewer target forward passes</b> at &gamma;=6, and the two levers compose &mdash; you can
+    <b>3&times; fewer target forward passes</b> at &gamma;=6, and the two levers compose; you can
     speculate against a quantized target and keep essentially the same acceptance rate (0.367 vs
     0.362), because 4-bit quantization barely moves the target's distribution.
   </p>
@@ -2531,7 +2812,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
     <p>
       Read the target-pass column, not the tokens/second column. Speculation converts a
       memory-bandwidth problem into a compute problem, and at 5M parameters on a CPU there is no
-      memory-bandwidth problem to convert &mdash; a forward pass is dominated by Python dispatch, and
+      memory-bandwidth problem to convert; a forward pass is dominated by Python dispatch, and
       speculation <em>adds</em> dispatch (the draft's &gamma; sequential passes, the accept loop, the
       cache surgery) to save passes that were cheap. The pass reduction is the real, hardware-independent
       result; the wall-clock number is honest and does not generalize, and both are reported.
@@ -2620,7 +2901,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
       (100 * accepted / total).toFixed(1) + "%</b> of the time &nbsp;·&nbsp; " +
       "total variation distance to <b>p</b>: <b>" + tv.toFixed(4) + "</b>" +
       "<br>the draft's own distance to p is <b>0.5100</b>, and its proposals are accepted " +
-      "<b>49%</b> of the time in theory — yet the output matches <b>p</b>, not <b>q</b>.";
+      "<b>49%</b> of the time in theory: yet the output matches <b>p</b>, not <b>q</b>.";
   }
 
   function run(n) { for (var i = 0; i < n; i++) drawOne(); render(); }
@@ -2651,7 +2932,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
   <div class="caveat">
     <span class="caveat-t">A real bug: the streamer swallowed stop sequences</span>
     <p>
-      Streaming means decoding tokens to text as they arrive &mdash; and a multi-byte UTF-8
+      Streaming means decoding tokens to text as they arrive, and a multi-byte UTF-8
       character can straddle a token boundary, so <code>bytes.decode()</code> on a partial buffer
       throws. My first implementation wrapped it in <code>try/except</code> and held the bytes back
       until they decoded. That is correct for a split character and <em>catastrophic</em> for a
@@ -2660,8 +2941,8 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
       silently ignores its stop sequences from then on.
     </p>
     <p>
-      The fix is to use the thing designed for this &mdash;
-      <code>codecs.getincrementaldecoder("utf-8")("replace")</code> &mdash; which holds back genuinely
+      The fix is to use the thing designed for this,
+<code>codecs.getincrementaldecoder("utf-8")("replace")</code>, which holds back genuinely
       incomplete sequences and emits a replacement character for genuinely invalid ones, so the
       buffer always drains.
     </p>
@@ -2689,10 +2970,10 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
             <td class="num">1.4766</td><td class="num best">100.0%</td></tr>
         <tr><td>speculative (&gamma;=6)</td><td class="num">5,231,232</td><td class="num">19.96 MB</td>
             <td class="num">0.53 MB</td><td class="num worse">597.3</td><td class="num">107.2 ms</td>
-            <td class="num">1.4764</td><td class="num">&mdash;</td></tr>
+            <td class="num">1.4764</td><td class="num">, </td></tr>
         <tr><td>speculative + GPTQ 4-bit</td><td class="num">5,231,232</td><td class="num">5.44 MB</td>
             <td class="num">0.53 MB</td><td class="num worse">583.5</td><td class="num">109.7 ms</td>
-            <td class="num">1.4766</td><td class="num">&mdash;</td></tr>
+            <td class="num">1.4766</td><td class="num">, </td></tr>
       </tbody>
     </table>
   </div>
@@ -2703,7 +2984,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
     <dd>
       The 4-bit rows are <em>simulated</em> in fp32, because there is no int4 CPU kernel to run them
       on. Reading the footprint off the tensors would therefore report a 4-bit model as 32-bit. The
-      figure shown is computed from the effective bit-width including the stored scales &mdash; the
+      figure shown is computed from the effective bit-width including the stored scales; the
       size the model <em>would</em> occupy with a real kernel.
     </dd>
     <dt>Speculative rows include the draft's weights and cache</dt>
@@ -2716,8 +2997,8 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
       This is a CPU measurement at 5M parameters, where a forward pass is bound by Python dispatch
       rather than weight loading. Both compression levers therefore show their memory win and no
       speed win, and speculation shows a speed <em>loss</em>. The
-      <a href="#cost">cost model</a> explains exactly why, and the target-pass reduction &mdash;
-      which is hardware-independent &mdash; is the number to carry away.
+      <a href="#cost">cost model</a> explains exactly why, and the target-pass reduction,
+which is hardware-independent, is the number to carry away.
     </dd>
     <dt>The tiny benchmark is saturated</dt>
     <dd>
@@ -2735,7 +3016,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
       capability cost (tiny bench 100% &rarr; 67.9%). GPTQ-4bit gives 4.3&times; smaller weights at
       <em>no</em> measurable perplexity or benchmark cost. And speculation composes with quantization:
       running the target 4-bit changes the acceptance rate from 0.367 to 0.362, which is to say
-      not at all &mdash; because 4-bit quantization barely moves the distribution the draft is trying
+      not at all: because 4-bit quantization barely moves the distribution the draft is trying
       to predict.
     </p>
   </div>
@@ -2743,7 +3024,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
   <div class="caveat">
     <span class="caveat-t">A test bug worth confessing: the benchmark was measuring nothing</span>
     <p>
-      One tiny-benchmark category scored <em>exactly</em> 0.5 &mdash; chance &mdash; which I first read
+      One tiny-benchmark category scored <em>exactly</em> 0.5: chance, which I first read
       as "the model has not learned agreement". It had. The probe presented a single sentence, but
       the model was trained on multi-sentence stories, so the prompt was structurally
       off-distribution and the model was effectively being asked a question in a format it had never
@@ -2766,7 +3047,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
 
   <h3>The natural-language model</h3>
   <p>
-    The <code>micro</code> tier, 40.4M parameters, trained on TinyStories &mdash; a corpus of short
+    The <code>micro</code> tier, 40.4M parameters, trained on TinyStories: a corpus of short
     stories written with the vocabulary of a small child, built by Eldan &amp; Li precisely to test
     whether sub-100M models can be coherent. That capability match is the point: the same 40M
     parameters given general web text learn the <em>shape</em> of English and produce fluent
@@ -2806,7 +3087,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
     </div>
     <figcaption>
       <b>Starting exactly at ln(16384) = 9.7041, as the zero-init scheme predicts.</b> The first
-      logged loss was 9.7041 &mdash; agreement to five decimals with a value derived from theory, not
+      logged loss was 9.7041: agreement to five decimals with a value derived from theory, not
       from a previous run. This is an in-progress run against a deliberately reduced budget; see the
       caveat below.
     </figcaption>
@@ -2831,8 +3112,8 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
   <p>
     Read that carefully, because the failures are as informative as the successes. The grammar is
     correct throughout. Tense, agreement and pronoun reference hold across sentences. Dialogue is
-    punctuated properly. Narrative structure &mdash; setup, complication, "But then, something
-    unexpected happened" &mdash; is clearly learned. What breaks is <em>entity tracking</em>: the
+    punctuated properly. Narrative structure: setup, complication, "But then, something
+    unexpected happened", is clearly learned. What breaks is <em>entity tracking</em>: the
     bowl becomes paper becomes a box, and Mia's mother calls her Sue. That is exactly the
     signature of an under-trained model: syntax is learned from local statistics and arrives early;
     maintaining a consistent world state across a paragraph needs far more data.
@@ -2841,7 +3122,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
     <span class="caveat-t">This run is under-trained, deliberately and measurably</span>
     <p>
       A Chinchilla-optimal budget for 40.4M parameters is ~808M tokens. This run has seen 3.07M
-      &mdash; <b>0.4% of compute-optimal</b> &mdash; because it is training on a laptop GPU at
+, <b>0.4% of compute-optimal</b>: because it is training on a laptop GPU at
       ~2,270 tokens/second, and the full budget would take four days. The run is continuing against a
       32M-token target. Every manifest records the Chinchilla fraction precisely so an under-trained
       run is labelled as one rather than quietly compared against a fully-trained baseline. The
@@ -2899,8 +3180,8 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
       <b>The <code>nano</code> tier: 4,952,064 parameters, 819,200 tokens, 95 seconds on a laptop
       CPU.</b> This is the tier the whole test suite and every ablation runs on, which is what makes
       a 563-test suite and six controlled A/B studies affordable. It trains on a synthetic story
-      grammar, so it demonstrates that the pipeline learns structure &mdash; agreement, coreference,
-      narrative shape &mdash; not that it models open-domain text.
+      grammar, so it demonstrates that the pipeline learns structure: agreement, coreference,
+      narrative shape: not that it models open-domain text.
     </figcaption>
   </figure>
 
@@ -2951,7 +3232,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
     </div>
     <figcaption>
       <b>Plotted against <em>effective</em> bits, so the stored group scales are counted.</b> All
-      three methods are indistinguishable from fp32 from 3.5 bits upward &mdash; the predicted 4-bit
+      three methods are indistinguishable from fp32 from 3.5 bits upward; the predicted 4-bit
       GPTQ win does not happen at this scale. The separation appears at 2.5 bits, where GPTQ reaches
       1.4997 against RTN's 1.5405 and AWQ's 1.5468, while having the largest weight error of the
       three.
@@ -2967,24 +3248,24 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
             <td><b>50 vs 105</b> steps to target loss; 0.3896 vs 0.4039 final</td>
             <td><code>scripts/ablate.py</code></td></tr>
         <tr><td>QK-norm / zero-init / SwiGLU improve final loss</td>
-            <td class="worse"><b>Not confirmed at 5 seeds</b> &mdash; p = 0.256 / 0.035 / 0.495, and
+            <td class="worse"><b>Not confirmed at 5 seeds</b>: p = 0.256 / 0.035 / 0.495, and
                 the one that clears α=0.05 does not survive Holm&ndash;Bonferroni</td>
             <td><code>scripts/ablate_multiseed.py</code></td></tr>
         <tr><td>QK-norm speeds convergence and stabilises it</td>
             <td><b>p &lt; 0.0001</b> on steps-to-target; 18&times; lower run-to-run variance</td>
             <td><code>scripts/ablate_multiseed.py</code></td></tr>
         <tr><td>Muon is more stable than AdamW across seeds</td>
-            <td><b>F = 176.4, p = 0.0002</b> &mdash; 176&times; smaller spread</td>
+            <td><b>F = 176.4, p = 0.0002</b>, 176&times; smaller spread</td>
             <td><code>scripts/ablate_multiseed.py</code></td></tr>
         <tr><td>Beats GPT-2 on in-domain bits per byte</td>
             <td><b>0.5485 vs 0.9385</b> with 3.1&times; fewer parameters; reverses out of domain</td>
             <td><code>scripts/external_baseline.py</code></td></tr>
         <tr><td>Has learned syntactic agreement</td>
-            <td class="worse"><b>Refuted</b> &mdash; 94% simple, <b>44%</b> with an attractor: linear
+            <td class="worse"><b>Refuted</b>, 94% simple, <b>44%</b> with an attractor: linear
                 recency, not syntax</td>
             <td><code>scripts/evaluate.py</code></td></tr>
         <tr><td>DPO alone beats its SFT starting point</td>
-            <td class="worse"><b>Refuted</b> &mdash; loses 0&ndash;7&ndash;33; likelihood collapse</td>
+            <td class="worse"><b>Refuted</b>, loses 0&ndash;7&ndash;33; likelihood collapse</td>
             <td><code>scripts/align_pipeline.py</code></td></tr>
         <tr><td>DPO + NLL anchor beats SFT</td>
             <td><b>3&ndash;0&ndash;37</b>, with &Delta;&thinsp;log&thinsp;p(chosen) restored to positive</td>
@@ -2996,7 +3277,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
             <td><b>17.7&times;</b> overall, 29.9&times; on non-embedding parameters</td>
             <td><code>scripts/distill_compare.py</code></td></tr>
         <tr><td>GPTQ beats RTN at 4 bits "by a clear margin"</td>
-            <td class="worse"><b>Refuted</b> &mdash; a tie (1.4766 vs 1.4767)</td>
+            <td class="worse"><b>Refuted</b>; a tie (1.4766 vs 1.4767)</td>
             <td><code>scripts/quantize_frontier.py</code></td></tr>
         <tr><td>GPTQ beats RTN where bits are scarce</td>
             <td><b>1.4997 vs 1.5405</b> at 2 bits, with higher weight error</td>
@@ -3005,13 +3286,13 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
             <td><b>2.94</b> tokens per target pass at &gamma;=6, vs 0.98 autoregressive</td>
             <td><code>scripts/specdec_bench.py</code></td></tr>
         <tr><td>Speculation is faster in wall clock</td>
-            <td class="worse"><b>Refuted at this scale</b> &mdash; 0.79&times;; see the cost model</td>
+            <td class="worse"><b>Refuted at this scale</b>, 0.79&times;; see the cost model</td>
             <td><code>scripts/specdec_bench.py</code></td></tr>
         <tr><td>Speculation is distribution-preserving</td>
             <td>Greedy identical token-for-token; 120,000-sample distributional test passes</td>
             <td><code>tests/unit/test_specdec.py</code></td></tr>
         <tr><td>Speculation composes with quantization</td>
-            <td>acceptance 0.367 &rarr; 0.362 with a 4-bit target &mdash; unchanged</td>
+            <td>acceptance 0.367 &rarr; 0.362 with a 4-bit target, unchanged</td>
             <td><code>scripts/bench_all.py</code></td></tr>
         <tr><td>The whole pipeline runs on a CPU</td>
             <td>tokenizer&rarr;pretrain&rarr;SFT&rarr;DPO&rarr;quantize&rarr;speculate in <b>45 s</b></td>
@@ -3033,8 +3314,8 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
 
   <p>
     Debugging a machine-learning pipeline is unusual in that most failures do not raise. The model
-    trains, the loss goes down, and the number at the end is simply worse than it should be &mdash;
-    which is indistinguishable from "this is how well the method works" unless you have something to
+    trains, the loss goes down, and the number at the end is simply worse than it should be,
+which is indistinguishable from "this is how well the method works" unless you have something to
     check against. Every entry below was found by having something to check against.
   </p>
 
@@ -3077,7 +3358,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
         <tr>
           <td><b>Missing MLE warm-start</b></td>
           <td>Reverse-KL students reached perplexity 1028.</td>
-          <td>Not a bug in the gradient &mdash; a policy gradient on a randomly-initialized student
+          <td>Not a bug in the gradient: a policy gradient on a randomly-initialized student
               optimizes the distribution of noise. Added the warm-start MiniLLM specifies, applied
               identically to all arms so the comparison stays controlled.</td>
         </tr>
@@ -3085,7 +3366,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
     </table>
   </div>
 
-  <h3>Hypotheses that were wrong &mdash; the tests, not the code</h3>
+  <h3>Hypotheses that were wrong: the tests, not the code</h3>
   <div class="grid2">
     <div class="card">
       <h4>"BPE is subadditive"</h4>
@@ -3098,7 +3379,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
     <div class="card">
       <h4>"Muon always beats AdamW"</h4>
       <p>
-        It loses on convex single-matrix least squares &mdash; the regime where Adam's
+        It loses on convex single-matrix least squares; the regime where Adam's
         per-coordinate scaling is near-optimal. Both results are now tests.
       </p>
     </div>
@@ -3106,7 +3387,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
       <h4>"GPTQ's edge needs the Hessian's off-diagonals"</h4>
       <p>
         Error compensation helps with white activations too. Split into two narrower true claims
-        &mdash; and while fixing it I found the test was measuring <code>act_order</code> as exactly
+, and while fixing it I found the test was measuring <code>act_order</code> as exactly
         zero, because I had built the synthetic data with <code>logspace</code>, which is already
         sorted.
       </p>
@@ -3125,7 +3406,7 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
     <span class="win-t">The pattern</span>
     <p>
       Four of the six code bugs were found by a test comparing an <em>optimized path against a slow
-      obvious one</em> &mdash; fast attention against a naive loop, packed tree against per-path,
+      obvious one</em>: fast attention against a naive loop, packed tree against per-path,
       resumed run against uninterrupted, fast rotation against an fp64 reference. That is the single
       highest-yield testing technique in this project, and it is available for almost any performance
       optimization: keep the stupid version, and assert they agree.
@@ -3149,12 +3430,12 @@ E[tokens per target pass] = (1 &minus; &alpha;<sup>&gamma;+1</sup>) / (1 &minus;
     What replaced them is four metrics that each answer a question the others cannot.
   </p>
 
-  <h3>Bits per byte &mdash; the only number that compares across models</h3>
+  <h3>Bits per byte; the only number that compares across models</h3>
   <p>
     Perplexity is <em>per token</em>, and token boundaries are a property of the tokenizer, not
     of the text. A model with a 50,257-token vocabulary needs fewer tokens for a sentence than
     one with 16,384, so each of its tokens carries more information and its per-token perplexity
-    looks <em>worse</em> &mdash; even if it predicts the underlying text better. Comparing
+    looks <em>worse</em>: even if it predicts the underlying text better. Comparing
     perplexity across tokenizers is meaningless, and it is done constantly.
   </p>
   <div class="math">
@@ -3204,14 +3485,14 @@ BPB = ( &Sigma; negative log-likelihood in nats / ln 2 ) / (UTF-8 bytes of the t
 </g></svg>
     </div>
     <figcaption>
-      <b>1.71&times; better than GPT-2 in domain with 3.1&times; fewer parameters &mdash; and
+      <b>1.71&times; better than GPT-2 in domain with 3.1&times; fewer parameters: and
       4&times; worse out of domain.</b> The reversal is the point. The in-domain number measures
       <em>specialization</em>, not capability: this model was trained on TinyStories and GPT-2 was
       not. Reporting the favourable half alone would make the favourable half worthless.
     </figcaption>
   </figure>
 
-  <h3>Minimal pairs &mdash; a benchmark with headroom</h3>
+  <h3>Minimal pairs: a benchmark with headroom</h3>
   <p>
     The replacement for the saturated quiz is a BLiMP-style forced choice (Warstadt et al. 2020).
     Each item is two sentences differing in exactly one place, one grammatical and one not; the
@@ -3220,7 +3501,7 @@ BPB = ( &Sigma; negative log-likelihood in nats / ln 2 ) / (UTF-8 bytes of the t
   <div class="math">
 good:  The boy near the cats runs quickly.
 bad:   The boy near the cats run quickly.
-<span class="ann">chance is exactly 50% &mdash; it is a forced choice, so there is no prompt-format sensitivity</span>
+<span class="ann">chance is exactly 50%; it is a forced choice, so there is no prompt-format sensitivity</span>
   </div>
   <p>
     856 items, generated from templates over a lexicon rather than hand-written, so the suite
@@ -3298,7 +3579,7 @@ bad:   The boy near the cats run quickly.
 </g></svg>
     </div>
     <figcaption>
-      <b>7 of 9 phenomena above chance, macro-average 79.1%</b> &mdash; and the two failures are
+      <b>7 of 9 phenomena above chance, macro-average 79.1%</b>, and the two failures are
       the most informative rows in the table.
     </figcaption>
   </figure>
@@ -3306,7 +3587,7 @@ bad:   The boy near the cats run quickly.
   <div class="win">
     <span class="win-t">The finding this benchmark was built to expose</span>
     <p>
-      <b>Simple agreement 94%. Agreement with an attractor: 44% &mdash; <em>below</em> chance.</b>
+      <b>Simple agreement 94%. Agreement with an attractor: 44%, <em>below</em> chance.</b>
       Put a disagreeing noun between the subject and the verb and the model systematically picks
       the one nearer the verb. It has not learned syntactic agreement; it has learned a linear
       recency heuristic that happens to coincide with agreement whenever nothing intervenes.
@@ -3325,22 +3606,22 @@ bad:   The boy near the cats run quickly.
       failing negation entirely, and it was: the template introduced only the <em>correct</em>
       object into the context, so any model with a copying bias scored perfectly without tracking
       anything. Rewriting it so both candidate objects appear, each bound to a different
-      character, dropped the score to <b>76%</b> &mdash; still real, now honest.
+      character, dropped the score to <b>76%</b>: still real, now honest.
     </p>
     <p>
       Two more were caught by tests rather than by reading numbers: negation items were not
       length-matched (<code>nothing inside</code> vs <code>a key inside</code>), so a model could
-      score by preferring shorter sentences; and articles were not chosen for the following vowel,
-      producing "a apple" &mdash; ungrammatical for a reason unrelated to the phenomenon under
+      score by preferring shorter sentences, and articles were not chosen for the following vowel,
+      producing "a apple", ungrammatical for a reason unrelated to the phenomenon under
       test. <b>An item only measures what you named if the wrong answer is equally available.</b>
     </p>
   </div>
 
-  <h3>Calibration &mdash; is the confidence earned?</h3>
+  <h3>Calibration, is the confidence earned?</h3>
   <p>
     A model can be accurate and badly miscalibrated: 99% confident on predictions that are right
     70% of the time. That matters for a small model specifically, because overconfidence is the
-    mechanism behind degenerate generation &mdash; a model certain of a wrong continuation cannot
+    mechanism behind degenerate generation, a model certain of a wrong continuation cannot
     recover from it. Expected calibration error bins predictions by confidence and measures the
     gap between confidence and accuracy in each bin.
   </p>
@@ -3394,13 +3675,13 @@ bad:   The boy near the cats run quickly.
       </div>
       <p style="font-size:.92rem">
         The model is <b>almost exactly calibrated</b>: it is right 61.7% of the time and 62.1%
-        confident. That is a genuinely good result and one perplexity cannot see &mdash; perplexity
+        confident. That is a genuinely good result and one perplexity cannot see, perplexity
         cannot distinguish a well-calibrated model from a confidently wrong one.
       </p>
     </div>
   </div>
 
-  <h3>Diversity &mdash; catching what likelihood rewards</h3>
+  <h3>Diversity: catching what likelihood rewards</h3>
   <p>
     Likelihood metrics reward a model for putting probability where the evaluation set is, which
     is exactly satisfied by a model that produces the same safe thing every time. Distinct-<em>n</em>
@@ -3412,7 +3693,7 @@ bad:   The boy near the cats run quickly.
       <tbody>
         <tr><td>distinct-2</td><td class="num">0.867</td><td>87% of bigrams across generations are unique</td></tr>
         <tr><td>distinct-3</td><td class="num">0.974</td><td>near-total trigram novelty</td></tr>
-        <tr><td>self-BLEU</td><td class="num best">0.027</td><td>generations are almost entirely unlike each other &mdash; no mode collapse</td></tr>
+        <tr><td>self-BLEU</td><td class="num best">0.027</td><td>generations are almost entirely unlike each other, no mode collapse</td></tr>
         <tr><td>repetition rate</td><td class="num best">0.011</td><td>very little within-sample looping</td></tr>
       </tbody>
     </table>
@@ -3431,14 +3712,14 @@ bad:   The boy near the cats run quickly.
 
   <p>
     The single-seed ablations reported earlier used a flat rule: any gap below 2% was "no
-    measurable difference". That was an honest guess and not a measurement &mdash; with one run
+    measurable difference". That was an honest guess and not a measurement, with one run
     per arm there is no estimate of run-to-run variance, so there is nothing to compare a gap
     <em>against</em>. Running five seeds per arm makes the comparison a real two-sample test.
   </p>
 
   <figure>
     <div class="fig-frame">
-<svg viewBox="0 0 680 300" role="img" aria-label="Optimizer — 5 seeds per arm: per-seed final validation losses with mean and standard deviation." style="width:100%;height:auto">
+<svg viewBox="0 0 680 300" role="img" aria-label="Optimizer, 5 seeds per arm: per-seed final validation losses with mean and standard deviation." style="width:100%;height:auto">
 <g font-family="ui-monospace, monospace" font-size="10" fill="currentColor">
 <line x1="62" y1="220.0" x2="660" y2="220.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
 <text x="54" y="223.5" text-anchor="end" opacity=".6">0.382</text>
@@ -3470,12 +3751,12 @@ bad:   The boy near the cats run quickly.
 <text x="510.5" y="238" text-anchor="middle" font-size="10">Muon + AdamW</text>
 <text x="510.5" y="254" text-anchor="middle" font-size="9.5" opacity=".65">sd 0.0033</text>
 <text x="510.5" y="270" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".75">53 steps → target</text>
-<text x="62" y="22" font-size="11" font-weight="600">Optimizer — 5 seeds per arm</text>
+<text x="62" y="22" font-size="11" font-weight="600">Optimizer, 5 seeds per arm</text>
 <text x="62" y="36" font-size="9.5" opacity=".65">bar: mean &#183; band: ±1 sd &#183; dots: individual seeds (n=5)</text>
 </g></svg>
     </div>
     <figcaption>
-      <b>Muon reaches the target in half the steps, every single seed &mdash; and never has a bad
+      <b>Muon reaches the target in half the steps, every single seed, and never has a bad
       run.</b> AdamW's five seeds span 0.400 to 0.503; Muon's span 0.384 to 0.392.
     </figcaption>
   </figure>
@@ -3485,7 +3766,7 @@ bad:   The boy near the cats run quickly.
       <thead><tr><th>Test</th><th class="num">Result</th><th class="num">p</th><th>Verdict</th></tr></thead>
       <tbody>
         <tr><td>Mean final loss</td><td class="num">0.3882 vs 0.4263</td><td class="num worse">0.121</td>
-            <td class="worse">Not significant &mdash; one AdamW seed failed to converge and inflated its variance</td></tr>
+            <td class="worse">Not significant; one AdamW seed failed to converge and inflated its variance</td></tr>
         <tr><td><b>Steps to target</b></td><td class="num best">53 vs 106</td><td class="num best">&lt;0.0001</td>
             <td class="best">Decisive, and the distributions do not overlap at all</td></tr>
         <tr><td><b>Run-to-run variance</b></td><td class="num best">F = 176.4</td><td class="num best">0.0002</td>
@@ -3500,7 +3781,7 @@ bad:   The boy near the cats run quickly.
       A single comparison of mean loss says "no significant difference" and would have been the
       whole report. That would have thrown away the two most striking things in the data. An
       optimizer that lands in the same place every time is more useful than one that is sometimes
-      better and sometimes diverges &mdash; and a t-test on the mean is structurally unable to say
+      better and sometimes diverges, and a t-test on the mean is structurally unable to say
       so. <b>Stability is a property worth testing directly, not an inconvenience for the mean
       comparison.</b>
     </p>
@@ -3508,7 +3789,7 @@ bad:   The boy near the cats run quickly.
 
   <figure>
     <div class="fig-frame">
-<svg viewBox="0 0 680 300" role="img" aria-label="Architecture — 5 seeds per arm: per-seed final validation losses with mean and standard deviation." style="width:100%;height:auto">
+<svg viewBox="0 0 680 300" role="img" aria-label="Architecture, 5 seeds per arm: per-seed final validation losses with mean and standard deviation." style="width:100%;height:auto">
 <g font-family="ui-monospace, monospace" font-size="10" fill="currentColor">
 <line x1="62" y1="220.0" x2="660" y2="220.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
 <text x="54" y="223.5" text-anchor="end" opacity=".6">0.380</text>
@@ -3560,7 +3841,7 @@ bad:   The boy near the cats run quickly.
 <text x="585.2" y="238" text-anchor="middle" font-size="10">ReLU² instead of SwiG…</text>
 <text x="585.2" y="254" text-anchor="middle" font-size="9.5" opacity=".65">sd 0.0100</text>
 <text x="585.2" y="270" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".75">55 steps → target</text>
-<text x="62" y="22" font-size="11" font-weight="600">Architecture — 5 seeds per arm</text>
+<text x="62" y="22" font-size="11" font-weight="600">Architecture, 5 seeds per arm</text>
 <text x="62" y="36" font-size="9.5" opacity=".65">bar: mean &#183; band: ±1 sd &#183; dots: individual seeds (n=5)</text>
 </g></svg>
     </div>
@@ -3590,7 +3871,7 @@ bad:   The boy near the cats run quickly.
   <div class="caveat">
     <span class="caveat-t">The correction that changed a conclusion</span>
     <p>
-      Removing zero-init came out at <b>p = 0.035</b> &mdash; significant by the usual threshold,
+      Removing zero-init came out at <b>p = 0.035</b>, significant by the usual threshold,
       and it would have read as a finding. But it is one of <em>three</em> comparisons against the
       same baseline, and running three tests at α=0.05 gives roughly a 14% chance of at least one
       false positive. Holm&ndash;Bonferroni correction demotes it to <b>not significant</b>, which
@@ -3609,7 +3890,7 @@ bad:   The boy near the cats run quickly.
       Its effect on final loss is not detectable (p=0.256). Its effect on <em>how the run gets
       there</em> is unmistakable: <b>p &lt; 0.0001 on steps-to-target and 18&times; the run-to-run
       variance without it</b>. That is precisely the signature of a stability aid, and the
-      single-seed experiment &mdash; which could only compare final losses &mdash; called it
+      single-seed experiment, which could only compare final losses, called it
       "no measurable difference".
     </p>
   </div>
@@ -3626,7 +3907,7 @@ bad:   The boy near the cats run quickly.
 
   <p>
     The evaluation reports one number per phenomenon at the end of training. That is a
-    photograph of a process, and the process is the more interesting object — especially
+    photograph of a process, and the process is the more interesting object, especially
     given the finished model sits at 94% on simple agreement and 44% on agreement across an
     attractor. Was it ever better? Is 44% a floor, or a trajectory caught mid-climb?
   </p>
@@ -3637,51 +3918,69 @@ bad:   The boy near the cats run quickly.
 
   <figure>
     <div class="fig-frame">
-<svg viewBox="0 0 690 400" role="img" aria-label="Seven of nine grammatical phenomena improve with training while negation stays exactly at chance and agreement-with-attractor trends slightly downward." style="width:100%;height:auto"><g font-family="ui-monospace, monospace" font-size="10" fill="currentColor"><line x1="56" y1="320.0" x2="558" y2="320.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
-<text x="48" y="323.5" text-anchor="end" opacity=".6">25%</text>
-<line x1="56" y1="228.3" x2="558" y2="228.3" stroke="currentColor" stroke-width=".7" opacity=".13"/>
-<text x="48" y="231.8" text-anchor="end" opacity=".6">50%</text>
-<line x1="56" y1="136.7" x2="558" y2="136.7" stroke="currentColor" stroke-width=".7" opacity=".13"/>
-<text x="48" y="140.2" text-anchor="end" opacity=".6">75%</text>
-<line x1="56" y1="45.0" x2="558" y2="45.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
-<text x="48" y="48.5" text-anchor="end" opacity=".6">100%</text>
-<line x1="56" y1="228.3" x2="558" y2="228.3" stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3" opacity=".55"/>
-<text x="62" y="222.3" font-size="9.5" opacity=".7">chance</text>
-<polyline points="87.4,228.3 118.8,136.7 150.1,124.4 181.5,100.0 212.9,75.6 244.2,51.1 275.6,75.6 307.0,75.6 338.4,93.9 369.8,45.0 401.1,75.6 432.5,57.2 463.9,45.0 495.2,45.0 526.6,45.0 558.0,45.0" fill="none" stroke="#12655F" stroke-width="1.6" opacity="0.85"/>
-<text x="566" y="48.5" font-size="9" fill="#12655F">reflexive</text>
-<text x="566" y="58.0" font-size="8" fill="#12655F" opacity=".7">ρ=+0.87 p=0.000</text>
-<polyline points="87.4,191.7 118.8,191.7 150.1,199.0 181.5,199.0 212.9,191.7 244.2,151.3 275.6,166.0 307.0,199.0 338.4,173.3 369.8,155.0 401.1,114.7 432.5,162.3 463.9,111.0 495.2,122.0 526.6,114.7 558.0,111.0" fill="none" stroke="#2C6A33" stroke-width="1.6" opacity="0.85"/>
-<text x="566" y="114.5" font-size="9" fill="#2C6A33">agreement_simple</text>
-<text x="566" y="124.0" font-size="8" fill="#2C6A33" opacity=".7">ρ=+0.82 p=0.000</text>
-<polyline points="87.4,217.3 118.8,107.3 150.1,158.7 181.5,78.0 212.9,78.0 244.2,74.3 275.6,45.0 307.0,59.7 338.4,48.7 369.8,52.3 401.1,48.7 432.5,52.3 463.9,45.0 495.2,70.7 526.6,45.0 558.0,59.7" fill="none" stroke="#3A6EA5" stroke-width="1.6" opacity="0.85"/>
-<text x="566" y="63.2" font-size="9" fill="#3A6EA5">pronoun_gender</text>
-<text x="566" y="72.7" font-size="8" fill="#3A6EA5" opacity=".7">ρ=+0.71 p=0.002</text>
-<polyline points="87.4,188.0 118.8,191.7 150.1,199.0 181.5,199.0 212.9,199.0 244.2,202.7 275.6,202.7 307.0,191.7 338.4,213.7 369.8,184.3 401.1,191.7 432.5,184.3 463.9,155.0 495.2,169.7 526.6,166.0 558.0,169.7" fill="none" stroke="#7A5EA8" stroke-width="1.6" opacity="0.85"/>
-<text x="566" y="173.2" font-size="9" fill="#7A5EA8">argument_structure</text>
-<text x="566" y="182.7" font-size="8" fill="#7A5EA8" opacity=".7">ρ=+0.64 p=0.008</text>
-<polyline points="87.4,246.7 118.8,239.3 150.1,162.3 181.5,195.3 212.9,107.3 244.2,173.3 275.6,114.7 307.0,129.3 338.4,129.3 369.8,96.3 401.1,114.7 432.5,129.3 463.9,136.7 495.2,147.7 526.6,147.7 558.0,118.3" fill="none" stroke="#B08A2E" stroke-width="1.6" opacity="0.85"/>
-<text x="566" y="121.8" font-size="9" fill="#B08A2E">entity_tracking</text>
-<text x="566" y="131.3" font-size="8" fill="#B08A2E" opacity=".7">ρ=+0.45 p=0.080</text>
-<polyline points="87.4,228.3 118.8,246.7 150.1,177.0 181.5,140.3 212.9,92.7 244.2,78.0 275.6,89.0 307.0,100.0 338.4,144.0 369.8,92.7 401.1,133.0 432.5,103.7 463.9,81.7 495.2,129.3 526.6,118.3 558.0,125.7" fill="none" stroke="#5A8F7B" stroke-width="1.6" opacity="0.85"/>
-<text x="566" y="129.2" font-size="9" fill="#5A8F7B">determiner_noun</text>
-<text x="566" y="138.7" font-size="8" fill="#5A8F7B" opacity=".7">ρ=+0.37 p=0.163</text>
-<polyline points="87.4,228.3 118.8,228.3 150.1,228.3 181.5,228.3 212.9,228.3 244.2,228.3 275.6,228.3 307.0,228.3 338.4,228.3 369.8,228.3 401.1,228.3 432.5,228.3 463.9,228.3 495.2,228.3 526.6,228.3 558.0,228.3" fill="none" stroke="#8F4715" stroke-width="2.4" stroke-dasharray="4 3" opacity="1"/>
-<text x="566" y="231.8" font-size="9" fill="#8F4715">negation</text>
-<text x="566" y="241.3" font-size="8" fill="#8F4715" opacity=".7">ρ=+0.00 p=1.000</text>
-<polyline points="87.4,45.0 118.8,56.0 150.1,48.7 181.5,48.7 212.9,45.0 244.2,59.7 275.6,56.0 307.0,45.0 338.4,45.0 369.8,45.0 401.1,45.0 432.5,45.0 463.9,48.7 495.2,48.7 526.6,52.3 558.0,52.3" fill="none" stroke="#8F4715" stroke-width="2.4" stroke-dasharray="4 3" opacity="1"/>
-<text x="566" y="55.8" font-size="9" fill="#8F4715">tense_consistency</text>
-<text x="566" y="65.3" font-size="8" fill="#8F4715" opacity=".7">ρ=-0.02 p=0.955</text>
-<polyline points="87.4,239.3 118.8,243.0 150.1,246.7 181.5,250.3 212.9,272.3 244.2,257.7 275.6,250.3 307.0,239.3 338.4,243.0 369.8,243.0 401.1,246.7 432.5,254.0 463.9,250.3 495.2,243.0 526.6,250.3 558.0,257.7" fill="none" stroke="#8F4715" stroke-width="2.4" stroke-dasharray="4 3" opacity="1"/>
-<text x="566" y="261.2" font-size="9" fill="#8F4715">agreement_attractor</text>
-<text x="566" y="270.7" font-size="8" fill="#8F4715" opacity=".7">ρ=-0.25 p=0.345</text>
-<text x="56.0" y="336" text-anchor="middle" opacity=".6">0M</text>
-<text x="181.5" y="336" text-anchor="middle" opacity=".6">6M</text>
-<text x="307.0" y="336" text-anchor="middle" opacity=".6">12M</text>
-<text x="432.5" y="336" text-anchor="middle" opacity=".6">18M</text>
-<text x="558.0" y="336" text-anchor="middle" opacity=".6">25M</text>
-<text x="307" y="354" text-anchor="middle" opacity=".6">training tokens</text>
-<text x="56" y="20" font-size="11" font-weight="600">Minimal-pair accuracy through one training run &#183; 12.8M params &#183; 16 probes</text>
-<text x="56" y="386" font-size="9.5" opacity=".7">dashed/amber: no positive trend with training. Validation loss over the same run: 3.106 &#8594; 1.774.</text></g></svg>
+<svg viewBox="0 0 720 430" role="img" aria-label="Seven of nine grammatical phenomena improve with training while negation stays exactly at chance and agreement with an attractor trends slightly downward." style="width:100%;height:auto"><g font-family="ui-monospace, monospace" font-size="10" fill="currentColor"><line x1="56" y1="346.0" x2="524" y2="346.0" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="48" y="349.5" text-anchor="end" opacity=".6">25%</text>
+<line x1="56" y1="247.9" x2="524" y2="247.9" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="48" y="251.4" text-anchor="end" opacity=".6">50%</text>
+<line x1="56" y1="149.8" x2="524" y2="149.8" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="48" y="153.3" text-anchor="end" opacity=".6">75%</text>
+<line x1="56" y1="51.8" x2="524" y2="51.8" stroke="currentColor" stroke-width=".7" opacity=".13"/>
+<text x="48" y="55.3" text-anchor="end" opacity=".6">100%</text>
+<line x1="56" y1="247.9" x2="524" y2="247.9" stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3" opacity=".55"/>
+<text x="62" y="241.9" font-size="9.5" opacity=".7">chance</text>
+<polyline points="85.2,247.9 114.5,149.8 143.8,136.8 173.0,110.6 202.2,84.5 231.5,58.3 260.8,84.5 290.0,84.5 319.2,104.1 348.5,51.8 377.8,84.5 407.0,64.8 436.2,51.8 465.5,51.8 494.8,51.8 524.0,51.8" fill="none" stroke="#12655F" stroke-width="1.7" opacity="0.9"/>
+<path d="M 524.0 51.8 L 530.0 51.8" fill="none" stroke="#12655F" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="51.8" r="2.6" fill="#12655F"/>
+<text x="535.0" y="53.8" font-size="9.5" fill="#12655F">reflexive</text>
+<text x="535.0" y="64.8" font-size="8" fill="#12655F" opacity=".72">rho=+0.87 p=0.000</text>
+<polyline points="85.2,208.7 114.5,208.7 143.8,216.5 173.0,216.5 202.2,208.7 231.5,165.5 260.8,181.2 290.0,216.5 319.2,189.1 348.5,169.5 377.8,126.3 407.0,177.3 436.2,122.4 465.5,134.2 494.8,126.3 524.0,122.4" fill="none" stroke="#2C6A33" stroke-width="1.7" opacity="0.9"/>
+<path d="M 524.0 122.4 L 530.0 129.8" fill="none" stroke="#2C6A33" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="122.4" r="2.6" fill="#2C6A33"/>
+<text x="535.0" y="131.8" font-size="9.5" fill="#2C6A33">agreement_simple</text>
+<text x="535.0" y="142.8" font-size="8" fill="#2C6A33" opacity=".72">rho=+0.82 p=0.000</text>
+<polyline points="85.2,236.2 114.5,118.5 143.8,173.4 173.0,87.1 202.2,87.1 231.5,83.2 260.8,51.8 290.0,67.5 319.2,55.7 348.5,59.6 377.8,55.7 407.0,59.6 436.2,51.8 465.5,79.2 494.8,51.8 524.0,67.5" fill="none" stroke="#3A6EA5" stroke-width="1.7" opacity="0.9"/>
+<path d="M 524.0 67.5 L 530.0 103.8" fill="none" stroke="#3A6EA5" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="67.5" r="2.6" fill="#3A6EA5"/>
+<text x="535.0" y="105.8" font-size="9.5" fill="#3A6EA5">pronoun_gender</text>
+<text x="535.0" y="116.8" font-size="8" fill="#3A6EA5" opacity=".72">rho=+0.71 p=0.002</text>
+<polyline points="85.2,204.8 114.5,208.7 143.8,216.5 173.0,216.5 202.2,216.5 231.5,220.5 260.8,220.5 290.0,208.7 319.2,232.2 348.5,200.8 377.8,208.7 407.0,200.8 436.2,169.5 465.5,185.2 494.8,181.2 524.0,185.2" fill="none" stroke="#7A5EA8" stroke-width="1.7" opacity="0.9"/>
+<path d="M 524.0 185.2 L 530.0 207.8" fill="none" stroke="#7A5EA8" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="185.2" r="2.6" fill="#7A5EA8"/>
+<text x="535.0" y="209.8" font-size="9.5" fill="#7A5EA8">argument_structure</text>
+<text x="535.0" y="220.8" font-size="8" fill="#7A5EA8" opacity=".72">rho=+0.64 p=0.008</text>
+<polyline points="85.2,267.5 114.5,259.7 143.8,177.3 173.0,212.6 202.2,118.5 231.5,189.1 260.8,126.3 290.0,142.0 319.2,142.0 348.5,106.7 377.8,126.3 407.0,142.0 436.2,149.8 465.5,161.6 494.8,161.6 524.0,130.2" fill="none" stroke="#B08A2E" stroke-width="1.7" opacity="0.9"/>
+<path d="M 524.0 130.2 L 530.0 155.8" fill="none" stroke="#B08A2E" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="130.2" r="2.6" fill="#B08A2E"/>
+<text x="535.0" y="157.8" font-size="9.5" fill="#B08A2E">entity_tracking</text>
+<text x="535.0" y="168.8" font-size="8" fill="#B08A2E" opacity=".72">rho=+0.45 p=0.080</text>
+<polyline points="85.2,247.9 114.5,267.5 143.8,193.0 173.0,153.8 202.2,102.8 231.5,87.1 260.8,98.8 290.0,110.6 319.2,157.7 348.5,102.8 377.8,145.9 407.0,114.5 436.2,91.0 465.5,142.0 494.8,130.2 524.0,138.1" fill="none" stroke="#5A8F7B" stroke-width="1.7" opacity="0.9"/>
+<path d="M 524.0 138.1 L 530.0 181.8" fill="none" stroke="#5A8F7B" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="138.1" r="2.6" fill="#5A8F7B"/>
+<text x="535.0" y="183.8" font-size="9.5" fill="#5A8F7B">determiner_noun</text>
+<text x="535.0" y="194.8" font-size="8" fill="#5A8F7B" opacity=".72">rho=+0.37 p=0.163</text>
+<polyline points="85.2,247.9 114.5,247.9 143.8,247.9 173.0,247.9 202.2,247.9 231.5,247.9 260.8,247.9 290.0,247.9 319.2,247.9 348.5,247.9 377.8,247.9 407.0,247.9 436.2,247.9 465.5,247.9 494.8,247.9 524.0,247.9" fill="none" stroke="#8F4715" stroke-width="2.4" stroke-dasharray="4 3" opacity="1"/>
+<path d="M 524.0 247.9 L 530.0 247.9" fill="none" stroke="#8F4715" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="247.9" r="2.6" fill="#8F4715"/>
+<text x="535.0" y="249.9" font-size="9.5" fill="#8F4715">negation</text>
+<text x="535.0" y="260.9" font-size="8" fill="#8F4715" opacity=".72">rho=+0.00 p=1.000</text>
+<polyline points="85.2,51.8 114.5,63.5 143.8,55.7 173.0,55.7 202.2,51.8 231.5,67.5 260.8,63.5 290.0,51.8 319.2,51.8 348.5,51.8 377.8,51.8 407.0,51.8 436.2,55.7 465.5,55.7 494.8,59.6 524.0,59.6" fill="none" stroke="#8F4715" stroke-width="2.4" stroke-dasharray="4 3" opacity="1"/>
+<path d="M 524.0 59.6 L 530.0 77.8" fill="none" stroke="#8F4715" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="59.6" r="2.6" fill="#8F4715"/>
+<text x="535.0" y="79.8" font-size="9.5" fill="#8F4715">tense_consistency</text>
+<text x="535.0" y="90.8" font-size="8" fill="#8F4715" opacity=".72">rho=-0.02 p=0.955</text>
+<polyline points="85.2,259.7 114.5,263.6 143.8,267.5 173.0,271.5 202.2,295.0 231.5,279.3 260.8,271.5 290.0,259.7 319.2,263.6 348.5,263.6 377.8,267.5 407.0,275.4 436.2,271.5 465.5,263.6 494.8,271.5 524.0,279.3" fill="none" stroke="#8F4715" stroke-width="2.4" stroke-dasharray="4 3" opacity="1"/>
+<path d="M 524.0 279.3 L 530.0 279.3" fill="none" stroke="#8F4715" stroke-width=".9" opacity=".5"/>
+<circle cx="524.0" cy="279.3" r="2.6" fill="#8F4715"/>
+<text x="535.0" y="281.3" font-size="9.5" fill="#8F4715">agreement_attractor</text>
+<text x="535.0" y="292.3" font-size="8" fill="#8F4715" opacity=".72">rho=-0.25 p=0.345</text>
+<text x="56.0" y="363" text-anchor="middle" opacity=".6">0M</text>
+<text x="173.0" y="363" text-anchor="middle" opacity=".6">6M</text>
+<text x="290.0" y="363" text-anchor="middle" opacity=".6">12M</text>
+<text x="407.0" y="363" text-anchor="middle" opacity=".6">18M</text>
+<text x="524.0" y="363" text-anchor="middle" opacity=".6">25M</text>
+<text x="290" y="381" text-anchor="middle" opacity=".6">training tokens</text>
+<text x="56" y="24" font-size="11" font-weight="600">Minimal-pair accuracy through one training run, 12.8M params, 16 probes</text>
+<text x="56" y="414" font-size="9.5" opacity=".7">Dashed amber: no positive trend with training. Validation loss over the same run: 3.106 to 1.774.</text></g></svg>
     </div>
     <figcaption>
       <b>Seven of nine phenomena climb. Two never move.</b> Curves are ordered by their rank
@@ -3724,7 +4023,7 @@ bad:   The boy near the cats run quickly.
       <b>1. There is an emergence order, and it is not the order of apparent difficulty.</b>
       Reflexive binding (<em>Tom washed himself</em>) and cross-sentence pronoun gender both
       clear 60% at 3.1M tokens; simple subject&ndash;verb agreement takes 13.8M. Agreement
-      looks like the more elementary rule and is learned <em>later</em> — plausibly because
+      looks like the more elementary rule and is learned <em>later</em>, plausibly because
       gendered names carry a strong lexical cue while agreement requires attending to a
       noun's number.
     </p>
@@ -3740,7 +4039,7 @@ bad:   The boy near the cats run quickly.
       Every other curve either rises or is already saturated; this one has &rho; = &minus;0.25.
       Combined with simple agreement rising to 82% over the same run, the picture is of a
       model getting steadily better at agreement <em>when nothing intervenes</em> and no
-      better — slightly worse — when something does.
+      better, slightly worse, when something does.
     </p>
   </div>
 
@@ -3769,8 +4068,8 @@ bad:   The boy near the cats run quickly.
 
   <p>
     This is the sharpest argument for the project's small scale being a feature rather than
-    an apology. The whole experiment — sixteen full benchmark evaluations interleaved with a
-    complete training run — took under two hours on a laptop. The same study on a model where
+    an apology. The whole experiment, sixteen full benchmark evaluations interleaved with a
+    complete training run, took under two hours on a laptop. The same study on a model where
     one training run costs thousands of GPU-hours is a research programme; here it is an
     afternoon, and it can be re-run with a different architecture, optimizer or data mixture
     by changing one config field.
@@ -3789,7 +4088,7 @@ bad:   The boy near the cats run quickly.
 
   <p>
     Everything above is a demonstration that the pipeline is correct. This section is the
-    argument that the artifact it produces is <em>useful</em> &mdash; and the argument rests
+    argument that the artifact it produces is <em>useful</em>, and the argument rests
     on an identity that is usually left as theory.
   </p>
   <div class="math">
@@ -3802,6 +4101,23 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
     repository does exactly this, and every figure below survived a byte-identical round
     trip.
   </p>
+
+  <div class="eg">
+    <span class="eg-t">Worked example: the cost of four real tokens</span>
+    <div class="math">
+context "Once upon a"      &rarr; p(" time")  = 1.000   cost &minus;log&#8322;(1.000) = <b>0.00 bits</b>
+context "Once upon a time" &rarr; p(",")      = 0.62    cost                    = 0.69 bits
+                              p(" there")  = 0.21    cost                    = 2.25 bits
+                              p(" in")     = 0.04    cost                    = 4.64 bits
+    </div>
+    <p style="margin-bottom:0">
+      The model spends <em>nothing</em> on " time" because the phrase is fixed, and the
+      arithmetic coder emits no bits for it. That is the whole mechanism: predictable text is
+      free, surprising text is expensive, and the total across a passage is the file size.
+      A generic compressor cannot do this, because "upon a" &rarr; " time" is a fact about
+      English, not a repeated substring it can point back to.
+    </p>
+  </div>
 
   <figure>
     <div class="fig-frame">
@@ -3856,7 +4172,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
 <text x="456" y="37" font-size="9.5" opacity=".75">gzip -9</text></g></svg>
     </div>
     <figcaption>
-      <b>0.71 bits/byte against 2.46 for the best classical compressor</b> &mdash; a 3.5&times;
+      <b>0.71 bits/byte against 2.46 for the best classical compressor</b>: a 3.5&times;
       smaller file. Coder overhead against the model's own cross-entropy is 1.1%, so nearly
       all of the theoretical rate is realised rather than merely quoted. The gap holds at
       every input size tested.
@@ -3866,7 +4182,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
   <h3>The same forward pass is an anomaly detector</h3>
   <p>
     Per-token surprisal is the compressor's cost function, un-summed. A line the model finds
-    expensive to encode is a line unlike its training distribution &mdash; an unsupervised
+    expensive to encode is a line unlike its training distribution; an unsupervised
     anomaly score needing no labels, no rules, and one threshold expressed as a percentile
     of normal traffic.
   </p>
@@ -3909,7 +4225,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
       The bottom row is the one worth looking at: <em>"Tom picked up the quantum entanglement
       and put it in his pocket"</em> is grammatical, in the right register, and differs only
       in that one noun phrase is impossible in this world. It scores 8.50 against a normal
-      maximum of 6.86 &mdash; semantic detection, not lexical.
+      maximum of 6.86: semantic detection, not lexical.
     </figcaption>
   </figure>
 
@@ -3936,7 +4252,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
   <p>
     Each input byte costs 0.708 bits with the model against 2.458 with the best classical
     coder, saving 0.219 bytes per byte. Below break-even, use <code>xz</code>. Above it, the
-    neural codec wins and keeps winning &mdash; and this is exactly where
+    neural codec wins and keeps winning, and this is exactly where
     <a href="#quant">&sect;08's quantization</a> stops being an exercise and starts paying
     rent, because shrinking the model shrinks the break-even point by 7&times;.
   </p>
@@ -3964,7 +4280,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
       <p>
         Application logs, telemetry, sensor records, EDI and claims traffic, chat
         transcripts, one team's code in one internal dialect. All are enormous, repetitive,
-        and distributionally narrow &mdash; the regime where a specialised 40M model beats a
+        and distributionally narrow; the regime where a specialised 40M model beats a
         general 124M one, which <a href="#evaluation">&sect;the measurement section</a> shows
         it does by 1.71&times;.
       </p>
@@ -3973,7 +4289,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
       <h4>Edge and air-gapped deployment</h4>
       <p>
         Runs on a CPU with no accelerator, no network and no API key. The entire pipeline
-        &mdash; train, compress, detect &mdash; fits on a laptop, which matters for
+: train, compress, detect, fits on a laptop, which matters for
         environments where sending logs to a hosted model is not an option.
       </p>
     </div>
@@ -3990,7 +4306,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
       <p>
         Encoding at ~200 tokens/second is orders of magnitude slower than <code>xz</code>.
         This suits <em>write-once, store-long</em> workloads, not interactive ones. And
-        decompression requires the exact model bytes &mdash; lose the checkpoint and the
+        decompression requires the exact model bytes, lose the checkpoint and the
         archive is unreadable, which is a real operational liability that
         <code>xz</code> does not have.
       </p>
@@ -4004,7 +4320,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
       re-running the model on what it has already decoded. If the two ends disagree about a
       single integer frequency anywhere in a 16,384-entry vocabulary, the arithmetic
       desynchronises and everything after it is corrupt. So the question is how much
-      floating-point drift the quantisation absorbs &mdash; and that is measurable, not a
+      floating-point drift the quantisation absorbs, and that is measurable, not a
       matter of hope.
     </p>
     <div class="tbl" style="margin:.9rem 0 .6rem">
@@ -4013,7 +4329,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
         <tbody>
           <tr><td>One-shot teacher-forced encode</td><td class="num">1.7e&minus;6</td>
               <td class="num worse">12&times;</td>
-              <td class="worse">Rejected &mdash; a coin flip at 16k symbols per position</td></tr>
+              <td class="worse">Rejected, a coin flip at 16k symbols per position</td></tr>
           <tr><td>Incremental decode with a KV cache</td><td class="num">1e&minus;9</td>
               <td class="num best">20,000&times;</td>
               <td class="best">Used, and 9&times; faster</td></tr>
@@ -4043,7 +4359,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
     <div class="card">
       <h4>D1 &nbsp;Configuration is frozen, hashed, documented</h4>
       <p>
-        16 immutable pydantic models. Every field carries a description &mdash; enforced by a test
+        16 immutable pydantic models. Every field carries a description, enforced by a test
         that fails if one is missing. Configs hash to a stable digest recorded in every run manifest,
         and save&rarr;load&rarr;validate is an exact identity.
       </p>
@@ -4081,7 +4397,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
     <div class="card">
       <h4>D5 &nbsp;Negative results are committed, not tuned away</h4>
       <p>
-        When a measurement contradicted the plan, the measurement was recorded &mdash; as a results
+        When a measurement contradicted the plan, the measurement was recorded: as a results
         table, a written explanation, and where possible a test pinning the surprising behaviour so
         it cannot silently change.
       </p>
@@ -4150,7 +4466,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
     <li>
       <b>The minimal-pair suite is templated, not naturalistic.</b> 856 items generated from a
       lexicon of about 50 words, so it measures whether specific grammatical contrasts are
-      represented &mdash; not general linguistic competence, and certainly not reasoning. Its
+      represented: not general linguistic competence, and certainly not reasoning. Its
       vocabulary overlaps the training distribution by construction. The older 28-question quiz is
       retained only as a compression-damage detector, where saturation is the desired property.
     </li>
@@ -4172,7 +4488,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
       <thead><tr><th>Change</th><th>What it needs</th><th>What it would settle</th></tr></thead>
       <tbody>
         <tr><td>Train <code>micro</code> to the full 20:1 budget</td>
-            <td>808M tokens &mdash; a few hours on one free T4, days on this laptop</td>
+            <td>808M tokens: a few hours on one free T4, days on this laptop</td>
             <td>Whether entity tracking appears with data alone at 40M parameters.</td></tr>
         <tr><td>Train <code>small</code> (126M) on FineWeb-Edu</td>
             <td>2.5B tokens; a multi-session Kaggle P100 run</td>
@@ -4183,7 +4499,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
             <td>Whether Muon's mean-loss advantage is significant, not just its speed and
                 stability. Currently p=0.121 at n=5.</td></tr>
         <tr><td>A held-out minimal-pair lexicon</td>
-            <td>No compute &mdash; a vocabulary split</td>
+            <td>No compute; a vocabulary split</td>
             <td>Whether the grammatical scores survive words the model never trained on, separating
                 learned rules from memorised collocations.</td></tr>
         <tr><td>Real GPU inference benchmarks</td>
@@ -4192,7 +4508,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
                 The pass-count reductions predict they should.</td></tr>
         <tr><td>Multi-GPU</td>
             <td>FSDP sharding; the training loop is written so this is additive</td>
-            <td>Nothing scientific &mdash; it is a throughput change, and the recipe is documented
+            <td>Nothing scientific; it is a throughput change, and the recipe is documented
                 rather than built.</td></tr>
       </tbody>
     </table>
@@ -4209,8 +4525,8 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
   </p>
   <ul>
     <li>
-      <b>The agreement-attraction result.</b> 94% on simple agreement, 44% &mdash; below chance
-      &mdash; with an attractor. That is a clean, quantified demonstration that a 40M model has
+      <b>The agreement-attraction result.</b> 94% on simple agreement, 44%: below chance
+: with an attractor. That is a clean, quantified demonstration that a 40M model has
       learned linear recency rather than syntactic agreement, at a scale where the whole training
       run is three hours and fully reproducible.
     </li>
@@ -4223,7 +4539,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
     <li>
       <b>The emergence trajectories.</b> Sixteen full benchmark evaluations interleaved with one
       training run, showing an ordering that is not the order of apparent difficulty, and two
-      phenomena that never move at all &mdash; <code>negation</code> at &rho;&nbsp;=&nbsp;+0.00,
+      phenomena that never move at all, <code>negation</code> at &rho;&nbsp;=&nbsp;+0.00,
       p&nbsp;=&nbsp;1.000. The methodological point is that this study costs two laptop-hours here
       and is a research programme at frontier scale, which is the strongest version of the
       "small scale is a feature" argument.
@@ -4237,7 +4553,7 @@ Shannon: a symbol of probability p costs &minus;log&#8322;(p) bits to encode.
   <p>
     The realistic framing is a workshop paper or a reproducibility report: <em>which small-scale
     replications of 2023&ndash;2026 LM findings hold, which do not, and what it costs to check</em>
-    &mdash; with every claim backed by a committed script and a significance test. That is a real
+, with every claim backed by a committed script and a significance test. That is a real
     contribution and an honest one. Claiming a state-of-the-art result would not be.
   </p>
 
@@ -4263,7 +4579,7 @@ make install
 make smoke     # tokenizer → pretrain → SFT → DPO → quantize → speculate</code></pre>
   <p>
     <code>make smoke</code> runs the entire pipeline on CPU and asserts a sanity metric at every
-    stage &mdash; loss starts at <code>ln(V)</code>, SFT reduces the masked loss, DPO raises the
+    stage, loss starts at <code>ln(V)</code>, SFT reduces the masked loss, DPO raises the
     reward margin, 4-bit stays coherent, GPTQ does not lose to RTN, greedy speculation is
     token-identical to greedy autoregressive decoding. Measured end to end: <b>45 seconds</b>.
   </p>
@@ -4284,7 +4600,7 @@ make smoke     # tokenizer → pretrain → SFT → DPO → quantize → specula
 └── bench/        ablation harness, throughput / latency / memory harness
 
 tests/{unit,property,dynamics,e2e}/   563 tests
-results/                              committed figures, tables, JSON — the source of truth
+results/                              committed figures, tables, JSON: the source of truth
 notebooks/                            two Colab notebooks, CPU and GPU paths
 demo/                                 Gradio app: generate, compare, inspect, race</code></pre>
 
@@ -4311,6 +4627,12 @@ demo/                                 Gradio app: generate, compare, inspect, ra
   </div>
 
   <hr class="soft">
+  <p class="hero-links" style="margin-bottom:1.6rem">
+    <a href="demo.html"><b>&#9654; Live demo</b></a>
+    <a href="results/">All results</a>
+    <a href="https://github.com/vedant1711/nanoscale-lm">Source on GitHub</a>
+    <a href="https://github.com/vedant1711/nanoscale-lm/tree/main/notebooks">Notebooks</a>
+  </p>
   <p class="footnote">
     Apache-2.0. Every algorithm implemented from scratch in PyTorch; no high-level trainer library in
     <code>src/nanoscale/</code>. Primary references: Vaswani et&nbsp;al. 2017 (Transformer);

@@ -2,13 +2,13 @@
 
 The load-bearing tests:
 
-* **SFT loss masking** — prompt tokens receive *exactly zero* gradient, verified by a
+* **SFT loss masking**: prompt tokens receive *exactly zero* gradient, verified by a
   gradient check rather than by inspecting the mask.
-* **DPO and SimPO losses** — match hand-computed values on tiny fixtures, with no model
+* **DPO and SimPO losses**: match hand-computed values on tiny fixtures, with no model
   involved, so a bug in the loss cannot hide behind a bug in the model.
-* **The length-exploitation mechanism** — DPO's reward grows with response length and
+* **The length-exploitation mechanism**: DPO's reward grows with response length and
   SimPO's does not, demonstrated directly on synthetic log-probabilities.
-* **GRPO's group-relative advantage** — zero-mean within each group, and exactly zero
+* **GRPO's group-relative advantage**: zero-mean within each group, and exactly zero
   for a unanimous group.
 """
 

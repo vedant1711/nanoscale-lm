@@ -11,15 +11,15 @@ the preference signal is something it can actually learn in a hundred CPU steps.
 
 The preference axis is deliberately **not** "one response is longer". It is:
 
-* **chosen** — answers the question, on-topic, ends properly with ``<eot>``;
-* **rejected** — one of a small set of concrete failure modes (off-topic, truncated,
+* **chosen**: answers the question, on-topic, ends properly with ``<eot>``;
+* **rejected**: one of a small set of concrete failure modes (off-topic, truncated,
   degenerate repetition, or a non-answer).
 
 That matters for the Phase-6 length-exploitation diagnostic (spec E4). If the preference
 data itself correlated quality with length, DPO's known length bias would be
 indistinguishable from it having learned the labels. Here the rejected responses are
-generated with a *length distribution deliberately matched* to the chosen ones — a test
-asserts the two are within a few percent — so any length drift after DPO comes from the
+generated with a *length distribution deliberately matched* to the chosen ones; a test
+asserts the two are within a few percent, so any length drift after DPO comes from the
 objective, not from the data.
 
 ``micro``/``small`` point at real preference data instead; see ``configs/align/``.

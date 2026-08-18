@@ -5,7 +5,7 @@ Why the KV cache, and not just the weights
 Weight-only quantization shrinks a fixed cost. The KV cache is a cost that **grows with
 context**, and past a few thousand tokens it dominates: for the ``micro`` tier at 4k
 context, the cache is larger than the entire model. Decoding is memory-bandwidth-bound,
-so halving the bytes read per step is close to halving decode latency — which is why
+so halving the bytes read per step is close to halving decode latency, which is why
 KV-cache quantization is the one compression technique whose benefit *increases* with
 sequence length.
 
@@ -102,7 +102,7 @@ class QuantizedKVCache(KVCache):
 
     This is a *simulation* of the memory win, not a kernel-level implementation: PyTorch
     has no int4 matmul on CPU, so the cache stores uint8 codes and dequantizes to fp32
-    when attention reads it. That is honest about what is being measured — the
+    when attention reads it. That is honest about what is being measured; the
     **accuracy cost** of quantized KV is exactly real, and the **memory footprint** is
     computed analytically by :meth:`memory_bytes` rather than measured from an
     allocator. The latency win a real int4 kernel would deliver is *not* claimed here;
@@ -185,7 +185,7 @@ class _QuantizedLayerCache(LayerKVCache):
         self.compute_dtype = dtype
 
     def append(self, new_keys: Tensor, new_values: Tensor) -> tuple[Tensor, Tensor]:
-        """Quantize then immediately dequantize, then store — simulating lossy storage.
+        """Quantize then immediately dequantize, then store, simulating lossy storage.
 
         Round-tripping through the quantizer on write is what makes the *accuracy* cost
         real while keeping the tensors in a dtype PyTorch can actually attend over.

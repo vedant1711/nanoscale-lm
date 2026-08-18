@@ -46,8 +46,8 @@ def test_frequencies_always_sum_to_the_budget_and_are_never_zero(probs: list[flo
     """The two invariants the coder depends on, over arbitrary inputs.
 
     A zero frequency is a symbol the coder cannot encode; a wrong total desynchronises
-    encoder and decoder. Hypothesis generates degenerate inputs — all zeros, one spike,
-    denormals — that hand-written cases would miss.
+    encoder and decoder. Hypothesis generates degenerate inputs; all zeros, one spike,
+    denormals; that hand-written cases would miss.
     """
     freq = probs_to_frequencies(torch.tensor(probs, dtype=torch.float64))
     assert int(freq.sum()) == FREQ_TOTAL
@@ -116,7 +116,7 @@ def test_coder_round_trips_with_a_changing_distribution() -> None:
 def test_coder_approaches_the_entropy_bound() -> None:
     """Output size must be close to the theoretical cost, or the coder is broken.
 
-    This is the test that would catch a coder that is lossless but wasteful — the failure
+    This is the test that would catch a coder that is lossless but wasteful; the failure
     mode where every compression number is real and unimpressive for no good reason.
     """
     gen = torch.Generator().manual_seed(11)

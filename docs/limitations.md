@@ -16,7 +16,7 @@ rather than tuning until it did.
 ## What the `nano` model is
 
 - **~5.0M parameters**, 6 layers × 256 width, 256-token context, 1024-token vocabulary.
-- Trained on **819,200 tokens** — which is 0.8% of its own Chinchilla-optimal budget.
+- Trained on **819,200 tokens**, which is 0.8% of its own Chinchilla-optimal budget.
 - Trained on a **synthetic story grammar**, not natural text. Roughly 440 word types.
   It writes coherent stories about Lily and Tom because that is the only thing it has
   ever read.
@@ -25,7 +25,7 @@ rather than tuning until it did.
 
 The `micro` tier (~40M parameters, FineWeb-Edu, full 20:1 budget) is the same code path
 with more compute and is the tier the spec designates for reported language-modelling
-results. It has not been run here — no GPU was available — so **no `micro` numbers appear
+results. It has not been run here; no GPU was available, so **no `micro` numbers appear
 anywhere in this repository**. The recipe is committed and runnable.
 
 ## Statistical power
@@ -35,7 +35,7 @@ anywhere in this repository**. The recipe is committed and runnable.
 | Validation perplexity | 16,384 tokens | ±0.011 ppl | Small differences are real |
 | Tiny benchmark | 28 questions | ±9 points near 50% | Differences under ~10 points are noise |
 | Ablations | **1 seed** | unquantified | Differences under 2% are not reported as results |
-| Preference head-to-head | 40 paired prompts | — | 3 wins vs 0 losses is suggestive, not conclusive |
+| Preference head-to-head | 40 paired prompts |, | 3 wins vs 0 losses is suggestive, not conclusive |
 
 Every ablation is a **single seed**. Proper practice is 3–5 seeds with a variance
 estimate; that was not affordable here on CPU, and the ablation harness compensates by
@@ -45,7 +45,7 @@ refusing to name a winner on a gap below 2%.
 
 Recorded here rather than omitted:
 
-- **GPTQ does not beat RTN at 4 bits** at this scale — all methods tie with fp32, because
+- **GPTQ does not beat RTN at 4 bits** at this scale; all methods tie with fp32, because
   a 5M-parameter model has little redundancy for 4-bit rounding to destroy. The
   separation appears at 2–3 bits.
 - **QK-norm, zero-init and SwiGLU-vs-ReLU² show no measurable difference in final loss.**
@@ -66,17 +66,17 @@ Recorded here rather than omitted:
 - **KV-cache quantization** likewise: real accuracy cost, analytic footprint, no measured
   latency win.
 - **Speculative decoding is batch size 1.** Batched speculation needs per-row bookkeeping
-  of divergent accepted lengths and a ragged cache — a serving-engine concern that does
+  of divergent accepted lengths and a ragged cache; a serving-engine concern that does
   not change the algorithm.
 
 ## Evaluation-suite limits
 
 The tiny benchmark is **saturated**: the base model scores 100% on all four tasks. A
 saturated benchmark cannot rank models that are all good at it. Its role in Arc 2 is as a
-**degradation detector** — "did 4-bit quantization break something?" — and nothing more.
+**degradation detector**: "did 4-bit quantization break something?", and nothing more.
 
 The preference judge is **programmatic**, not an LLM or a human. It scores on-topic
-overlap, absence of degenerate repetition, and proper termination — exactly the properties
+overlap, absence of degenerate repetition, and proper termination: exactly the properties
 the synthetic preference labels encode. So it measures *did the model learn the labels*,
 not *is the model better*. It is deliberately length-insensitive so a model that learned
 to game DPO's length bias gains nothing from it.
@@ -90,7 +90,7 @@ Disadvantage: it is not language. Nothing here says anything about how these met
 behave on real text.
 
 The preference data is **length-matched by construction** (chosen and rejected within 5%),
-which is what makes the DPO length-exploitation diagnostic interpretable at all — but it
+which is what makes the DPO length-exploitation diagnostic interpretable at all, but it
 also means the length bias has less to grip than it would on real preference data where
 longer responses genuinely are preferred more often.
 

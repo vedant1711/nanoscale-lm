@@ -156,9 +156,9 @@ def dpo_collapse() -> str:
     )
 
 
-(OUT / "chart_seeds_opt.svg").write_text(seeds_chart("optimizer", "Optimizer — 5 seeds per arm"))
+(OUT / "chart_seeds_opt.svg").write_text(seeds_chart("optimizer", "Optimizer, 5 seeds per arm"))
 (OUT / "chart_seeds_arch.svg").write_text(
-    seeds_chart("architecture", "Architecture — 5 seeds per arm")
+    seeds_chart("architecture", "Architecture, 5 seeds per arm")
 )
 (OUT / "chart_dpo.svg").write_text(dpo_collapse())
 print("wrote 3 charts")

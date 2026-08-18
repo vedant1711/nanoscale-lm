@@ -235,7 +235,7 @@ def test_streamer_emits_immediately_for_definitively_invalid_bytes(
 
     A UTF-8 continuation byte with no lead byte can never become valid. A naive
     ``try: decode() except UnicodeDecodeError: return ""`` buffers it indefinitely, so an
-    untrained model — whose tokens are effectively random bytes — emits nothing at all
+    untrained model, whose tokens are effectively random bytes: emits nothing at all
     until the final flush, and any incremental logic downstream (stop sequences, a live
     UI) never fires.
     """

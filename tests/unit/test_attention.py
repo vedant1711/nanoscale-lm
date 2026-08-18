@@ -1,7 +1,7 @@
 """Attention correctness (spec D1).
 
 The headline test: **our from-scratch attention equals
-``F.scaled_dot_product_attention``** on every configuration we ship — causal, GQA, RoPE,
+``F.scaled_dot_product_attention``** on every configuration we ship: causal, GQA, RoPE,
 padded, and single-query decode. SDPA is an optional fast path, so it has to prove it
 did not change the answer; equally, if our manual path had a mask or scaling bug, this
 test is what catches it.

@@ -170,7 +170,7 @@ def spearman(xs: list[float], ys: list[float]) -> tuple[float, float]:
     across sixteen probes is a much stronger signal than any one of them, and rank
     correlation tests exactly that without assuming the curve is a straight line.
 
-    So the reportable claim is not "accuracy dipped to 38%" — it is "this phenomenon's
+    So the reportable claim is not "accuracy dipped to 38%"; it is "this phenomenon's
     accuracy fails to rise with training while every other phenomenon's does", which is a
     statement about sixteen paired observations rather than one.
     """
@@ -256,7 +256,7 @@ def ensure_trends(payload: dict[str, Any], items: int) -> dict[str, Any]:
     """Compute per-phenomenon trend statistics if the payload predates them.
 
     Deriving these at render time rather than only at measure time is what lets the
-    statistics improve without paying for the training run again — the same reason the
+    statistics improve without paying for the training run again, the same reason the
     multi-seed ablations store raw per-seed losses.
     """
     probes = payload["probes"]
@@ -294,7 +294,7 @@ def render(payload: dict[str, Any], figure: Path) -> str:
         return "never"
 
     def peak_drop(name: str) -> float:
-        """Largest fall from a running maximum — the non-monotonicity measure."""
+        """Largest fall from a running maximum: the non-monotonicity measure."""
         best = 0.0
         worst = 0.0
         for p in probes:
@@ -328,8 +328,8 @@ def render(payload: dict[str, Any], figure: Path) -> str:
             f"| {name} | {first['phenomena'][name] * 100:.0f}% | "
             f"**{last['phenomena'][name] * 100:.0f}%** | {crossed(name)} | "
             f"{peak_drop(name) * 100:.0f} pts | "
-            f"{'—' if rho is None else f'{rho:+.2f}'} | "
-            f"{'—' if pv is None else f'{pv:.4f}'} |"
+            f"{', ' if rho is None else f'{rho:+.2f}'} | "
+            f"{', ' if pv is None else f'{pv:.4f}'} |"
         )
 
     lines += [
@@ -341,7 +341,7 @@ def render(payload: dict[str, Any], figure: Path) -> str:
         "A single end-of-training number cannot distinguish *never learned* from *learned "
         "and then unlearned*, and the two have opposite implications. A capability that "
         "rises and then falls means the model found a shortcut that pays on the training "
-        "distribution and costs accuracy on the probe — which is a statement about the "
+        "distribution and costs accuracy on the probe, which is a statement about the "
         "data, not about capacity. A capability that never moves is a statement about "
         "capacity or about the probe.",
         "",

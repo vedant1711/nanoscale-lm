@@ -283,8 +283,8 @@ def write_report(payload: dict[str, object], figure: Path) -> Path:
         "|" + "---|" * 10,
     ]
     for row in rows:
-        ppl = f"{row['perplexity']:.4f}" if row["perplexity"] is not None else "—"
-        acc = f"{row['acceptance_rate']:.3f}" if row["acceptance_rate"] is not None else "—"
+        ppl = f"{row['perplexity']:.4f}" if row["perplexity"] is not None else ", "
+        acc = f"{row['acceptance_rate']:.3f}" if row["acceptance_rate"] is not None else ", "
         lines.append(
             f"| {row['variant']} | {row['params']:,} | {row['weight_mb']:.2f} MB | "
             f"{row['kv_mb']:.2f} MB | {row['prefill_ms_p50']:.1f} ms | "
@@ -321,8 +321,8 @@ def write_report(payload: dict[str, object], figure: Path) -> Path:
         "Reporting only the target's size would hide the trade.",
         "",
         "**Decode throughput here is a CPU measurement at 5M parameters and does not "
-        "generalise.** Speculation reduces target forward passes — that part is real and "
-        "hardware-independent, and is measured in `results/speculative/` — but at this "
+        "generalise.** Speculation reduces target forward passes; that part is real and "
+        "hardware-independent, and is measured in `results/speculative/`, but at this "
         "scale a forward pass is dominated by Python dispatch rather than by weight "
         "loading, so the wall-clock win the method exists for does not appear. Quantization "
         "likewise shows no speedup because the arithmetic is still fp32.",

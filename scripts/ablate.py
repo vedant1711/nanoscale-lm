@@ -2,9 +2,9 @@
 
 Two suites, matching the spec:
 
-* ``optimizer`` — AdamW-only vs the Muon+AdamW split (spec E3: "the optimizer was the
+* ``optimizer``: AdamW-only vs the Muon+AdamW split (spec E3: "the optimizer was the
   biggest lever").
-* ``architecture`` — QK-norm on/off, zero-init output projections on/off, and
+* ``architecture``: QK-norm on/off, zero-init output projections on/off, and
   SwiGLU vs ReLU² (spec E2's speedrun stack).
 
 Usage::
@@ -76,8 +76,8 @@ def architecture_suite(steps: int, target: float) -> AblationSuite:
     return AblationSuite(
         name="architecture",
         question=(
-            "Do the modded-nanoGPT speedrun's architecture choices — QK-norm, zero-init "
-            "output projections, SwiGLU — measurably help at this scale?"
+            "Do the modded-nanoGPT speedrun's architecture choices, QK-norm, zero-init "
+            "output projections, SwiGLU: measurably help at this scale?"
         ),
         target_loss=target,
         base_overrides=base,
@@ -142,7 +142,7 @@ def plot(suite: AblationSuite, results: Sequence[AblationResult]) -> Path:
 def write_finding(suite: AblationSuite, results: Sequence[AblationResult], figure: Path) -> Path:
     baseline = results[0]
     lines = [
-        f"# Ablation — {suite.name}",
+        f"# Ablation, {suite.name}",
         "",
         f"**Question.** {suite.question}",
         "",
@@ -155,8 +155,8 @@ def write_finding(suite: AblationSuite, results: Sequence[AblationResult], figur
         row = res.row()
         lines.append(
             f"| {row['variant']} | {row['final_val_loss']} | {row['val_ppl']} | "
-            f"{row['steps_to_target'] if row['steps_to_target'] is not None else '—'} | "
-            f"{row['seconds_to_target'] if row['seconds_to_target'] is not None else '—'} | "
+            f"{row['steps_to_target'] if row['steps_to_target'] is not None else ', '} | "
+            f"{row['seconds_to_target'] if row['seconds_to_target'] is not None else ', '} | "
             f"{row['tokens_per_s']} |"
         )
     lines += ["", "## Findings", ""]
@@ -184,7 +184,7 @@ def write_finding(suite: AblationSuite, results: Sequence[AblationResult], figur
         "findings obtained at 100–1000× this scale, not independent evidence about them. "
         "Differences below 2% in final loss are reported as *no measurable difference*, "
         "because at one seed that is what they are. A lever that matters at scale can be "
-        "invisible here — a small model in a narrow domain is exactly the regime where "
+        "invisible here; a small model in a narrow domain is exactly the regime where "
         "stability aids have little to stabilise.",
         "",
         f"Reproduce with: `python scripts/ablate.py --suite {suite.name}`",

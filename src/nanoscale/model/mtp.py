@@ -9,12 +9,12 @@ things come out of it:
 1. **A denser training signal.** Each position now carries several prediction targets,
    which empirically improves sample efficiency at fixed token budget.
 2. **A free draft model.** At inference the extra heads propose the next few tokens
-   without a second network — which is precisely the Medusa-style self-speculation used
+   without a second network, which is precisely the Medusa-style self-speculation used
    in Phase 9. This is the seam that ties Arc 1 to Arc 2: an architecture choice made
    during pretraining pays off as an inference optimisation later.
 
-Each head is deliberately tiny — one ``d_model → d_model`` transform, a nonlinearity, a
-parameter-free norm, and its own unembedding — so that the auxiliary objective adds
+Each head is deliberately tiny: one ``d_model → d_model`` transform, a nonlinearity, a
+parameter-free norm, and its own unembedding, so that the auxiliary objective adds
 capacity for prediction rather than a second model.
 """
 

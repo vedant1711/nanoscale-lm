@@ -2,13 +2,13 @@
 
 Four tabs, matching the spec:
 
-1. **Chat / generate** — talk to the model, with a base ↔ aligned toggle so a visitor can
+1. **Chat / generate**: talk to the model, with a base ↔ aligned toggle so a visitor can
    feel what alignment did.
-2. **Speed lab** — the same prompt decoded autoregressively and speculatively, with live
+2. **Speed lab**: the same prompt decoded autoregressively and speculatively, with live
    tokens/second and acceptance length.
-3. **Compression explorer** — the committed bits-vs-accuracy frontier and the variants
+3. **Compression explorer**: the committed bits-vs-accuracy frontier and the variants
    table, read from ``results/`` rather than retyped.
-4. **About** — the thesis, the architecture, and the honest caveats.
+4. **About**: the thesis, the architecture, and the honest caveats.
 
 Run locally::
 
@@ -18,7 +18,7 @@ Run locally::
 On Hugging Face Spaces the free CPU-basic tier is enough for the ``nano`` tier. Port 7860
 is pinned, which is what Spaces expects.
 
-Every number displayed here is read from a committed artifact in ``results/`` — the demo
+Every number displayed here is read from a committed artifact in ``results/``: the demo
 never computes a headline number of its own and never hand-edits one (spec F5).
 """
 
@@ -45,7 +45,7 @@ log = get_logger("nanoscale.demo")
 ROOT = Path(__file__).resolve().parent.parent
 RESULTS = ROOT / "results"
 #: The 40M TinyStories model is far better than `nano` at everything this demo shows, but
-#: it is 154 MB and therefore gitignored — a fresh clone only has the committed `nano`
+#: it is 154 MB and therefore gitignored; a fresh clone only has the committed `nano`
 #: exports. So prefer it when present and fall back cleanly, rather than shipping a demo
 #: that either breaks without it or silently shows the weaker model as if it were the
 #: headline one. `make train-micro-tinystories` reproduces it.
@@ -172,12 +172,12 @@ def do_speed_lab(prompt: str, max_new_tokens: int, gamma: int, seed: int) -> tup
         f"| target forward passes | {base.target_calls} | {spec.target_calls} |\n"
         f"| tokens per target pass | {base.mean_accepted_length:.2f} | "
         f"{spec.mean_accepted_length:.2f} |\n"
-        f"| draft acceptance rate | — | {spec.acceptance_rate:.1%} |\n"
+        f"| draft acceptance rate |, | {spec.acceptance_rate:.1%} |\n"
         f"| wall clock | {base_wall * 1000:.0f} ms | {spec_wall * 1000:.0f} ms |\n"
         f"| tokens/s | {base.generated / max(1e-9, base_wall):.0f} | "
         f"{spec.generated / max(1e-9, spec_wall):.0f} |\n\n"
         "**Read the target-pass row, not the wall clock.** Speculation reduces target "
-        "forward passes — that is the mechanism and it is hardware-independent. On a "
+        "forward passes; that is the mechanism and it is hardware-independent. On a "
         "5M-parameter model running on a free CPU, a forward pass is dominated by Python "
         "dispatch rather than by weight loading, so the wall-clock win the method exists "
         "for does not appear here. It needs a model large enough that memory bandwidth is "
@@ -201,7 +201,7 @@ def do_compress(text: str, checkpoint: str) -> tuple[str, str]:
     text = (text or "").strip()
     if len(text) < 40:
         return (
-            "Enter at least 40 characters — below that the coder's 4-byte flush "
+            "Enter at least 40 characters, below that the coder's 4-byte flush "
             "dominates the measurement and the comparison is meaningless.",
             "",
         )
@@ -228,9 +228,9 @@ def do_compress(text: str, checkpoint: str) -> tuple[str, str]:
         table.append(f"| {name}{mark} | {nbytes:,} | {ratio:.2f}x | {nbytes * 8 / len(raw):.3f} |")
 
     verdict = (
-        "**Beating every classical coder** — this text is inside the model's distribution."
+        "**Beating every classical coder**: this text is inside the model's distribution."
         if result.bits_per_byte < min(r[1] * 8 / len(raw) for r in rows[1:])
-        else "**Losing to the classical coders** — this text is outside the model's "
+        else "**Losing to the classical coders**: this text is outside the model's "
         "distribution, which is exactly what specialisation costs."
     )
     report = "\n".join(table) + (
@@ -244,7 +244,7 @@ def do_compress(text: str, checkpoint: str) -> tuple[str, str]:
 
 
 def do_anomaly(lines_text: str, checkpoint: str) -> str:
-    """Score each line by surprisal — the same quantity the compressor sums."""
+    """Score each line by surprisal: the same quantity the compressor sums."""
     lines = [ln.strip() for ln in (lines_text or "").splitlines() if ln.strip()]
     if len(lines) < 2:
         return "Enter at least two lines, one per row."
@@ -267,7 +267,7 @@ def do_anomaly(lines_text: str, checkpoint: str) -> str:
     out.append(
         f"\n\nThe cleanest line costs {floor:.2f} bits/token; anything above 1.5x that is "
         f"flagged. No labels and no rules are involved. In a real deployment the baseline is "
-        f"a percentile of known-good traffic rather than the best line in the batch — same "
+        f"a percentile of known-good traffic rather than the best line in the batch: same "
         f"idea, more data behind it."
     )
     return "\n".join(out)
@@ -309,8 +309,8 @@ def about_view() -> str:
         "assistant, it knows no facts about the world, and it will not answer questions "
         "outside that tiny domain.\n\n"
         "That is the point. The claim is not that this model is good; it is that the "
-        "**whole lifecycle** — tokenizer, pretraining, alignment, distillation, "
-        "quantization, speculative decoding — is implemented correctly, measured "
+        "**whole lifecycle**: tokenizer, pretraining, alignment, distillation, "
+        "quantization, speculative decoding, is implemented correctly, measured "
         "honestly, and runs end to end on hardware anyone has. The `micro` tier scales "
         "the identical code path to FineWeb-Edu on a free Colab GPU.\n\n"
         "### Architecture\n\n"
@@ -369,8 +369,8 @@ def build_demo() -> Any:  # noqa: ANN401 - gradio is an optional extra, so Block
 
         with gr.Tab("Speed lab"):
             gr.Markdown(
-                "Decode the same prompt twice — once autoregressively, once with "
-                "draft–target speculative decoding — and compare. The outputs differ "
+                "Decode the same prompt twice: once autoregressively, once with "
+                "draft–target speculative decoding, and compare. The outputs differ "
                 "because both sample; speculative decoding is lossless **in "
                 "distribution**, not token-for-token, unless you decode greedily."
             )
@@ -396,7 +396,7 @@ def build_demo() -> Any:  # noqa: ANN401 - gradio is an optional extra, so Block
                 "Shannon: a token of probability `p` costs `-log2(p)` bits. Feeding those "
                 "probabilities to an arithmetic coder turns the model's cross-entropy into "
                 "an actual file size. **Try in-domain text (a children's story) against "
-                "out-of-domain text (news, code, an email)** — the model wins enormously on "
+                "out-of-domain text (news, code, an email)**; the model wins enormously on "
                 "the first and loses badly on the second, and that trade is the point."
             )
             with gr.Row():
@@ -420,7 +420,7 @@ def build_demo() -> Any:  # noqa: ANN401 - gradio is an optional extra, so Block
             gr.Markdown(
                 "### Surprisal as an unsupervised anomaly score\n"
                 "The same per-token cost, un-summed. A line the model finds expensive to "
-                "encode is a line unlike its training data. One line per row — mix ordinary "
+                "encode is a line unlike its training data. One line per row, mix ordinary "
                 "sentences with something that does not belong and watch the ordering."
             )
             anom_in = gr.Textbox(

@@ -20,7 +20,7 @@ measurement for this project:
    sensitivity of the kind that made the old agreement probe read as chance
    (see ``docs/limitations.md``).
 2. **It is tokenizer-independent.** Both sentences are scored by the same model with the
-   same tokenizer, and only their ordering matters — so scores are comparable across
+   same tokenizer, and only their ordering matters, so scores are comparable across
    models that tokenize differently, unlike perplexity.
 3. **Difficulty is controllable.** An agreement item with an intervening attractor noun
    (``the boy near the cats``) is far harder than one without, because the model must
@@ -123,7 +123,7 @@ def article(word: str) -> str:
     """``a`` or ``an``, by the following word's initial sound.
 
     Without this the generator produced "a apple", which is ungrammatical for a reason
-    that has nothing to do with the phenomenon under test — the model could then get the
+    that has nothing to do with the phenomenon under test; the model could then get the
     item right by noticing the article, not the target contrast. Approximating "sound" by
     "starts with a vowel letter" is wrong for words like *hour*, none of which are in this
     lexicon.
@@ -242,7 +242,7 @@ def _entity_tracking(rng: random.Random, n: int) -> Iterator[MinimalPair]:
     so the model must resolve the binding rather than notice which word it has seen
     before. An earlier version of this template introduced only the correct object
     ("X picked up the key ... X looked down at the key/book"), which any model with a
-    copying bias scores 100% on without tracking anything — and this model duly scored
+    copying bias scores 100% on without tracking anything, and this model duly scored
     100%. Making both objects present dropped the score to where it belongs. The lesson
     generalises: a benchmark item is only measuring the thing you named if the *wrong*
     answer is equally available.
@@ -261,7 +261,7 @@ def _entity_tracking(rng: random.Random, n: int) -> Iterator[MinimalPair]:
 def _negation(rng: random.Random, n: int) -> Iterator[MinimalPair]:
     """A negated premise must be followed by the consistent continuation.
 
-    The two continuations are ``nothing`` and ``something`` — same length, same syntactic
+    The two continuations are ``nothing`` and ``something``: same length, same syntactic
     frame, differing in exactly one word. An earlier version contrasted ``nothing inside``
     with ``a key inside``, which differs in *length* as well as in meaning, so a model
     could have scored well by preferring shorter sentences. A test comparing word counts
@@ -368,7 +368,7 @@ def wilson_interval(successes: int, n: int, *, z: float = 1.96) -> tuple[float, 
     """Wilson score interval for a binomial proportion.
 
     Preferred over the normal approximation because accuracies here run close to 0.5 and
-    to 1.0, where the normal interval misbehaves badly — it can extend past 1.0, and it is
+    to 1.0, where the normal interval misbehaves badly; it can extend past 1.0, and it is
     far too narrow near the boundary. At n=100 and p=0.99 the normal interval is
     ±0.019 and the Wilson interval is correctly asymmetric.
     """

@@ -21,7 +21,7 @@ A single head is a weak predictor, so Medusa takes the top-``k`` candidates from
 head and considers their **Cartesian product** as a tree of continuations. Verifying
 those independently would cost one forward pass per path. Instead the paths are packed
 into one sequence and given a **custom attention mask** in which each node attends only
-to its own ancestors — so sibling branches cannot see each other, and one forward pass
+to its own ancestors: so sibling branches cannot see each other, and one forward pass
 over ``N`` tree nodes evaluates every root-to-leaf path simultaneously.
 
 :func:`build_tree_attention_mask` constructs that mask from the tree's parent pointers,
@@ -33,7 +33,7 @@ the first child of the second root, i.e. at depth 1. Feeding the packed sequence
 default positions gives every node a RoPE angle derived from its packing index, which
 silently scores continuations at the wrong distance from the prefix.
 :func:`tree_position_ids` supplies positions derived from each node's **depth**, and the
-equivalence test only passes with them — it caught exactly this bug.
+equivalence test only passes with them: it caught exactly this bug.
 
 What is and is not claimed
 ---------------------------
@@ -213,8 +213,8 @@ class MedusaSampler:
 
         Args:
             model: The target model.
-            heads: MTP heads to draft with. Defaults to the model's own ``mtp`` heads —
-                the Arc-1/Arc-2 seam — and raises if the model has none.
+            heads: MTP heads to draft with. Defaults to the model's own ``mtp`` heads;
+        the Arc-1/Arc-2 seam, and raises if the model has none.
             topk: Candidates taken from each head.
             max_nodes: Cap on tree size.
             temperature: Sampling temperature for the target's own tokens.

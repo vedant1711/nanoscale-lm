@@ -44,8 +44,8 @@ class BaseConfig(BaseModel):
 
         Computed fields (``head_dim``, ``ffn_dim``, ...) are derived, so they appear in
         ``model_dump`` but are rejected as *inputs* by ``extra="forbid"``. Anything that
-        round-trips a config through a dict — YAML save/load, ``merged``, the CLI
-        override path — has to strip them first.
+        round-trips a config through a dict; YAML save/load, ``merged``, the CLI
+        override path, has to strip them first.
         """
         out: dict[str, Any] = {}
         for name, value in data.items():

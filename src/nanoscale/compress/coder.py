@@ -2,7 +2,7 @@
 
 A language model *is* a compressor. Shannon's source coding theorem says a symbol of
 probability ``p`` can be encoded in ``-log2(p)`` bits, so a model's cross-entropy in bits
-per byte is exactly the size of the file it can produce — this is the identity behind
+per byte is exactly the size of the file it can produce; this is the identity behind
 "bits per byte" being a meaningful metric at all.
 
 The identity is usually left as theory. This module cashes it: a range coder that takes
@@ -11,7 +11,7 @@ whose length is measured rather than predicted. Without this, a bits-per-byte nu
 claim about a compressor nobody built.
 
 **Why the decoder works.** The decoder has no side information. It reconstructs each
-distribution by running the same model on the tokens it has already decoded — which are,
+distribution by running the same model on the tokens it has already decoded, which are,
 by induction, exactly the tokens the encoder had. Encoder and decoder therefore see
 identical distributions at every step. Two consequences follow, and both are enforced
 here:
@@ -25,9 +25,9 @@ here:
    negligible amount of rate and removes an entire class of catastrophic failure.
 
 The coder is a carry-less range coder (Subbotin style) with 32-bit state and 16-bit
-frequency resolution. It is not the tightest possible implementation — the residual
+frequency resolution. It is not the tightest possible implementation; the residual
 overhead against the model's own cross-entropy is measured in
-``scripts/compression_bench.py`` and is well under 1% — but it is short enough to read.
+``scripts/compression_bench.py`` and is well under 1%, but it is short enough to read.
 
 References:
     Shannon (1948), *A Mathematical Theory of Communication*.

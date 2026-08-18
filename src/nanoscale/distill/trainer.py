@@ -11,7 +11,7 @@ Warm-start
 objective takes over. This is not a convenience: MiniLLM prescribes exactly this, and the
 reason is structural. On-policy reverse KL estimates its gradient from trajectories the
 **student** generates, so a randomly-initialised student is sampling noise and scoring it
-against a teacher that finds all of it equally unlikely — the reward carries no usable
+against a teacher that finds all of it equally unlikely; the reward carries no usable
 signal and the policy gradient is pure variance. Skipping the warm-start does not make
 reverse KL slightly worse; it makes it not work at all (measured: student perplexity
 ~1000 without, versus the teacher's ~3).
@@ -92,7 +92,7 @@ class DistillResult:
 
         This is the number that describes what distillation actually shrank. Teacher and
         student must share a tokenizer, so the embedding table and LM head are the same
-        width in both and their cost is irreducible — at small vocabularies they can
+        width in both and their cost is irreducible, at small vocabularies they can
         dominate the total and make the headline ratio look far worse than the depth and
         width reduction really is.
         """
@@ -180,7 +180,7 @@ class DistillTrainer:
 
     @torch.no_grad()
     def _student_rollout(self, prompts: Tensor, n_new: int) -> tuple[Tensor, Tensor]:
-        """Sample continuations from the *student* — the on-policy part of MiniLLM."""
+        """Sample continuations from the *student*, the on-policy part of MiniLLM."""
         gen = torch.Generator().manual_seed(self.config.seed + int(prompts.sum()) % 10_000)
         out = self.student.generate(
             prompts,

@@ -4,7 +4,7 @@ Four claims, each tested rather than asserted:
 
 1. Our AdamW equals ``torch.optim.AdamW`` to floating-point tolerance over many steps.
 2. Newton–Schulz output is (near-)orthogonal: singular values cluster at 1.
-3. Muon beats AdamW on a matrix-structured problem — the regime it exists for.
+3. Muon beats AdamW on a matrix-structured problem; the regime it exists for.
 4. The parameter router assigns every tensor to the group the spec says it should.
 """
 

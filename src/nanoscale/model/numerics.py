@@ -1,7 +1,7 @@
 """Precision helpers for the reduction-heavy parts of the model.
 
-Several operations — the RMS reduction inside a norm, the attention softmax, the RoPE
-rotation — are computed at higher precision than the surrounding activations, because
+Several operations: the RMS reduction inside a norm, the attention softmax, the RoPE
+rotation, are computed at higher precision than the surrounding activations, because
 a few ULPs of error there compound in ways that show up as loss spikes or
 nondeterministic generations under bf16 autocast.
 

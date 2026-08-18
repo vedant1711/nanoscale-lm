@@ -7,13 +7,13 @@ budget for a human one, so the judge has to be **programmatic and stated**.
 The judge scores a completion on three criteria drawn from the failure modes the
 preference data actually contains (see :mod:`nanoscale.data.instruct`):
 
-1. **On-topic** — does the completion mention the entities named in the prompt?
-2. **Non-degenerate** — is it free of the immediate n-gram repetition that the
+1. **On-topic**: does the completion mention the entities named in the prompt?
+2. **Non-degenerate**: is it free of the immediate n-gram repetition that the
    ``repetitive`` rejection mode exhibits?
-3. **Terminated** — did the model emit ``<eot>`` rather than run to the token cap?
+3. **Terminated**: did the model emit ``<eot>`` rather than run to the token cap?
 
 These are the properties the preference labels encode, so a model that learned the
-labels should score higher. That is a real, checkable claim — and a much weaker one than
+labels should score higher. That is a real, checkable claim, and a much weaker one than
 "the aligned model is better", which nothing at this scale could support. The write-up
 says so.
 
@@ -45,7 +45,7 @@ _WORD = re.compile(r"[A-Za-z']+")
 
 
 def repetition_rate(text: str, *, n: int = 3) -> float:
-    """Fraction of ``n``-grams that are repeats — the degeneracy diagnostic.
+    """Fraction of ``n``-grams that are repeats, the degeneracy diagnostic.
 
     ``0.0`` means every n-gram is unique; values above ~0.3 indicate the looping that
     small models fall into when they have nothing left to say.
@@ -165,7 +165,7 @@ def head_to_head(
     """Compare two models on the same prompts with the same sampling seed.
 
     Both models see identical prompts and identical RNG seeds per prompt, so the
-    comparison is paired rather than two independent samples — which is what makes 40
+    comparison is paired rather than two independent samples, which is what makes 40
     prompts informative at all.
     """
     was_a, was_b = model_a.training, model_b.training

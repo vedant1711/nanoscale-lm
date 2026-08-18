@@ -11,7 +11,7 @@ argument applies to the hidden matmul weights and to nothing else in the model:
   unrelated tokens' updates.
 * **The LM head** has the same structure transposed, and additionally has a vocabulary
   dimension whose scale differs from everything else in the network.
-* **Norm gains and biases** are 1D — a vector of independent scalars, where per-coordinate
+* **Norm gains and biases** are 1D; a vector of independent scalars, where per-coordinate
   adaptivity is exactly what you want and Muon is undefined anyway.
 
 So: 2D hidden weights to Muon, everything else to AdamW. This is the split the
@@ -77,8 +77,8 @@ def split_parameters(
     """Route a model's trainable parameters into the Muon and AdamW groups.
 
     A parameter goes to Muon iff it is exactly 2D **and** its name matches none of
-    ``adamw_patterns``. Everything else — 1D gains and biases, embeddings, the LM head,
-    MTP unembeddings, and any >2D tensor — goes to AdamW.
+    ``adamw_patterns``. Everything else, 1D gains and biases, embeddings, the LM head,
+    MTP unembeddings, and any >2D tensor, goes to AdamW.
 
     Tied parameters are routed once: the same tensor appearing under two names would
     otherwise be stepped twice per optimizer step.
@@ -111,9 +111,9 @@ class CompositeOptimizer:
     Deliberately *not* a subclass of :class:`torch.optim.Optimizer`: the base class
     assumes a single ``param_groups`` list and a single flat state dict, and pretending
     to satisfy that contract while holding two independent optimizers is how subtle
-    checkpoint bugs happen. This class exposes exactly what the trainer needs —
+    checkpoint bugs happen. This class exposes exactly what the trainer needs,
     ``step``, ``zero_grad``, ``state_dict``, ``load_state_dict``, and per-group LR
-    control — and nothing it cannot honour.
+    control, and nothing it cannot honour.
     """
 
     def __init__(self, optimizers: dict[str, Optimizer]) -> None:
@@ -194,7 +194,7 @@ class CompositeOptimizer:
 def build_optimizer(model: nn.Module, config: OptimConfig) -> CompositeOptimizer:
     """Build the optimizer stack described by ``config``.
 
-    ``config.name == "adamw"`` routes everything to AdamW — the A/B baseline for
+    ``config.name == "adamw"`` routes everything to AdamW, the A/B baseline for
     Phase 5. ``config.name == "muon"`` uses the documented split.
     """
     split = split_parameters(model)

@@ -1,8 +1,8 @@
 """Hypothesis property tests for the tokenizer (spec D2).
 
 The headline property is the one the spec names explicitly: ``decode(encode(x)) == x``
-for *arbitrary* UTF-8. Byte-level BPE makes this a theorem rather than a hope — there
-is no unknown token and no lossy normalisation anywhere in the pipeline — so a
+for *arbitrary* UTF-8. Byte-level BPE makes this a theorem rather than a hope; there
+is no unknown token and no lossy normalisation anywhere in the pipeline, so a
 counter-example here would be a genuine bug, not a tuning issue.
 """
 

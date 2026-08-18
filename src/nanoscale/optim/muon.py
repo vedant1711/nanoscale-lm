@@ -10,7 +10,7 @@ The idea
 Adam normalises each *coordinate* by its own running gradient magnitude. For a weight
 **matrix** that is the wrong geometry: what matters is the matrix's action as a linear
 map, and a momentum buffer for a matrix is typically dominated by one or two singular
-directions. Steps taken along it stretch the map anisotropically — one direction moves
+directions. Steps taken along it stretch the map anisotropically: one direction moves
 far, the rest barely move.
 
 Muon instead replaces the momentum matrix ``M`` with the nearest **semi-orthogonal**
@@ -33,7 +33,7 @@ with ``(a, b, c) = (3.4445, -4.7750, 2.0315)``. Applied to a spectrally-normalis
 deliberately *not* the textbook Newton–Schulz values ``(1.5, -0.5, 0)``: they are tuned
 so the map overshoots near zero, which converges far faster for the small singular
 values that dominate a real momentum matrix. The cost is that convergence is not
-monotone and the fixed point sits near ``1 ± 0.3`` rather than exactly 1 — which is
+monotone and the fixed point sits near ``1 ± 0.3`` rather than exactly 1, which is
 fine, because only the *direction* is used. ``tests/unit/test_optim.py`` measures the
 resulting singular values directly.
 
@@ -43,7 +43,7 @@ Every iteration is two matmuls of the smaller dimension, so five steps on a
 Scope
 -----
 Muon applies to 2D hidden weight matrices only. Embeddings, the LM head, norm gains and
-biases go to AdamW — that is the documented split from the speedrun, and it is what
+biases go to AdamW; that is the documented split from the speedrun, and it is what
 :mod:`nanoscale.optim.router` implements. The reason is that Muon's whole argument is
 about a matrix's action as a linear map; an embedding table is a lookup, and a norm gain
 is a vector of independent scalars. Neither has the geometry the orthogonalisation is
