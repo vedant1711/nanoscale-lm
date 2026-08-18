@@ -1,0 +1,191 @@
+{
+  "git_sha": "8edb9c3",
+  "hardware": "mps:apple-silicon | macOS-15.6-arm64-arm-64bit",
+  "checkpoint": "runs/micro/tinystories/final.pt",
+  "params": 40379904,
+  "rows": [
+    {
+      "size": 2000,
+      "nanoscale": {
+        "bytes_in": 2000,
+        "bytes_out": 194,
+        "tokens": 473,
+        "bits_per_byte": 0.776,
+        "ideal_bits_per_byte": 0.76135,
+        "ratio": 10.309,
+        "coder_overhead": 0.01924,
+        "encode_s": 2.26,
+        "decode_s": 2.1,
+        "tokens_per_s": 209.5,
+        "lossless": true
+      },
+      "classical": {
+        "gzip -9": {
+          "bytes": 976,
+          "bits_per_byte": 3.904,
+          "ratio": 2.0491803278688523
+        },
+        "bzip2 -9": {
+          "bytes": 966,
+          "bits_per_byte": 3.864,
+          "ratio": 2.070393374741201
+        },
+        "xz -9": {
+          "bytes": 1080,
+          "bits_per_byte": 4.32,
+          "ratio": 1.8518518518518519
+        }
+      }
+    },
+    {
+      "size": 8000,
+      "nanoscale": {
+        "bytes_in": 8000,
+        "bytes_out": 732,
+        "tokens": 2016,
+        "bits_per_byte": 0.732,
+        "ideal_bits_per_byte": 0.72724,
+        "ratio": 10.929,
+        "coder_overhead": 0.00655,
+        "encode_s": 10.38,
+        "decode_s": 9.86,
+        "tokens_per_s": 194.2,
+        "lossless": true
+      },
+      "classical": {
+        "gzip -9": {
+          "bytes": 3240,
+          "bits_per_byte": 3.24,
+          "ratio": 2.4691358024691357
+        },
+        "bzip2 -9": {
+          "bytes": 2941,
+          "bits_per_byte": 2.941,
+          "ratio": 2.7201632097925876
+        },
+        "xz -9": {
+          "bytes": 3236,
+          "bits_per_byte": 3.236,
+          "ratio": 2.4721878862793574
+        }
+      }
+    },
+    {
+      "size": 24000,
+      "nanoscale": {
+        "bytes_in": 24006,
+        "bytes_out": 2124,
+        "tokens": 5906,
+        "bits_per_byte": 0.70782,
+        "ideal_bits_per_byte": 0.70562,
+        "ratio": 11.302,
+        "coder_overhead": 0.00313,
+        "encode_s": 32.42,
+        "decode_s": 32.01,
+        "tokens_per_s": 182.2,
+        "lossless": true
+      },
+      "classical": {
+        "gzip -9": {
+          "bytes": 8559,
+          "bits_per_byte": 2.852286928267933,
+          "ratio": 2.8047669120224326
+        },
+        "bzip2 -9": {
+          "bytes": 7376,
+          "bits_per_byte": 2.45805215362826,
+          "ratio": 3.2546095444685466
+        },
+        "xz -9": {
+          "bytes": 8152,
+          "bits_per_byte": 2.7166541697908855,
+          "ratio": 2.944798822374877
+        }
+      }
+    }
+  ],
+  "anomaly": {
+    "normal_p95_bits_per_token": 6.4071,
+    "n_normal": 60,
+    "detected": 5,
+    "n_anomalies": 5,
+    "scored": [
+      {
+        "kind": "log line",
+        "line": "2026-08-17T14:22:01Z ERROR db.pool timeout after 30000ms retry=3 host=10.0.4.21",
+        "bits_per_token": 14.1413
+      },
+      {
+        "kind": "code",
+        "line": "for (int i = 0; i < n; i++) { buf[i] = malloc(sizeof(struct node)); }",
+        "bits_per_token": 13.9477
+      },
+      {
+        "kind": "wrong domain",
+        "line": "The mitochondrion generates adenosine triphosphate via oxidative phosphorylation.",
+        "bits_per_token": 12.9601
+      },
+      {
+        "kind": "gibberish",
+        "line": "xqzk vburt plimf woggle zzzt krrn.",
+        "bits_per_token": 12.6903
+      },
+      {
+        "kind": "subtle",
+        "line": "Tom picked up the quantum entanglement and put it in his pocket.",
+        "bits_per_token": 8.5016
+      },
+      {
+        "kind": "normal",
+        "line": "The angel saw the flower and smiled at Lily",
+        "bits_per_token": 6.86
+      },
+      {
+        "kind": "normal",
+        "line": "They named the kitten Fluffy because she had soft fur",
+        "bits_per_token": 6.4821
+      },
+      {
+        "kind": "normal",
+        "line": "The bird looked all around for his friend",
+        "bits_per_token": 6.4071
+      },
+      {
+        "kind": "normal",
+        "line": "The tunnel was big and dark and had funny sounds",
+        "bits_per_token": 6.2359
+      },
+      {
+        "kind": "normal",
+        "line": "The tunnel was a secret way to a fun party for young fish like Fin and his friends",
+        "bits_per_token": 6.1776
+      },
+      {
+        "kind": "normal",
+        "line": "They swam faster and faster to reach the light",
+        "bits_per_token": 6.0334
+      },
+      {
+        "kind": "normal",
+        "line": "The sign had letters, but they could not read them",
+        "bits_per_token": 5.9705
+      }
+    ],
+    "normal_median": 4.6436
+  },
+  "economics": {
+    "model_mb": {
+      "fp32": 154.0,
+      "int8": 40.9,
+      "int4": 21.7
+    },
+    "best_classical_bpb": 2.4581,
+    "nanoscale_bpb": 0.7078,
+    "saved_bytes_per_byte": 0.21878,
+    "break_even_mb": {
+      "fp32": 704,
+      "int8": 187,
+      "int4": 99
+    }
+  }
+}

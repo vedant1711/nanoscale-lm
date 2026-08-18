@@ -132,3 +132,7 @@ train-micro:  ## Pretrain the micro tier (needs a GPU and the 'data' extra)
 clean:  ## Remove caches and build artifacts
 	rm -rf .mypy_cache .ruff_cache .pytest_cache .hypothesis build dist htmlcov .coverage
 	find . -name __pycache__ -type d -prune -exec rm -rf {} +
+
+.PHONY: compress
+compress:  ## Neural compression + anomaly detection benchmark vs gzip/bzip2/xz
+	$(PY) scripts/compression_bench.py runs/micro/tinystories/final.pt
